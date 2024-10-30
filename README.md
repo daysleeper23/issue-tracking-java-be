@@ -8,7 +8,7 @@
 
 ---
 
-# Members
+## Members
 Maksim Minenko, Thuong Le, Luu Dao
 
 ---
