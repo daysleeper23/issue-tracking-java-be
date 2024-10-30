@@ -8,6 +8,11 @@
 
 ---
 
+# Members
+Maksim Minenko, Thuong Le, Luu Dao
+
+---
+
 ## Menu
 
 - [Vision](#vision)
