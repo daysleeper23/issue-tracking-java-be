@@ -1,5 +1,5 @@
 package domain.enums;
 
 public enum DefaultStatus {
-    TODO, IN_PROGRESS, DONE;
+    TODO, IN_PROGRESS, DONE, ARCHIVED;
 }
