@@ -43,7 +43,7 @@ public class Users {
 
   @NonNull
   @Getter
-  private Instant createdAt;
+  private final Instant createdAt;
 
   @NonNull
   @Getter
