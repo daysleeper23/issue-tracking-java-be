@@ -1,4 +1,4 @@
-package main.java.application.services;
+package application.services;
 
 public class UserApplicationService {
   

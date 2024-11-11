@@ -1,4 +1,4 @@
-package main.java.presentation.controllers;
+package presentation.controllers;
 
 public class UserController {
   
