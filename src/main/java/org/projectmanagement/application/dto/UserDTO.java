@@ -1,4 +1,4 @@
-package main.java.application.dto;
+package org.projectmanagement.application.dto;
 
 public class UserDTO {
   
