@@ -1,11 +1,11 @@
-package domain.entities;
+package org.projectmanagement.domain.entities;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class TaskSubscribers {
     @Setter(AccessLevel.NONE)
