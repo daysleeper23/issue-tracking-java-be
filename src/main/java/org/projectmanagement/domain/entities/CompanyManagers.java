@@ -1,8 +1,8 @@
-package domain.entities;
+package org.projectmanagement.domain.entities;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @ToString
@@ -21,13 +21,13 @@ public class CompanyManagers {
     private UUID roleId;
 
     @NonNull
-    private final LocalDateTime createdAt;
+    private final Instant createdAt;
 
     @NonNull
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     public void updateTimestamp() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = Instant.now();
     }
 
     public void setRoleId(@NonNull UUID roleId) {

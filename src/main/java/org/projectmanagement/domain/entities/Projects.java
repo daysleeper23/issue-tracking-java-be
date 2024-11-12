@@ -1,8 +1,9 @@
-package domain.entities;
+package org.projectmanagement.domain.entities;
 
 import lombok.*;
+import org.projectmanagement.domain.enums.DefaultStatus;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -16,14 +17,14 @@ public class Projects {
 
     private String description;
 
-    private LocalDateTime endDate;
+    private Instant endDate;
 
-    private LocalDateTime startDate;
+    private Instant startDate;
 
     private short priority;
 
     @NonNull
-    private ProjectStatus status;
+    private DefaultStatus status;
 
     @NonNull
     private UUID leaderId;
@@ -32,13 +33,13 @@ public class Projects {
     private final UUID workspaceId;
 
     @NonNull
-    private final LocalDateTime createdAt;
+    private final Instant createdAt;
 
     @NonNull
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     public void updateTimestamp() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = Instant.now();
     }
 
     public void setName(@NonNull String name) {
@@ -46,7 +47,7 @@ public class Projects {
         updateTimestamp();
     }
 
-    public void setStatus(@NonNull ProjectStatus status) {
+    public void setStatus(@NonNull DefaultStatus status) {
         this.status = status;
         updateTimestamp();
     }
@@ -56,12 +57,12 @@ public class Projects {
         updateTimestamp();
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(Instant endDate) {
         this.endDate = endDate;
         updateTimestamp();
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(Instant startDate) {
         this.startDate = startDate;
         updateTimestamp();
     }
