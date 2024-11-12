@@ -1,4 +1,4 @@
-package domain.exceptions;
+package org.projectmanagement.domain.exceptions;
 
 public class InvalidInputException extends RuntimeException {
 
