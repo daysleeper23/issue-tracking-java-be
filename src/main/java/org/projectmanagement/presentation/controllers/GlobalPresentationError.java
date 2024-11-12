@@ -13,6 +13,7 @@ import java.util.List;
 public class GlobalPresentationError {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<GlobalResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+
         List<GlobalResponse.ErrorItem> errors = ex.getBindingResult().getFieldErrors().stream()
                 .map(err -> new GlobalResponse.ErrorItem(err.getField() + " " + err.getDefaultMessage()))
                 .toList();
@@ -25,6 +26,5 @@ public class GlobalPresentationError {
         List<GlobalResponse.ErrorItem> errors = List.of(new GlobalResponse.ErrorItem("Invalid JSON"));
         return new ResponseEntity<>(new GlobalResponse(400, errors), null, HttpStatus.BAD_REQUEST);
     }
-
 
 }
