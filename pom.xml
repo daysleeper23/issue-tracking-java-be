@@ -14,7 +14,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <description>Demo project for Spring Boot</description>
+    <description>Project management service</description>
     <dependencies>
 
         <dependency>

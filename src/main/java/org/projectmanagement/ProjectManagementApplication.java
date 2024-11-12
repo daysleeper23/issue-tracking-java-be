@@ -5,9 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class ProjectManagerApplication {
+public class ProjectManagementApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ProjectManagerApplication.class, args);
+        SpringApplication.run(ProjectManagementApplication.class, args);
     }
 }
