@@ -1,4 +1,4 @@
-package domain.entities;
+package org.projectmanagement.domain.entities;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package domain.entities;
+package org.projectmanagement.domain.entities;
 
 import lombok.Getter;
 import lombok.NonNull;
