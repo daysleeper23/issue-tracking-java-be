@@ -1,4 +1,4 @@
-package domain.entities;
+package org.projectmanagement.domain.entities;
 import java.time.Instant;
 import java.util.UUID;
 
