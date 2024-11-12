@@ -1,9 +1,8 @@
-package org.projectmanagement.entities;
+package org.projectmanagement.domain.entities;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.projectmanagement.domain.entities.Users;
 
 import java.time.Instant;
 import java.util.UUID;
