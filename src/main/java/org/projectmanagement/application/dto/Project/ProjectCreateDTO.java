@@ -1,5 +1,4 @@
 package org.projectmanagement.application.dto.Project;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.projectmanagement.domain.enums.DefaultStatus;
 
@@ -13,7 +12,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class ProjectCreateDTO {
-    @NotNull
     @NonNull
     private String name;
 
@@ -25,15 +23,12 @@ public class ProjectCreateDTO {
 
     private short priority;
 
-    @NotNull
     @NonNull
     private DefaultStatus status;
 
-    @NotNull
     @NonNull
     private UUID leaderId;
 
-    @NotNull
     @NonNull
     private final UUID workspaceId;
 }

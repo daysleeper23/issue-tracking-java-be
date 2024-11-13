@@ -13,15 +13,12 @@ import java.util.UUID;
 @Builder
 public class ProjectMemberCreateDTO {
     @NonNull
-    @NotNull
     private final UUID userId;
 
     @NotNull
-    @NonNull
     private final UUID projectId;
 
     @NotNull
-    @NonNull
     private Boolean subscribed;
 
 }

@@ -1,10 +1,11 @@
 package org.projectmanagement.application.services;
 
 import org.projectmanagement.application.dto.ProjectMember.ProjectMemberCreateDTO;
+import org.projectmanagement.application.dto.ProjectMember.ProjectMemberMapper;
+import org.projectmanagement.application.dto.ProjectMember.ProjectMemberUpdateDTO;
 import org.projectmanagement.domain.entities.ProjectMembers;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,19 +13,24 @@ import java.util.UUID;
 public class ProjectMembersServiceImpl {
 
     public List<ProjectMembers> getMembersByProjectId(UUID id) {
-        List<ProjectMembers> pr = null;
+        List<ProjectMembers> pr = null; // send Id to the repo then to db to get projectmembmerslist.
         return pr;
     }
 
     public ProjectMembers createProjectMember(ProjectMemberCreateDTO dto) {
-        ProjectMembers projectMember = ProjectMembers.builder()
-                .userId(dto.getUserId())
-                .projectId(dto.getProjectId())
-                .subscribed(dto.getSubscribed())
-                .createdAt(Instant.now())
-                .updatedAt(Instant.now())
-                .build();
-        ProjectMembers createdProjectMember = null; //call to repo and save to db
+        ProjectMembers projectMember = ProjectMemberMapper.createDTOtoProjectMembers(dto);
+        ProjectMembers createdProjectMember = null; //call to repo and save to db return the whole object.
         return createdProjectMember;
+    }
+
+    public ProjectMembers updateProjectMember(UUID id,ProjectMemberUpdateDTO dto) {
+        ProjectMembers projectMembers = ProjectMemberMapper.updateDTOtoProjectMembers(id, dto);
+        ProjectMembers updatedProjectMember = null; //call to repo and save to db return the whole object.
+        return updatedProjectMember;
+    }
+
+    //what should it return to rest controller?
+    public void deleteProjectMember(UUID id) {
+        //send id to repo and delete the source.
     }
 }
