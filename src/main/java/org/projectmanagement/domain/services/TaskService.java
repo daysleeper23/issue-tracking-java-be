@@ -11,9 +11,10 @@ public interface TaskService {
 
     Tasks addTask(TaskDTO taskDTO);
 
+    Tasks updateTask(String taskId, TaskDTO taskDTO);
+
     List<Tasks> getAllTask(String projectId);
 
-    Tasks getTaskInfo(String taskId);
-
     boolean archiveTasks(String taskId);
+
 }

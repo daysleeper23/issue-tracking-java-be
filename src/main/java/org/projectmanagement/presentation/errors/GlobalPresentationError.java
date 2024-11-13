@@ -1,6 +1,7 @@
 package org.projectmanagement.presentation.errors;
 
 import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
+import org.projectmanagement.application.exception.ApplicationException;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,4 +44,11 @@ public class GlobalPresentationError {
         List<GlobalResponse.ErrorItem> errors = List.of(new GlobalResponse.ErrorItem(ex.getMessage()));
         return new ResponseEntity<>(new GlobalResponse(400, errors), null, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(ApplicationException.class)
+    public ResponseEntity<GlobalResponse> handleApplicationException(ApplicationException ex){
+        List<GlobalResponse.ErrorItem> errorItems = List.of(new GlobalResponse.ErrorItem(ex.getMessage()));
+        return new ResponseEntity<>(new GlobalResponse(ex.getStatus().value(),errorItems),null,ex.getStatus());
+    }
+
 }

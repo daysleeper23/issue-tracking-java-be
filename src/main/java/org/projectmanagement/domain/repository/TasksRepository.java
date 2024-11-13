@@ -5,7 +5,7 @@ import org.projectmanagement.domain.entities.Tasks;
 import java.util.List;
 import java.util.UUID;
 
-public interface TaskRepository {
+public interface TasksRepository {
     Tasks save(Tasks task);
 
     List<Tasks> getTasksByProjectId(UUID projectId);
