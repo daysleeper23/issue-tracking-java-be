@@ -1,33 +1,33 @@
 package org.projectmanagement.domain.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.Instant;
 import java.util.UUID;
 
+@NonNull
+@Getter
+@AllArgsConstructor
 public class WorkspacesMembersRoles {
-    @NonNull
-    @Getter
+    @Id
     private final UUID id;
 
-    @NonNull
-    @Getter
     private final UUID workspaceId;
 
-    @NonNull
-    @Getter
     private final UUID userId;
 
-    @NonNull
-    @Getter
     @Setter
     private UUID roleId;
 
-    public WorkspacesMembersRoles(UUID id, UUID workspaceId, UUID userId, UUID roleId) {
-        this.id = id;
-        this.workspaceId = workspaceId;
-        this.userId = userId;
-        this.roleId = roleId;
-    }
+//    @CreatedDate
+    private final Instant createdAt;
+
+//    @LastModifiedDate
+    private Instant updatedAt;
 }

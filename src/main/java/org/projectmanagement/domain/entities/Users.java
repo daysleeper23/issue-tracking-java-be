@@ -2,51 +2,41 @@ package org.projectmanagement.domain.entities;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+
 import lombok.*;
+import javax.persistence.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-
-@Builder
+@Data
 @ToString
+@AllArgsConstructor
+@Getter
+@Setter
+@EntityListeners(AuditingEntityListener.class)
 public class Users {
+  @Id
   private UUID id;
 
-  @NonNull
-  @Setter
-  @Getter
   private String name;
 
-  @NonNull
-  @Setter
-  @Getter
   private String email;
 
-  @NonNull
-  @Setter
   private String passwordHash;
 
-  @Getter
-  @Setter
   private String title;
 
-  @NonNull
-  @Getter
-  @Setter
   private Boolean isActive;
 
-  @NonNull
-  @Getter
   private UUID companyId;
 
-  @NonNull
-  @Getter
   private Boolean isOwner;
 
-  @NonNull
-  @Getter
+//  @CreatedDate
   private final Instant createdAt;
 
-  @NonNull
-  @Getter
-  @Setter
+//  @LastModifiedDate
   private Instant updatedAt;
 }
