@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/roles")
+@RequestMapping("/{companyId}")
 public class RolesController {
     private final RolesServiceImpl rolesService;
 
@@ -21,15 +21,15 @@ public class RolesController {
         this.rolesService = rolesService;
     }
 
-    @GetMapping
-    public ResponseEntity<GlobalResponse<List<Roles>>> getRoles() {
+    @GetMapping("/roles")
+    public ResponseEntity<GlobalResponse<List<Roles>>> getRoles(@PathVariable UUID companyId) {
         return new ResponseEntity<>(
-                new GlobalResponse<>(HttpStatus.OK.value(), rolesService.findAllRoles()),
+                new GlobalResponse<>(HttpStatus.OK.value(), rolesService.findAllRoles(companyId)),
                 HttpStatus.OK
         );
     }
 
-    @PostMapping
+    @PostMapping("/roles")
     public ResponseEntity<GlobalResponse<Roles>> createRole(@Valid RolesCreate newRole) {
         Roles createdRole = rolesService.createRole(newRole);
         if (createdRole == null) {
@@ -38,7 +38,7 @@ public class RolesController {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), createdRole), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/roles/{id}")
     public ResponseEntity<GlobalResponse<Roles>> updateRole(@Valid Roles role) {
         Roles updatedRole = rolesService.updateRoleName(role);
         if (updatedRole == null) {
@@ -47,7 +47,7 @@ public class RolesController {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedRole), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/roles/{id}")
     public ResponseEntity<GlobalResponse<Void>> deleteRole(@PathVariable UUID id) {
         rolesService.deleteRole(id);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NO_CONTENT.value(), null), HttpStatus.NO_CONTENT);

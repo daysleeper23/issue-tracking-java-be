@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.projectmanagement.domain.entities.Users;
-import org.springframework.stereotype.Repository;
 
 public interface UsersRepository {
 

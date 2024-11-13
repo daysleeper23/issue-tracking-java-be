@@ -26,6 +26,7 @@ public class RolesServiceImpl implements RolesService {
             Roles newRole = new Roles(
                     UUID.randomUUID(),
                     role.getName(),
+                    role.getCompanyId(),
                     Instant.now(),
                     Instant.now()
             );
@@ -36,10 +37,6 @@ public class RolesServiceImpl implements RolesService {
     }
 
     public Roles updateRoleName(@Valid Roles role) {
-//        if (role.getId() == null) {
-//            return null;
-//        }
-
         if (rolesRepository.findById(role.getId()).isEmpty()) {
             return null;
         }
@@ -64,7 +61,7 @@ public class RolesServiceImpl implements RolesService {
         return rolesRepository.findByExactName(name);
     }
 
-    public List<Roles> findAllRoles() {
-        return rolesRepository.findAllRoles();
+    public List<Roles> findAllRoles(UUID companyId) {
+        return rolesRepository.findAllRolesOfCompany(companyId);
     }
 }

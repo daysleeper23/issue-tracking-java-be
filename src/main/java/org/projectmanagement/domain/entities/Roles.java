@@ -21,6 +21,8 @@ public class Roles {
 
     private String name;
 
+    private UUID companyId;
+
 //    @CreatedDate
     private final Instant createdAt;
 

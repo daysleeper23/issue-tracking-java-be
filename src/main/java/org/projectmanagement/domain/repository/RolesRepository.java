@@ -14,5 +14,5 @@ public interface RolesRepository {
 
     Optional<Roles> findByExactName(String name);
     Optional<Roles> findById(UUID id);
-    List<Roles> findAllRoles();
+    List<Roles> findAllRolesOfCompany(UUID companyId);
 }

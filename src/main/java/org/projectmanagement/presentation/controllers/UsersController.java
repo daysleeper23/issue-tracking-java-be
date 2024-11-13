@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/{companyId}")
 public class UsersController {
   @Autowired
   private final UsersServiceImpl usersService;
@@ -30,12 +30,12 @@ public class UsersController {
         this.usersService = usersService;
     }
 
-  @GetMapping("/company/{companyId}/members")
-  public List<UsersRead> getUsersOfCompany(UUID companyId) {
+  @GetMapping("/users")
+  public List<UsersRead> getUsersOfCompany(@PathVariable UUID companyId) {
     return usersService.getAllUsersOfCompany(companyId);
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/users/{id}")
   public ResponseEntity<GlobalResponse<UsersRead>> getUserById(@PathVariable UUID id) {
     UsersRead user = usersService.getUserById(id).orElse(null);
 
@@ -45,20 +45,20 @@ public class UsersController {
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), user), HttpStatus.OK);
   }
 
-  @PostMapping
+  @PostMapping("/users")
   public ResponseEntity<GlobalResponse<UsersRead>> createUser(@RequestBody @Valid UsersCreate user) {
       UsersRead createdUser = usersService.createUser(user);
-      return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), createdUser), HttpStatus.OK);
+      return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), createdUser), HttpStatus.CREATED);
   }
 
   // Update a user by ID
-  @PatchMapping("/{id}")
+  @PatchMapping("/users/{id}")
   public ResponseEntity<GlobalResponse<UsersRead>> updateUser(@PathVariable UUID id, @RequestBody UsersCreate user) {
       UsersRead updatedUser = usersService.updateUser(id, user);
       return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedUser), HttpStatus.OK);
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/users/{id}")
   public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
       usersService.deleteUser(id);
       return ResponseEntity.noContent().build();

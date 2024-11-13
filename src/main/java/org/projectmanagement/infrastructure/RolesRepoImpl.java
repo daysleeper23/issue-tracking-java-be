@@ -37,7 +37,7 @@ public class RolesRepoImpl implements RolesRepository {
         inMemoryDatabase.roles.removeIf(role -> role.getId().equals(id));
     }
 
-    public List<Roles> findAllRoles() {
-        return inMemoryDatabase.roles;
+    public List<Roles> findAllRolesOfCompany(UUID companyId) {
+        return inMemoryDatabase.roles.stream().filter(role -> role.getCompanyId().equals(companyId)).toList();
     }
 }

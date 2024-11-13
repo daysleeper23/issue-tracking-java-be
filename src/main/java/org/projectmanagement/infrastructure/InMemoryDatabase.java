@@ -68,7 +68,22 @@ public class InMemoryDatabase {
                 )
         );
 
-        roles = new ArrayList<>();
+        roles = new ArrayList<>(
+                List.of(
+                        new Roles(UUID.randomUUID(),
+                                "Admin",
+                                companyId,
+                                Instant.now(),
+                                Instant.now()
+                        ),
+                        new Roles(UUID.randomUUID(),
+                                "Developer",
+                                companyId,
+                                Instant.now(),
+                                Instant.now()
+                        )
+                )
+        );
     }
 
     public Users saveUser(Users user) {
