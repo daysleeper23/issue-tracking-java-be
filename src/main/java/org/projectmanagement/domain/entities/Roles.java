@@ -1,35 +1,29 @@
 package org.projectmanagement.domain.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
 import java.util.UUID;
 
+@Getter
+@Setter
+@NonNull
+@AllArgsConstructor
 public class Roles {
-    @NonNull
-    @Getter
+    @Id
     private final UUID id;
 
-    @NonNull
-    @Getter
-    @Setter
     private String name;
 
-    @NonNull
-    @Getter
+//    @CreatedDate
     private final Instant createdAt;
 
-    @NonNull
-    @Getter
-    @Setter
+//    @LastModifiedDate
     private Instant updatedAt;
-
-    public Roles(UUID id, String name) {
-        this.id = id;
-        this.name = name;
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
-    }
 }

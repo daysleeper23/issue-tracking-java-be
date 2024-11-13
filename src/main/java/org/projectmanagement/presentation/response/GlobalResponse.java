@@ -1,4 +1,4 @@
-package org.projectmanagement.presentation.controllers;
+package org.projectmanagement.presentation.response;
 
 import lombok.Getter;
 
