@@ -1,4 +1,6 @@
 package org.projectmanagement.application.dto.Project;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 import org.projectmanagement.domain.enums.DefaultStatus;
 
@@ -21,6 +23,8 @@ public class ProjectCreateDTO {
 
     private Instant startDate;
 
+    @Min(0)
+    @Max(4)
     private short priority;
 
     @NonNull
