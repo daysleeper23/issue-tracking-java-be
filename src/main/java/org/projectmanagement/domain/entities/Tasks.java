@@ -56,7 +56,7 @@ public class Tasks {
         }
 
         public TasksBuilder startedAt(Instant startedAt) {
-            if (startedAt.isAfter(this.endedAt)) {
+            if (startedAt != null && startedAt.isAfter(this.endedAt)) {
                 throw new InvalidInputException("Started at cannot be in the future");
             }
             this.startedAt = startedAt;
@@ -64,7 +64,7 @@ public class Tasks {
         }
 
         public TasksBuilder endedAt(Instant endedAt) {
-            if (endedAt.isBefore(this.startedAt)) {
+            if (endedAt != null && endedAt.isBefore(this.startedAt)) {
                 throw new InvalidInputException("Ended at cannot be in the past");
             }
             this.endedAt = endedAt;
