@@ -26,8 +26,9 @@ public class ProjectMapper {
         if (dto.getStartDate() != null && dto.getEndDate() != null) {
             validateDates(dto.getStartDate(), dto.getEndDate());
         }
+        //
+
         return Projects.builder()
-                .id(id)
                 .description(dto.getDescription())
                 .endDate(dto.getEndDate())
                 .startDate(dto.getStartDate())

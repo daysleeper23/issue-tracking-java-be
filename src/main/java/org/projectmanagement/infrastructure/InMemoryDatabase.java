@@ -1,9 +1,8 @@
 package org.projectmanagement.infrastructure;
 
 import lombok.Getter;
-import org.projectmanagement.domain.entities.Roles;
-import org.projectmanagement.domain.entities.Users;
-import org.projectmanagement.domain.entities.Workspaces;
+import org.projectmanagement.domain.entities.*;
+import org.projectmanagement.domain.enums.DefaultStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -17,6 +16,10 @@ public class InMemoryDatabase {
     public List<Users> users;
     public List<Workspaces> workspaces;
     public List<Roles> roles;
+    public List<Projects> projects;
+    public List<CompanyManagers> companyManagers;
+    public List<ProjectMembers> projectMembers;
+
 
 
     public InMemoryDatabase() {
@@ -68,7 +71,85 @@ public class InMemoryDatabase {
                 )
         );
 
-        roles = new ArrayList<>();
+        roles = new ArrayList<>(
+                List.of(
+                        new Roles(UUID.randomUUID(),
+                                "Company Manager",
+                                Instant.now(),
+                                Instant.now()
+                        )
+                )
+        );
+
+        projects = new ArrayList<>(
+                List.of(
+                        Projects.builder()
+                                .id(UUID.randomUUID())
+                                .name("Project A")
+                                .description("Belongs to Workspace A")
+                                .startDate(null)
+                                .endDate(null)
+                                .priority(0)
+                                .status(DefaultStatus.TODO)
+                                .leaderId(users.getFirst().getId())
+                                .workspaceId(workspaces.getFirst().getId())
+                                .createdAt(Instant.now())
+                                .updatedAt(Instant.now())
+                                .build(),
+                        Projects.builder()
+                                .id(UUID.randomUUID())
+                                .name("Project B")
+                                .description("Belongs to Workspace B")
+                                .startDate(null)
+                                .endDate(null)
+                                .priority(2)
+                                .status(DefaultStatus.IN_PROGRESS)
+                                .leaderId(users.getLast().getId())
+                                .workspaceId(workspaces.getLast().getId())
+                                .createdAt(Instant.now())
+                                .updatedAt(Instant.now())
+                                .build()
+                        )
+                );
+
+        projectMembers = new ArrayList<>(
+                List.of(
+                        ProjectMembers.builder()
+                                .id(UUID.randomUUID())
+                                .userId(users.getLast().getId())
+                                .projectId(projects.getFirst().getId())
+                                .subscribed(false)
+                                .createdAt(Instant.now())
+                                .updatedAt(Instant.now())
+                                .build()
+                )
+        );
+
+        UUID managerId = UUID.randomUUID();
+        users.add(new Users(managerId,
+                "User 3",
+                "u3@test.com",
+                "password",
+                "CTO",
+                true,
+                companyId,
+                false,
+                Instant.now(),
+                Instant.now()
+        ));
+
+        companyManagers = new ArrayList<>(
+                List.of(
+                        CompanyManagers.builder()
+                                .id(UUID.randomUUID())
+                                .userId(managerId)
+                                .roleId(roles.getFirst().getId())
+                                .createdAt(Instant.now())
+                                .updatedAt(Instant.now())
+                                .build()
+                )
+        );
+
     }
 
     public Users saveUser(Users user) {
@@ -80,4 +161,5 @@ public class InMemoryDatabase {
         roles.add(role);
         return role;
     }
+
 }
