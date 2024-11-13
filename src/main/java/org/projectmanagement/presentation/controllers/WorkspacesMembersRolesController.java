@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/workspaces")
+@RequestMapping("/{companyId}/{workspaceId}/members/roles")
 public class WorkspacesMembersRolesController {
     private final WorkspacesMembersRolesServiceImpl wmrsi;
 
@@ -21,7 +21,7 @@ public class WorkspacesMembersRolesController {
     }
 
     //get the roles for all members in a workspace
-    @GetMapping("/workspaces/{workspaceId}/members/roles")
+    @GetMapping
     public ResponseEntity<GlobalResponse<List<WorkspacesMembersRolesRead>>> getWorkspacesMembersRoles(
             @PathVariable UUID workspaceId
     ) {
@@ -45,7 +45,7 @@ public class WorkspacesMembersRolesController {
 //    }
 
     //update role for a user in a workspace using its own id
-    @PutMapping("/workspaces/members/roles/{id}")
+    @PutMapping("/members/roles/{id}")
     public ResponseEntity<GlobalResponse<WorkspacesMembersRolesRead>> updateWorkspacesMembersRoles(
             @PathVariable UUID id,
             @RequestBody WorkspacesMembersRolesCreate newWorkspacesMembersRoles

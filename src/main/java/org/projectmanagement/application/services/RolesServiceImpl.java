@@ -36,21 +36,25 @@ public class RolesServiceImpl implements RolesService {
         }
     }
 
-    public Roles updateRoleName(@Valid Roles role) {
-        if (rolesRepository.findById(role.getId()).isEmpty()) {
+    public Roles updateRoleName(UUID id, RolesCreate role) {
+        Roles existingRole = rolesRepository.findById(id).orElse(null);
+        if (existingRole == null) {
             return null;
         }
 
-        Optional<Roles> roles = rolesRepository.findByExactName(role.getName());
-        if (roles.isEmpty()) {
-            return rolesRepository.save(role);
+        Optional<Roles> rolesWithSameName = rolesRepository.findByExactName(role.getName());
+        if (rolesWithSameName.isEmpty()) {
+            existingRole.setName(role.getName());
+            return rolesRepository.save(existingRole);
         } else {
             return null;
         }
     }
 
-    public void deleteRole(UUID id) {
-        rolesRepository.deleteById(id);
+    public Boolean deleteRole(UUID id) {
+//        rolesRepository.deleteById(id);
+        //considering update the status to archived instead of deleting
+        return true;
     }
 
     public Optional<Roles> findById(UUID id) {
