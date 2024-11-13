@@ -1,6 +1,5 @@
 package org.projectmanagement.application.dto.Project;
 
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.projectmanagement.domain.entities.Projects;
 
 import java.time.Instant;
