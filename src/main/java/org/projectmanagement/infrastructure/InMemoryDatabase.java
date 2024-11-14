@@ -3,6 +3,7 @@ package org.projectmanagement.infrastructure;
 import lombok.Getter;
 import org.projectmanagement.domain.entities.*;
 import org.projectmanagement.domain.enums.DefaultStatus;
+import org.projectmanagement.domain.repository.ProjectsRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -70,7 +71,7 @@ public class InMemoryDatabase {
                         )
                 )
         );
-
+        System.out.println("Workspace A ID: " + workspaces.get(0).getId());
         roles = new ArrayList<>(
                 List.of(
                         new Roles(UUID.randomUUID(),
@@ -125,6 +126,9 @@ public class InMemoryDatabase {
                 )
         );
 
+        System.out.println("Project A ID: " + projects.get(0).getId());
+        System.out.println("User 2 ID: " + users.get(1).getId());
+
         UUID managerId = UUID.randomUUID();
         users.add(new Users(managerId,
                 "User 3",
@@ -161,6 +165,21 @@ public class InMemoryDatabase {
     public Roles saveRole(Roles role) {
         roles.add(role);
         return role;
+    }
+
+    public Projects saveProject(Projects project) {
+        projects.add(project);
+        return project;
+    }
+
+    public CompanyManagers saveCompanyManager(CompanyManagers cm) {
+        companyManagers.add(cm);
+        return cm;
+    }
+
+    public ProjectMembers saveProjectMember(ProjectMembers pm) {
+        projectMembers.add(pm);
+        return pm;
     }
 
 }
