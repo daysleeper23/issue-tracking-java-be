@@ -4,7 +4,6 @@ import lombok.*;
 
 import java.util.UUID;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class TaskSubscribers {
@@ -12,4 +11,9 @@ public class TaskSubscribers {
     private UUID id;
     private UUID taskId;
     private UUID userId;
+
+    public TaskSubscribers(UUID taskId, UUID userId){
+        this.userId = userId;
+        this.taskId = taskId;
+    }
 }

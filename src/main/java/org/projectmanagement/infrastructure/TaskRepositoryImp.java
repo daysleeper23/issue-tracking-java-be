@@ -1,15 +1,15 @@
-package org.projectmanagement.infrastructure.repository;
+package org.projectmanagement.infrastructure;
 
 import org.projectmanagement.domain.entities.Tasks;
 import org.projectmanagement.domain.repository.TasksRepository;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
-@Component
+@Repository
 public class TaskRepositoryImp implements TasksRepository {
 
     //Replace with actual implementation for jpa

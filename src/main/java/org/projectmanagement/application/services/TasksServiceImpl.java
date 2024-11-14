@@ -1,12 +1,16 @@
 package org.projectmanagement.application.services;
 
+import lombok.RequiredArgsConstructor;
 import org.projectmanagement.application.dto.tasks.TaskDTO;
+import org.projectmanagement.application.dto.tasks.TaskInfo;
 import org.projectmanagement.application.exception.AppMessage;
 import org.projectmanagement.application.exception.ApplicationException;
+import org.projectmanagement.domain.entities.TaskSubscribers;
 import org.projectmanagement.domain.entities.Tasks;
 import org.projectmanagement.domain.enums.DefaultStatus;
 import org.projectmanagement.domain.repository.TasksRepository;
-import org.projectmanagement.domain.services.TaskService;
+import org.projectmanagement.domain.repository.TaskSubscribersRepository;
+import org.projectmanagement.domain.services.TasksService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -16,14 +20,13 @@ import java.util.UUID;
 
 import static org.projectmanagement.application.exception.AppMessage.TASK_NOT_FOUND;
 
+@RequiredArgsConstructor
 @Service
-public class TasksServiceImpl implements TaskService {
+public class TasksServiceImpl implements TasksService {
 
     private final TasksRepository tasksRepository;
+    private final TaskSubscribersRepository subscribersRepository;
 
-    public TasksServiceImpl(TasksRepository tasksRepository) {
-        this.tasksRepository = tasksRepository;
-    }
 
     @Override
     public Tasks addTask(TaskDTO newTask) {
@@ -39,6 +42,9 @@ public class TasksServiceImpl implements TaskService {
         if (newTask.assigneeId() != null && !newTask.assigneeId().isEmpty()) {
             newTasks.toBuilder().assigneeId(UUID.fromString(newTask.assigneeId())).build();
         }
+        // user who created this tasks also is a subscriber
+        // The order should be after task is created
+        // subscriberRepository.save(new TaskSubscribers(taskId, userId));
         return tasksRepository.save(newTasks);
     }
 
@@ -73,11 +79,33 @@ public class TasksServiceImpl implements TaskService {
     }
 
     @Override
+    public TaskInfo getTaskInfo(String taskId) {
+        Tasks info = tasksRepository.findOne(UUID.fromString(taskId));
+        if (info == null) {
+            throw new ApplicationException(TASK_NOT_FOUND);
+        }
+        List<TaskSubscribers> subscribers = subscribersRepository.getSubscriberByTaskId(info.getId());
+        //Move to dto
+        return TaskInfo.builder()
+                .id(info.getId())
+                .name(info.getName())
+                .description(info.getName())
+                .status(info.getStatus())
+                .priority(info.getPriority())
+                .startedAt(info.getStartedAt())
+                .endedAt(info.getEndedAt())
+                .subscribers(subscribers)
+                .projectId(info.getProjectId())
+                .createdAt(info.getCreatedAt())
+                .updatedAt(info.getUpdatedAt())
+                .build();
+    }
+
+    @Override
     public boolean archiveTasks(String taskId) {
         Tasks findTasks = tasksRepository.findOne(UUID.fromString(taskId));
         if (findTasks == null) {
-            //Application exception
-            return false;
+            throw new ApplicationException(TASK_NOT_FOUND);
         }
         findTasks.toBuilder().status(DefaultStatus.ARCHIVED).build();
         tasksRepository.save(findTasks);
