@@ -1,10 +1,10 @@
 package org.projectmanagement.application.services;
 
-import jakarta.validation.Valid;
 import org.projectmanagement.application.dto.roles.RolesCreate;
 import org.projectmanagement.domain.entities.Roles;
 import org.projectmanagement.domain.repository.RolesRepository;
 import org.projectmanagement.domain.services.RolesService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -16,6 +16,7 @@ import java.util.UUID;
 public class RolesServiceImpl implements RolesService {
     private final RolesRepository rolesRepository;
 
+    @Autowired
     public RolesServiceImpl(RolesRepository rolesRepository) {
         this.rolesRepository = rolesRepository;
     }

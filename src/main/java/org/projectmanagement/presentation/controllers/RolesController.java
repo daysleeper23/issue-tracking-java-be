@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import org.projectmanagement.application.dto.roles.RolesCreate;
 import org.projectmanagement.application.services.RolesServiceImpl;
 import org.projectmanagement.domain.entities.Roles;
+import org.projectmanagement.domain.services.RolesService;
 import org.projectmanagement.presentation.response.GlobalResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,9 +20,10 @@ import java.util.UUID;
 @RequestMapping("/{companyId}")
 @Validated
 public class RolesController {
-    private final RolesServiceImpl rolesService;
+    private final RolesService rolesService;
 
-    public RolesController(RolesServiceImpl rolesService) {
+    @Autowired
+    public RolesController(RolesService rolesService) {
         this.rolesService = rolesService;
     }
 

@@ -14,6 +14,7 @@ import org.projectmanagement.domain.repository.UsersRepository;
 import org.projectmanagement.domain.services.UsersService;
 
 import jakarta.validation.constraints.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +22,7 @@ public class UsersServiceImpl implements UsersService {
 
     private final UsersRepository usersRepository;
 
+    @Autowired
     public UsersServiceImpl(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
