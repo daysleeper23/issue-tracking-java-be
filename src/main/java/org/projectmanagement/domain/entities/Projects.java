@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Getter
+@Setter
 @ToString
 @Builder
 public class Projects {
@@ -21,7 +22,7 @@ public class Projects {
 
     private Instant startDate;
 
-    private short priority;
+    private int priority;
 
     @NonNull
     private DefaultStatus status;
@@ -30,46 +31,14 @@ public class Projects {
     private UUID leaderId;
 
     @NonNull
-    private final UUID workspaceId;
+    private UUID workspaceId;
 
-    @NonNull
-    private final Instant createdAt;
+    //@NonNull
 
-    @NonNull
+    private Instant createdAt;
+
+    //@NonNull
     private Instant updatedAt;
 
-    public void updateTimestamp() {
-        this.updatedAt = Instant.now();
-    }
-
-    public void setName(@NonNull String name) {
-        this.name = name;
-        updateTimestamp();
-    }
-
-    public void setStatus(@NonNull DefaultStatus status) {
-        this.status = status;
-        updateTimestamp();
-    }
-
-    public void setDescription(@NonNull String description) {
-        this.description = description;
-        updateTimestamp();
-    }
-
-    public void setEndDate(Instant endDate) {
-        this.endDate = endDate;
-        updateTimestamp();
-    }
-
-    public void setStartDate(Instant startDate) {
-        this.startDate = startDate;
-        updateTimestamp();
-    }
-
-    public void setPriority(short priority) {
-        this.priority = priority;
-        updateTimestamp();
-    }
 }
 
