@@ -1,6 +1,7 @@
 package org.projectmanagement.application.services;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.projectmanagement.application.dto.workspacesmembersroles.WorkspacesMembersRolesCreate;
 import org.projectmanagement.application.dto.workspacesmembersroles.WorkspacesMembersRolesMapper;
 import org.projectmanagement.application.dto.workspacesmembersroles.WorkspacesMembersRolesRead;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,15 +26,25 @@ public class WorkspacesMembersRolesServiceImpl {
         this.wmrRepository = workspacesMembersRolesRepository;
     }
 
-    public WorkspacesMembersRoles createWorkspacesMembersRoles(WorkspacesMembersRoles wmr) {
-        if (wmrRepository.findByUserIdAndWorkspaceId(wmr.getUserId(), wmr.getWorkspaceId()).isPresent()) {
+    public WorkspacesMembersRolesRead createWorkspacesMembersRoles(WorkspacesMembersRolesCreate wmrc) {
+        if (wmrRepository.findByUserIdAndWorkspaceId(wmrc.getUserId(), wmrc.getWorkspaceId()).isPresent()) {
             return null;
         }
-        return null;
+
+        WorkspacesMembersRoles wmr = new WorkspacesMembersRoles(
+                UUID.randomUUID(),
+                wmrc.getUserId(),
+                wmrc.getWorkspaceId(),
+                wmrc.getRoleId(),
+                Instant.now(),
+                Instant.now()
+        );
+        wmrRepository.save(wmr);
+        return WorkspacesMembersRolesMapper.toWorkspacesMembersRolesRead(wmr);
     }
 
     //get the roles for all members in a workspace
-    public List<WorkspacesMembersRolesRead> getWorkspacesMembersRoles(@Valid UUID workspaceId) {
+    public List<WorkspacesMembersRolesRead> getWorkspacesMembersRoles(UUID workspaceId) {
         List<WorkspacesMembersRoles> wmrl = wmrRepository.findAllByWorkspaceId(workspaceId);
         return wmrl.stream().map(WorkspacesMembersRolesMapper::toWorkspacesMembersRolesRead).toList();
     }
@@ -66,5 +78,11 @@ public class WorkspacesMembersRolesServiceImpl {
 
         wmr = wmrRepository.updateWorkspacesMembersRoles(id, newRole.getRoleId());
         return WorkspacesMembersRolesMapper.toWorkspacesMembersRolesRead(wmr);
+    }
+
+    //delete a role for a user in a workspace == remove the user from the workspace
+    public void deleteWorkspacesMembersRoles(@NotNull UUID id) {
+
+        wmrRepository.deleteById(id);
     }
 }

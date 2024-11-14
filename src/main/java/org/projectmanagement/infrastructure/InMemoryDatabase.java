@@ -1,10 +1,7 @@
 package org.projectmanagement.infrastructure;
 
 import lombok.Getter;
-import org.projectmanagement.domain.entities.Companies;
-import org.projectmanagement.domain.entities.Roles;
-import org.projectmanagement.domain.entities.Users;
-import org.projectmanagement.domain.entities.Workspaces;
+import org.projectmanagement.domain.entities.*;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -25,18 +22,17 @@ public class InMemoryDatabase {
     public List<Workspaces> workspaces;
     public List<Roles> roles;
     public List<Companies> companies;
+    public List<WorkspacesMembersRoles> wmrs;
 
     UUID companyId = UUID.fromString("b541ade4-9cfa-4664-b9e3-d9923ae02fb4");
     UUID roleAdminId = UUID.fromString("7b149139-6b39-4e5c-9e24-70c092df4a5d");
     UUID roleDeveloperId = UUID.fromString("78b4fe40-5f93-40ef-9095-7b25c7bb62ff");
-    UUID workspaceId = UUID.randomUUID();
-
-//    System.out.println("C: " + companyId);
-//            ("W: " + workspaceId);
+    UUID workspaceId1 = UUID.fromString("6892ddd0-8a88-4aac-a562-1e1656732f9f");
+    UUID workspaceId2 = UUID.fromString("f7e6c463-7930-446c-b871-59db53cf5c01");
 
     public InMemoryDatabase() {
 
-        System.out.println("W ID: " + UUID.randomUUID());
+        System.out.println("ID: " + UUID.randomUUID());
         users = new ArrayList<>(
                 List.of(
                         new Users(UUID.randomUUID(),
@@ -66,14 +62,14 @@ public class InMemoryDatabase {
 
         workspaces = new ArrayList<>(
                 List.of(
-                        new Workspaces(UUID.randomUUID(),
+                        new Workspaces(workspaceId1,
                                 "Workspace A",
                                 "Description A",
                                 companyId,
                                 Instant.now(),
                                 Instant.now()
                         ),
-                        new Workspaces(UUID.randomUUID(),
+                        new Workspaces(workspaceId2,
                                 "Workspace B",
                                 "Description B",
                                 companyId,
@@ -110,6 +106,40 @@ public class InMemoryDatabase {
                         )
                 )
         );
+
+        wmrs = new ArrayList<>(
+                List.of(
+                        new WorkspacesMembersRoles(UUID.randomUUID(),
+                                workspaceId1,
+                                users.get(0).getId(),
+                                roles.get(0).getId(),
+                                Instant.now(),
+                                Instant.now()
+                        ),
+                        new WorkspacesMembersRoles(UUID.randomUUID(),
+                                workspaceId1,
+                                users.get(1).getId(),
+                                roles.get(1).getId(),
+                                Instant.now(),
+                                Instant.now()
+                        ),
+                        new WorkspacesMembersRoles(UUID.randomUUID(),
+                                workspaceId2,
+                                users.get(0).getId(),
+                                roles.get(1).getId(),
+                                Instant.now(),
+                                Instant.now()
+                        ),
+                        new WorkspacesMembersRoles(UUID.randomUUID(),
+                                workspaceId2,
+                                users.get(1).getId(),
+                                roles.get(0).getId(),
+                                Instant.now(),
+                                Instant.now()
+                        )
+
+                )
+        );
     }
 
     public Companies saveCompany(Companies company) {
@@ -125,5 +155,10 @@ public class InMemoryDatabase {
     public Roles saveRole(Roles role) {
         roles.add(role);
         return role;
+    }
+
+    public WorkspacesMembersRoles saveWmr(WorkspacesMembersRoles wmr) {
+        wmrs.add(wmr);
+        return wmr;
     }
 }

@@ -1,5 +1,6 @@
 package org.projectmanagement.presentation.controllers;
 
+import jakarta.validation.Valid;
 import org.projectmanagement.application.dto.workspacesmembersroles.WorkspacesMembersRolesCreate;
 import org.projectmanagement.application.dto.workspacesmembersroles.WorkspacesMembersRolesRead;
 import org.projectmanagement.application.services.WorkspacesMembersRolesServiceImpl;
@@ -44,8 +45,19 @@ public class WorkspacesMembersRolesController {
 //                .orElseGet(() -> new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), null), HttpStatus.NOT_FOUND));
 //    }
 
+    //create a role for a user in a workspace == add a user to a workspace
+    @PostMapping
+    public ResponseEntity<GlobalResponse<WorkspacesMembersRolesRead>> createWorkspacesMembersRoles(
+            @RequestBody @Valid WorkspacesMembersRolesCreate wmrCreate
+    ) {
+        WorkspacesMembersRolesRead wmrr = wmrsi
+                .createWorkspacesMembersRoles(wmrCreate);
+
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), wmrr), HttpStatus.CREATED);
+    }
+
     //update role for a user in a workspace using its own id
-    @PutMapping("/members/roles/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<GlobalResponse<WorkspacesMembersRolesRead>> updateWorkspacesMembersRoles(
             @PathVariable UUID id,
             @RequestBody WorkspacesMembersRolesCreate newWorkspacesMembersRoles
