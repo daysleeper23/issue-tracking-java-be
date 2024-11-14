@@ -1,36 +1,102 @@
 package org.projectmanagement.application.services;
 
-import org.projectmanagement.application.dto.ProjectMember.ProjectMemberCreateDTO;
-import org.projectmanagement.application.dto.ProjectMember.ProjectMemberMapper;
-import org.projectmanagement.application.dto.ProjectMember.ProjectMemberUpdateDTO;
+import org.projectmanagement.application.dto.project_members.ProjectMemberCreateDTO;
+import org.projectmanagement.application.dto.project_members.ProjectMemberMapper;
+import org.projectmanagement.application.dto.project_members.ProjectMemberUpdateDTO;
 import org.projectmanagement.domain.entities.ProjectMembers;
+import org.projectmanagement.domain.entities.Projects;
+import org.projectmanagement.domain.entities.Users;
+import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
+import org.projectmanagement.domain.repository.ProjectMembersRepository;
+import org.projectmanagement.domain.repository.ProjectsRepository;
+import org.projectmanagement.domain.repository.UsersRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class ProjectMembersServiceImpl {
+    private ProjectMembersRepository projectMembersRepository;
+    private ProjectsRepository projectRepository;
+    private UsersRepository usersRepository;
 
-    public List<ProjectMembers> getMembersByProjectId(UUID id) {
-        List<ProjectMembers> pr = null; // send Id to the repo then to db to get projectmembmerslist.
-        return pr;
+    ProjectMembersServiceImpl(ProjectMembersRepository projectMembersRepository,
+                              ProjectsRepository projectRepository,
+                              UsersRepository usersRepository
+    ) {
+
+        this.projectMembersRepository = projectMembersRepository;
+        this.projectRepository = projectRepository;
+        this.usersRepository = usersRepository;
+    }
+
+    public List<ProjectMembers> getAllProjectMembersByProjectId(UUID id) {
+        Projects projectFromDB = projectRepository.findOneById(id).orElse(null);
+
+        if (projectFromDB == null) {
+            throw new ResourceNotFoundException("Project with id: " + id + " was not found.");
+        }
+
+        List<ProjectMembers> projectMembers = projectMembersRepository.findAllProjectMembersByProjectId(id);
+        return projectMembers;
+    }
+
+    public List<ProjectMembers> getAllProjectsMemberIsPartOfByUserId(UUID userId) {
+        Users userFromDB = usersRepository.findById(userId).orElse(null);
+
+        if (userFromDB == null) {
+            throw new ResourceNotFoundException("User with id: " + userId + " was not found.");
+        }
+
+        List<ProjectMembers> projectMembers = projectMembersRepository.findAllProjectsMemberIsPartOfByUserId(userId);
+        return projectMembers;
     }
 
     public ProjectMembers createProjectMember(ProjectMemberCreateDTO dto) {
         ProjectMembers projectMember = ProjectMemberMapper.createDTOtoProjectMembers(dto);
-        ProjectMembers createdProjectMember = null; //call to repo and save to db return the whole object.
+        ProjectMembers createdProjectMember = projectMembersRepository.save(projectMember);
         return createdProjectMember;
     }
 
-    public ProjectMembers updateProjectMember(UUID id,ProjectMemberUpdateDTO dto) {
+    public Optional<ProjectMembers> updateProjectMember(UUID id, ProjectMemberUpdateDTO dto) {
         ProjectMembers projectMembers = ProjectMemberMapper.updateDTOtoProjectMembers(id, dto);
-        ProjectMembers updatedProjectMember = null; //call to repo and save to db return the whole object.
-        return updatedProjectMember;
+        ProjectMembers projectMemberToUpdate = projectMembersRepository.findOneById(id).orElse(null);
+        if (projectMemberToUpdate == null) {
+            throw new ResourceNotFoundException("Project Member with id: " + id + " was not found.");
+        }
+
+        ProjectMembers updatedProjectMember = projectMembersRepository.save(projectMemberToUpdate);
+        return Optional.of(updatedProjectMember);
     }
 
-    //what should it return to rest controller?
-    public void deleteProjectMember(UUID id) {
-        //send id to repo and delete the source.
+
+    public void deleteProjectMemberById(UUID id) {
+        ProjectMembers projectMemberFromDB = projectMembersRepository.findOneById(id).orElse(null);
+
+        if (projectMemberFromDB == null) {
+            throw new ResourceNotFoundException("Project Member with id: " + id + " was not found.");
+        }
+
+        projectMembersRepository.deleteProjectMemberById(id);
+
+    }
+
+    public void deleteProjectMemberByProjectIdAndUserId(UUID projectId, UUID userId) {
+        Projects projectFromDb = projectRepository.findOneById(projectId).orElse(null);
+
+        if (projectFromDb == null) {
+            throw new ResourceNotFoundException("Project with id: " + projectId + " was not found.");
+        }
+
+        Users userFromDB = usersRepository.findById(userId).orElse(null);
+
+        if (userFromDB == null) {
+            throw new ResourceNotFoundException("User with id: " + userId + " was not found.");
+        }
+
+        projectMembersRepository.deleteProjectMemberByProjectIdAndUserId(projectId, userId);
+
     }
 }
