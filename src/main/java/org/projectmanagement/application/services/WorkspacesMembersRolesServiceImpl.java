@@ -64,8 +64,8 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
 
     //get the role of a user in a workspace using user id and workspace id
     public WorkspacesMembersRolesRead getWorkspacesMembersRolesForUser(
-            @Valid UUID userId,
-            @Valid UUID workspaceId)
+            UUID userId,
+            UUID workspaceId)
     {
         WorkspacesMembersRoles wmr = wmrRepository.findByUserIdAndWorkspaceId(userId, workspaceId).orElse(null);
         if (wmr == null) {
@@ -76,8 +76,8 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
 
     //update role for a user in a workspace
     public WorkspacesMembersRolesRead updateWorkspacesMembersRoles(
-            @Valid UUID id,
-            @Valid WorkspacesMembersRolesCreate newRole)
+            UUID id,
+            WorkspacesMembersRolesCreate newRole)
     {
         //check if the role exists already, if not return null
         WorkspacesMembersRoles wmr = wmrRepository.findById(id).orElse(null);
@@ -97,7 +97,7 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
     }
 
     //delete a role for a user in a workspace == remove the user from the workspace
-    public void deleteWorkspacesMembersRoles(@NotNull UUID id) {
+    public void deleteWorkspacesMembersRoles(UUID id) {
 
         wmrRepository.deleteById(id);
     }
