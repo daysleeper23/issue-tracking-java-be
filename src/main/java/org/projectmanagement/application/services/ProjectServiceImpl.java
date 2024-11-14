@@ -1,35 +1,57 @@
 package org.projectmanagement.application.services;
 
 
-import org.projectmanagement.application.dto.Project.ProjectCreateDTO;
-import org.projectmanagement.application.dto.Project.ProjectMapper;
-import org.projectmanagement.application.dto.Project.ProjectUpdateDTO;
-import org.projectmanagement.application.dto.ProjectMember.ProjectMemberMapper;
+import org.projectmanagement.application.dto.projects.ProjectMapper;
+import org.projectmanagement.application.dto.projects.ProjectsCreateDTO;
+import org.projectmanagement.application.dto.projects.ProjectsUpdateDTO;
 import org.projectmanagement.domain.entities.Projects;
+import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
+import org.projectmanagement.domain.repository.ProjectsRepository;
+import org.projectmanagement.domain.services.ProjectService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class ProjectServiceImpl {
+public class ProjectServiceImpl implements ProjectService {
 
-    public List<Projects> getProjects() {
-        List<Projects> pList = null; //calling repo then getting projects from db
-        return pList;
+    private final ProjectsRepository projectsRepository;
+
+    @Autowired
+    ProjectServiceImpl(ProjectsRepository projectsRepository){
+        this.projectsRepository = projectsRepository;
     }
 
-    public Projects createProject(ProjectCreateDTO dto){
-        Projects project = ProjectMapper.createDTOToProject(dto);
-        Projects createdProject = null;// calling repo then saving project to db
-        return createdProject;
+    public Optional<Projects> getProjectById(UUID id) {
+        Projects project = projectsRepository.findOneById(id).orElse(null);
+        if (project == null){
+            throw new ResourceNotFoundException("Project with id: " + id + " was not found.");
+        }
+        return Optional.of(project);
     }
 
-    public Projects updateProject(UUID id, ProjectUpdateDTO dto) {
-        Projects project = ProjectMapper.updateDTOToProject(id, dto);
-        Projects updatedProject = null; // calling repo then updating project to db
-        return updatedProject;
+    public List<Projects> getProjectsByWorkspaceId(UUID workspaceId) {
+        List<Projects> projects = projectsRepository.findAllFromWorkspace(workspaceId);
+        return projects;
     }
 
-    //there is no delete project because wee archive it?
+    public Projects createProject(ProjectsCreateDTO dto){
+        Projects project = null; //ProjectMapper.INSTANCE.toProjectsFromProjectsCreateDTO(dto);
+        return projectsRepository.save(project);
+    }
+
+    public Projects updateProject(UUID id, ProjectsUpdateDTO dto) {
+        Projects projectToUpdate = projectsRepository.findOneById(id).orElse(null);
+
+        if (projectToUpdate == null) {
+            return null;
+        }
+        ProjectMapper.INSTANCE.toProjectsFromProjectsUpdateDTO(dto, projectToUpdate);
+
+        return projectsRepository.save(projectToUpdate);
+    }
+
 }
