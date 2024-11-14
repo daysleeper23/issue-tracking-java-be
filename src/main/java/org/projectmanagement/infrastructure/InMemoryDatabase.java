@@ -29,13 +29,15 @@ public class InMemoryDatabase {
     UUID roleDeveloperId = UUID.fromString("78b4fe40-5f93-40ef-9095-7b25c7bb62ff");
     UUID workspaceId1 = UUID.fromString("6892ddd0-8a88-4aac-a562-1e1656732f9f");
     UUID workspaceId2 = UUID.fromString("f7e6c463-7930-446c-b871-59db53cf5c01");
+    UUID user1 = UUID.fromString("03093311-73ce-4264-99c9-886caa7bd1e1");
+    UUID user2 = UUID.fromString("6ea39d08-9f8d-4271-ad98-be7eddd4c7fc");
 
     public InMemoryDatabase() {
 
         System.out.println("ID: " + UUID.randomUUID());
         users = new ArrayList<>(
                 List.of(
-                        new Users(UUID.randomUUID(),
+                        new Users(user1,
                                 "User 1",
                                 "u1@test.com",
                                 "password",
@@ -43,16 +45,18 @@ public class InMemoryDatabase {
                                 true,
                                 companyId,
                                 true,
+                                false,
                                 Instant.now(),
                                 Instant.now()
                         ),
-                        new Users(UUID.randomUUID(),
+                        new Users(user2,
                                 "User 2",
                                 "u2@test.com",
                                 "password",
                                 "Developer",
                                 true,
                                 companyId,
+                                false,
                                 false,
                                 Instant.now(),
                                 Instant.now()
@@ -66,6 +70,7 @@ public class InMemoryDatabase {
                                 "Workspace A",
                                 "Description A",
                                 companyId,
+                                false,
                                 Instant.now(),
                                 Instant.now()
                         ),
@@ -73,6 +78,7 @@ public class InMemoryDatabase {
                                 "Workspace B",
                                 "Description B",
                                 companyId,
+                                false,
                                 Instant.now(),
                                 Instant.now()
                         )
@@ -84,12 +90,14 @@ public class InMemoryDatabase {
                         new Roles(roleAdminId,
                                 "Admin",
                                 companyId,
+                                false,
                                 Instant.now(),
                                 Instant.now()
                         ),
                         new Roles(roleDeveloperId,
                                 "Developer",
                                 companyId,
+                                false,
                                 Instant.now(),
                                 Instant.now()
                         )
@@ -142,23 +150,124 @@ public class InMemoryDatabase {
         );
     }
 
+    /*
+     *
+     * COMPANIES
+     *
+     */
     public Companies saveCompany(Companies company) {
         companies.add(company);
         return company;
     }
 
+    /*
+     *
+     * USERS
+     *
+     */
     public Users saveUser(Users user) {
         users.add(user);
         return user;
     }
 
+    public void deleteUserById(UUID id) {
+        Users user = users.
+                stream().filter(u -> u.getId().equals(id) && !u.getIsDeleted()).
+                findFirst().orElse(null);
+
+        if (user == null) {
+            return;
+        }
+
+        //update isDeleted to true
+        users.removeIf(u -> u.getId().equals(id));
+        user.setIsDeleted(true);
+        users.add(user);
+    }
+
+    public List<Users> getUsersByCompany(UUID companyId) {
+        return users.stream().filter(u -> u.getCompanyId().equals(companyId) && !u.getIsDeleted()).toList();
+    }
+
+    /*
+     *
+     * ROLES
+     *
+     */
     public Roles saveRole(Roles role) {
         roles.add(role);
         return role;
     }
 
+    public Roles getRoleByName(String name, UUID companyId) {
+        return roles.stream()
+                .filter(r -> r.getName().equals(name) && r.getCompanyId().equals(companyId) && !r.getIsDeleted())
+                .findFirst().orElse(null);
+    }
+
+    public Roles getRoleById(UUID id) {
+        return roles.stream().filter(r -> r.getId().equals(id) && !r.getIsDeleted()).findFirst().orElse(null);
+    }
+
+    public List<Roles> getRolesByCompanyId(UUID companyId) {
+        return roles.stream().filter(r -> r.getCompanyId().equals(companyId) && !r.getIsDeleted()).toList();
+    }
+
+    public void deleteRoleById(UUID id) {
+        Roles role = roles.stream().filter(r -> r.getId().equals(id)).findFirst().orElse(null);
+        if (role == null) {
+            return;
+        }
+
+        //update isDeleted to true
+        roles.removeIf(r -> r.getId().equals(id));
+        role.setIsDeleted(true);
+        roles.add(role);
+    }
+
+    /*
+     *
+     * WORKSPACES MEMBERS ROLES
+     *
+     */
     public WorkspacesMembersRoles saveWmr(WorkspacesMembersRoles wmr) {
         wmrs.add(wmr);
         return wmr;
+    }
+
+    /*
+     *
+     * WORKSPACES
+     *
+     */
+    public Workspaces saveWorkspace(Workspaces workspace) {
+        workspaces.add(workspace);
+        return workspace;
+    }
+
+    public void deleteWorkspaceById(UUID id) {
+        Workspaces workspace = workspaces.stream().filter(w -> w.getId().equals(id) && !w.getIsDeleted()).findFirst().orElse(null);
+        if (workspace == null) {
+            return;
+        }
+
+        //update isDeleted to true
+        workspaces.removeIf(w -> w.getId().equals(id));
+        workspace.setIsDeleted(true);
+        workspaces.add(workspace);
+    }
+
+    public List<Workspaces> getActiveWorkspacesByCompany(UUID companyId) {
+        return workspaces.stream().filter(w -> !w.getIsDeleted() && w.getCompanyId().equals(companyId)).toList();
+    }
+
+    public Workspaces getActiveWorkspaceById(UUID id) {
+        return workspaces.stream().filter(w -> w.getId().equals(id) && !w.getIsDeleted()).findFirst().orElse(null);
+    }
+
+    public Workspaces getWorkspaceByIdAndUpdate(UUID id, Workspaces workspace) {
+        workspaces.removeIf(w -> w.getId().equals(id));
+        workspaces.add(workspace);
+        return workspace;
     }
 }

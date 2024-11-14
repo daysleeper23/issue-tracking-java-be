@@ -22,12 +22,13 @@ public class RolesServiceImpl implements RolesService {
     }
 
     public Roles createRole(RolesCreate role) {
-        Optional<Roles> roles = rolesRepository.findByExactName(role.getName());
+        Optional<Roles> roles = rolesRepository.findByExactName(role.getName(), role.getCompanyId());
         if (roles.isEmpty()) {
             Roles newRole = new Roles(
                     UUID.randomUUID(),
                     role.getName(),
                     role.getCompanyId(),
+                    false,
                     Instant.now(),
                     Instant.now()
             );
@@ -43,7 +44,7 @@ public class RolesServiceImpl implements RolesService {
             return null;
         }
 
-        Optional<Roles> rolesWithSameName = rolesRepository.findByExactName(role.getName());
+        Optional<Roles> rolesWithSameName = rolesRepository.findByExactName(role.getName(), role.getCompanyId());
         if (rolesWithSameName.isEmpty()) {
             existingRole.setName(role.getName());
             return rolesRepository.save(existingRole);
@@ -53,7 +54,7 @@ public class RolesServiceImpl implements RolesService {
     }
 
     public Boolean deleteRole(UUID id) {
-//        rolesRepository.deleteById(id);
+        rolesRepository.deleteById(id);
         //considering update the status to archived instead of deleting
         return true;
     }
@@ -62,8 +63,8 @@ public class RolesServiceImpl implements RolesService {
         return rolesRepository.findById(id);
     }
 
-    public Optional<Roles> findByExactName(String name) {
-        return rolesRepository.findByExactName(name);
+    public Optional<Roles> findByExactName(String name, UUID companyId) {
+        return rolesRepository.findByExactName(name, companyId);
     }
 
     public List<Roles> findAllRoles(UUID companyId) {

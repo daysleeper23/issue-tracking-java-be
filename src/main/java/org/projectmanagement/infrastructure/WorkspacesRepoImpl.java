@@ -18,23 +18,40 @@ public class WorkspacesRepoImpl implements WorkspacesRepository {
         this.inMemoryDatabase = inMemoryDatabase;
     }
 
-    public Optional<Workspaces> save(Workspaces workspace) {
-        return Optional.empty();
+    //return a complete copy of the object instead of its reference
+    public Workspaces safeCopy(Workspaces workspace) {
+        return new Workspaces(
+                workspace.getId(),
+                workspace.getName(),
+                workspace.getDescription(),
+                workspace.getCompanyId(),
+                workspace.getIsDeleted(),
+                workspace.getCreatedAt(),
+                workspace.getUpdatedAt()
+        );
+    }
+
+    public Workspaces save(Workspaces workspace) {
+        Workspaces newWorkspace = inMemoryDatabase.saveWorkspace(workspace);
+        return safeCopy(newWorkspace);
     }
 
     public Optional<Workspaces> findById(UUID id) {
-        return Optional.empty();
+        return Optional.ofNullable(
+                safeCopy(inMemoryDatabase.getActiveWorkspaceById(id))
+        );
     }
 
-    public List<Workspaces> findAllWorkspacesOfCompany(UUID companyId) {
-        return null;
+    public List<Workspaces> findAllWorkspaces(UUID companyId) {
+        return inMemoryDatabase.getActiveWorkspacesByCompany(companyId).stream().map(this::safeCopy).toList();
     }
 
     public Optional<Workspaces> findByIdAndUpdate(UUID id, Workspaces workspace) {
-        return Optional.empty();
+        Workspaces updatedWorkspace = inMemoryDatabase.getWorkspaceByIdAndUpdate(id, workspace);
+        return safeCopy(updatedWorkspace) == null ? Optional.empty() : Optional.of(safeCopy(updatedWorkspace));
     }
 
     public void deleteById(UUID id) {
-
+        inMemoryDatabase.deleteWorkspaceById(id);
     }
 }

@@ -1,5 +1,6 @@
 package org.projectmanagement.infrastructure;
 
+import org.projectmanagement.domain.entities.Roles;
 import org.projectmanagement.domain.entities.Users;
 import org.projectmanagement.domain.repository.UsersRepository;
 import org.springframework.stereotype.Repository;
@@ -16,27 +17,37 @@ public class UsersRepoImpl implements UsersRepository {
         this.inMemoryDatabase = inMemoryDatabase;
     }
 
+    public Users safeCopy(Users user) {
+        return new Users(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getPasswordHash(),
+                user.getTitle(),
+                user.getIsActive(),
+                user.getCompanyId(),
+                user.getIsOwner(),
+                user.getIsDeleted(),
+                user.getCreatedAt(),
+                user.getUpdatedAt()
+        );
+    }
+
     public Users save(Users user) {
-        return inMemoryDatabase.saveUser(user);
+        return safeCopy(inMemoryDatabase.saveUser(user));
     }
 
     public List<Users> findAllFromCompany(UUID companyId) {
-        return inMemoryDatabase.users.stream()
-                .filter(user -> user.getCompanyId().equals(companyId))
-                .toList();
+        return inMemoryDatabase.getUsersByCompany(companyId).stream().map(this::safeCopy).toList();
     }
 
     public Optional<Users> findById(UUID id) {
         return inMemoryDatabase.users.stream()
-                .filter(user -> user.getId().equals(id))
-                .findFirst();
+                .filter(user -> user.getId().equals(id) && !user.getIsDeleted())
+                .findFirst().map(this::safeCopy);
     }
 
     public void deleteById(UUID id) {
-        inMemoryDatabase.users.removeIf(user -> user.getId().equals(id));
-    }
-
-    public List<Users> findAll() {
-        return inMemoryDatabase.getUsers();
+        inMemoryDatabase.deleteUserById(id);
     }
 }

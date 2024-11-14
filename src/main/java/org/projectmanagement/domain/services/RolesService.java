@@ -14,7 +14,7 @@ public interface RolesService {
 
     Boolean deleteRole(UUID id);
 
-    Optional<Roles> findByExactName(String name);
+    Optional<Roles> findByExactName(String name, UUID companyId);
     Optional<Roles> findById(UUID id);
 
     List<Roles> findAllRoles(UUID companyId);

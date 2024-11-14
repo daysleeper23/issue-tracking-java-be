@@ -1,11 +1,14 @@
 package org.projectmanagement.application.dto.workspaces;
 
 import lombok.AllArgsConstructor;
-import org.springframework.data.annotation.Id;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.util.UUID;
 
+@Getter
+@Setter
 @AllArgsConstructor
 public class WorkspacesRead {
     private UUID id;

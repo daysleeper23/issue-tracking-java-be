@@ -23,6 +23,8 @@ public class Roles {
 
     private UUID companyId;
 
+    private Boolean isDeleted;
+
 //    @CreatedDate
     private final Instant createdAt;
 

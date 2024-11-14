@@ -7,10 +7,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface WorkspacesRepository {
-    Optional<Workspaces> save(Workspaces workspace);
-    Optional<Workspaces> findByIdAndUpdate(UUID id, Workspaces workspace);
-    void deleteById(UUID id);
+    Workspaces safeCopy(Workspaces workspace);
+    Workspaces save(Workspaces workspace);
 
+    Optional<Workspaces> findByIdAndUpdate(UUID id, Workspaces workspace);
     Optional<Workspaces> findById(UUID id);
-    List<Workspaces> findAllWorkspacesOfCompany(UUID companyId);
+    List<Workspaces> findAllWorkspaces(UUID companyId);
+
+    void deleteById(UUID id);
 }

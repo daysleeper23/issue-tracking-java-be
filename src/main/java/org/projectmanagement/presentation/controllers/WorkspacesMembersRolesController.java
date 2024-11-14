@@ -62,4 +62,13 @@ public class WorkspacesMembersRolesController {
 
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), wmrr), HttpStatus.OK);
     }
+
+    //delete role for a user in a workspace using its own id
+    @DeleteMapping("/{id}")
+    public ResponseEntity<GlobalResponse<Void>> deleteWorkspacesMembersRoles(
+            @PathVariable UUID id
+    ) {
+        wmrs.deleteWorkspacesMembersRoles(id);
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NO_CONTENT.value(), null), HttpStatus.NO_CONTENT);
+    }
 }

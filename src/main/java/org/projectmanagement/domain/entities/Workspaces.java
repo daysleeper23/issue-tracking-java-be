@@ -24,9 +24,9 @@ public class Workspaces {
     
     private UUID companyId;
 
-//    @CreatedDate
+    private Boolean isDeleted;
+
     private final Instant createdAt;
 
-//    @LastModifiedDate
     private Instant updatedAt;
 }

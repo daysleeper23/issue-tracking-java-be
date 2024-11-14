@@ -10,6 +10,8 @@ public interface UsersRepository {
 
   Users save(Users user);
 
+  Users safeCopy(Users user);
+
   List<Users> findAllFromCompany(UUID companyId);
 
   Optional<Users> findById(UUID id);

@@ -18,15 +18,17 @@ public class WorkspacesMembersRolesRepoImpl implements WorkspacesMembersRolesRep
     }
 
     public WorkspacesMembersRoles save(WorkspacesMembersRoles workspacesMembersRoles){
-        return workspacesMembersRoles;
+        return inMemoryDatabase.saveWmr(workspacesMembersRoles);
     }
 
-    public Optional<WorkspacesMembersRoles> findByUserIdAndWorkspaceId(UUID userId, UUID workspaceId){
-        return Optional.empty();
+    public Optional<WorkspacesMembersRoles> findByUserIdAndWorkspaceId(UUID userId, UUID workspaceId) {
+        return inMemoryDatabase.wmrs.stream()
+                .filter(wmr -> wmr.getUserId().equals(userId) && wmr.getWorkspaceId().equals(workspaceId))
+                .findFirst();
     }
 
     public Optional<WorkspacesMembersRoles> findById(UUID id) {
-        return Optional.empty();
+        return inMemoryDatabase.wmrs.stream().filter(wmr -> wmr.getId().equals(id)).findFirst();
     }
 
     public List<WorkspacesMembersRoles> findAllByWorkspaceId(UUID workspaceId) {
