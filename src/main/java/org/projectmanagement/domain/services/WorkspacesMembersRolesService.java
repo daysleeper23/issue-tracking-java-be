@@ -1,13 +1,20 @@
 package org.projectmanagement.domain.services;
 
+import org.projectmanagement.application.dto.workspacesmembersroles.WorkspacesMembersRolesCreate;
+import org.projectmanagement.application.dto.workspacesmembersroles.WorkspacesMembersRolesRead;
 import org.projectmanagement.domain.entities.WorkspacesMembersRoles;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface WorkspacesMembersRolesService {
-    public WorkspacesMembersRoles createWorkspacesMembersRoles(WorkspacesMembersRoles workspacesMembersRoles);
+    WorkspacesMembersRolesRead createMembersRolesForWorkspace(WorkspacesMembersRolesCreate wmrc);
 
-    public WorkspacesMembersRoles getWorkspacesMembersRolesForUser(UUID userId, UUID workspaceId);
+    WorkspacesMembersRolesRead getWorkspacesMembersRolesForUser(UUID userId, UUID workspaceId);
 
-    public WorkspacesMembersRoles updateWorkspacesMembersRoles(UUID id, UUID userId, UUID workspaceId, UUID newRoleId);
+    List<WorkspacesMembersRolesRead> getMembersRolesForWorkspace(UUID workspaceId);
+
+    WorkspacesMembersRolesRead updateWorkspacesMembersRoles(UUID id, WorkspacesMembersRolesCreate newRole);
+
+    void deleteWorkspacesMembersRoles(UUID id);
 }

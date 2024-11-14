@@ -1,21 +1,20 @@
-package org.projectmanagement.application.dto.roles;
+package org.projectmanagement.application.dto.workspaces;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class RolesCreate {
-
-    @NotBlank(message = "cannot be blank")
+public class WorkspacesCreate {
+    @NotBlank(message = "is required")
     private String name;
 
-    @NotNull(message = "cannot be null")
+    private String description;
+
+    @NotNull(message = "is required")
     private UUID companyId;
 }

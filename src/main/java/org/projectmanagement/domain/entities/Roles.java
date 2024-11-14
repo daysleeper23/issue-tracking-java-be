@@ -21,6 +21,10 @@ public class Roles {
 
     private String name;
 
+    private UUID companyId;
+
+    private Boolean isDeleted;
+
 //    @CreatedDate
     private final Instant createdAt;
 

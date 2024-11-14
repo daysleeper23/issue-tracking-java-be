@@ -18,17 +18,15 @@ public class Workspaces {
     @Id
     private final UUID id;
 
-    @NonNull
     private String name;
 
     private String description;
-
-    @NonNull
+    
     private UUID companyId;
 
-//    @CreatedDate
+    private Boolean isDeleted;
+
     private final Instant createdAt;
 
-//    @LastModifiedDate
     private Instant updatedAt;
 }

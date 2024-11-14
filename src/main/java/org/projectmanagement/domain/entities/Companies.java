@@ -28,4 +28,13 @@ public class Companies {
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
     }
+
+    public Companies(UUID id, @NonNull String name, String description, @NonNull UUID ownerId, Instant createdAt, Instant updatedAt){
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.ownerId = ownerId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }

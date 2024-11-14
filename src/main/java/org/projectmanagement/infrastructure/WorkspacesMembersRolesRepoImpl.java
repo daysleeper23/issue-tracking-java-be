@@ -11,23 +11,35 @@ import java.util.UUID;
 
 @Repository
 public class WorkspacesMembersRolesRepoImpl implements WorkspacesMembersRolesRepository {
-    public WorkspacesMembersRoles save(WorkspacesMembersRoles workspacesMembersRoles){
-        return workspacesMembersRoles;
-    };
+    private final InMemoryDatabase inMemoryDatabase;
 
-    public Optional<WorkspacesMembersRoles> findByUserIdAndWorkspaceId(UUID userId, UUID workspaceId){
-        return Optional.empty();
-    };
+    public WorkspacesMembersRolesRepoImpl(InMemoryDatabase inMemoryDatabase) {
+        this.inMemoryDatabase = inMemoryDatabase;
+    }
+
+    public WorkspacesMembersRoles save(WorkspacesMembersRoles workspacesMembersRoles){
+        return inMemoryDatabase.saveWmr(workspacesMembersRoles);
+    }
+
+    public Optional<WorkspacesMembersRoles> findByUserIdAndWorkspaceId(UUID userId, UUID workspaceId) {
+        return inMemoryDatabase.wmrs.stream()
+                .filter(wmr -> wmr.getUserId().equals(userId) && wmr.getWorkspaceId().equals(workspaceId))
+                .findFirst();
+    }
 
     public Optional<WorkspacesMembersRoles> findById(UUID id) {
-        return Optional.empty();
-    };
+        return inMemoryDatabase.wmrs.stream().filter(wmr -> wmr.getId().equals(id)).findFirst();
+    }
 
     public List<WorkspacesMembersRoles> findAllByWorkspaceId(UUID workspaceId) {
-        return List.of();
-    };
+        return inMemoryDatabase.wmrs.stream().filter(wmr -> wmr.getWorkspaceId().equals(workspaceId)).toList();
+    }
 
-    public WorkspacesMembersRoles updateWorkspacesMembersRoles(UUID id, UUID newRoleId){
+    public WorkspacesMembersRoles updateWorkspacesMembersRoles(UUID id, UUID newRoleId) {
         return new WorkspacesMembersRoles(id, UUID.randomUUID(), UUID.randomUUID(), newRoleId, Instant.now(), Instant.now());
-    };
+    }
+
+    public void deleteById(UUID id) {
+        inMemoryDatabase.wmrs.removeIf(wmr -> wmr.getId().equals(id));
+    }
 }

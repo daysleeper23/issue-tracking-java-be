@@ -1,10 +1,10 @@
 package org.projectmanagement.application.services;
 
-import jakarta.validation.Valid;
 import org.projectmanagement.application.dto.roles.RolesCreate;
 import org.projectmanagement.domain.entities.Roles;
 import org.projectmanagement.domain.repository.RolesRepository;
 import org.projectmanagement.domain.services.RolesService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -16,16 +16,19 @@ import java.util.UUID;
 public class RolesServiceImpl implements RolesService {
     private final RolesRepository rolesRepository;
 
+    @Autowired
     public RolesServiceImpl(RolesRepository rolesRepository) {
         this.rolesRepository = rolesRepository;
     }
 
     public Roles createRole(RolesCreate role) {
-        Optional<Roles> roles = rolesRepository.findByExactName(role.getName());
+        Optional<Roles> roles = rolesRepository.findByExactName(role.getName(), role.getCompanyId());
         if (roles.isEmpty()) {
             Roles newRole = new Roles(
                     UUID.randomUUID(),
                     role.getName(),
+                    role.getCompanyId(),
+                    false,
                     Instant.now(),
                     Instant.now()
             );
@@ -35,36 +38,36 @@ public class RolesServiceImpl implements RolesService {
         }
     }
 
-    public Roles updateRoleName(@Valid Roles role) {
-//        if (role.getId() == null) {
-//            return null;
-//        }
-
-        if (rolesRepository.findById(role.getId()).isEmpty()) {
+    public Roles updateRoleName(UUID id, RolesCreate role) {
+        Roles existingRole = rolesRepository.findById(id).orElse(null);
+        if (existingRole == null) {
             return null;
         }
 
-        Optional<Roles> roles = rolesRepository.findByExactName(role.getName());
-        if (roles.isEmpty()) {
-            return rolesRepository.save(role);
+        Optional<Roles> rolesWithSameName = rolesRepository.findByExactName(role.getName(), role.getCompanyId());
+        if (rolesWithSameName.isEmpty()) {
+            existingRole.setName(role.getName());
+            return rolesRepository.save(existingRole);
         } else {
             return null;
         }
     }
 
-    public void deleteRole(UUID id) {
+    public Boolean deleteRole(UUID id) {
         rolesRepository.deleteById(id);
+        //considering update the status to archived instead of deleting
+        return true;
     }
 
     public Optional<Roles> findById(UUID id) {
         return rolesRepository.findById(id);
     }
 
-    public Optional<Roles> findByExactName(String name) {
-        return rolesRepository.findByExactName(name);
+    public Optional<Roles> findByExactName(String name, UUID companyId) {
+        return rolesRepository.findByExactName(name, companyId);
     }
 
-    public List<Roles> findAllRoles() {
-        return rolesRepository.findAllRoles();
+    public List<Roles> findAllRoles(UUID companyId) {
+        return rolesRepository.findAllRolesOfCompany(companyId);
     }
 }

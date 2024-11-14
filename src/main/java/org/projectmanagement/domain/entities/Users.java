@@ -34,6 +34,8 @@ public class Users {
 
   private Boolean isOwner;
 
+  private Boolean isDeleted;
+
 //  @CreatedDate
   private final Instant createdAt;
 

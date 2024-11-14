@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import jakarta.validation.Valid;
 import org.projectmanagement.application.dto.users.UsersCreate;
 import org.projectmanagement.application.dto.users.UsersMapper;
 import org.projectmanagement.application.dto.users.UsersRead;
+import org.projectmanagement.application.dto.users.UsersUpdate;
 import org.projectmanagement.domain.entities.Users;
 import org.projectmanagement.domain.repository.UsersRepository;
 import org.projectmanagement.domain.services.UsersService;
 
-import jakarta.validation.constraints.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +21,7 @@ public class UsersServiceImpl implements UsersService {
 
     private final UsersRepository usersRepository;
 
+    @Autowired
     public UsersServiceImpl(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
@@ -29,13 +30,14 @@ public class UsersServiceImpl implements UsersService {
         Users newUser = usersRepository.save(
                 new Users(
                         UUID.randomUUID(),
-                        user.getName(),
-                        user.getEmail(),
-                        user.getPasswordHash(),
-                        user.getTitle(),
-                        user.getIsActive(),
-                        user.getCompanyId(),
-                        user.getIsOwner(),
+                        user.name(),
+                        user.email(),
+                        user.passwordHash(),
+                        user.title(),
+                        user.isActive(),
+                        user.companyId(),
+                        user.isOwner(),
+                        false,
                         Instant.now(),
                         Instant.now()
                 )
@@ -44,7 +46,7 @@ public class UsersServiceImpl implements UsersService {
         return UsersMapper.toUsersRead(newUser);
     }
 
-    public Optional<UsersRead> getUserById(@Valid UUID id) {
+    public Optional<UsersRead> getUserById(UUID id) {
         Users users = usersRepository.findById(id).orElse(null);
         if (users == null) {
             return Optional.empty();
@@ -52,23 +54,24 @@ public class UsersServiceImpl implements UsersService {
         return Optional.of(UsersMapper.toUsersRead(users));
     }
 
-    public List<UsersRead> getAllUsersOfCompany(@Valid UUID companyId) {
+    public List<UsersRead> getAllUsersOfCompany(UUID companyId) {
         List<Users> users = usersRepository.findAllFromCompany(companyId);
         return users.stream().map(UsersMapper::toUsersRead).toList();
     }
 
-    public void deleteUser(@Valid UUID id) {
+    public Boolean deleteUser(UUID id) {
         usersRepository.deleteById(id);
+        return true;
     }
 
-    public UsersRead updateUser(@NotNull UUID id, @NotNull UsersCreate user) {
+    public UsersRead updateUser(UUID id, UsersUpdate user) {
         Users existingUser = usersRepository.findById(id).orElse(null);
 
         if (existingUser == null) {
             return null;
         }
 
-        UsersMapper.INSTANCE.toUsersFromUsersCreate(user, existingUser);
+        UsersMapper.INSTANCE.toUsersFromUsersUpdate(user, existingUser);
         Users updatedUser = usersRepository.save(existingUser);
         return UsersMapper.toUsersRead(updatedUser);
     }

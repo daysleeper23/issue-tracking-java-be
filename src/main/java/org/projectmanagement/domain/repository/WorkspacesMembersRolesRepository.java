@@ -16,4 +16,6 @@ public interface WorkspacesMembersRolesRepository {
     List<WorkspacesMembersRoles> findAllByWorkspaceId(UUID workspaceId);
 
     WorkspacesMembersRoles updateWorkspacesMembersRoles(UUID id, UUID newRoleId);
+
+    void deleteById(UUID id);
 }

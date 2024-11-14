@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.projectmanagement.application.dto.users.UsersCreate;
 import org.projectmanagement.application.dto.users.UsersRead;
+import org.projectmanagement.application.dto.users.UsersUpdate;
 
 public interface UsersService {
 
@@ -15,7 +16,7 @@ public interface UsersService {
 
   List<UsersRead> getAllUsersOfCompany(UUID companyId);
 
-  UsersRead updateUser(UUID id, UsersCreate user);
+  UsersRead updateUser(UUID id, UsersUpdate user);
 
-  void deleteUser(UUID id);
+  Boolean deleteUser(UUID id);
 }

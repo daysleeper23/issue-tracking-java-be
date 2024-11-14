@@ -1,32 +1,38 @@
 package org.projectmanagement.presentation.controllers;
 
+import jakarta.validation.Valid;
 import org.projectmanagement.application.dto.workspacesmembersroles.WorkspacesMembersRolesCreate;
 import org.projectmanagement.application.dto.workspacesmembersroles.WorkspacesMembersRolesRead;
-import org.projectmanagement.application.services.WorkspacesMembersRolesServiceImpl;
+import org.projectmanagement.domain.services.WorkspacesMembersRolesService;
 import org.projectmanagement.presentation.response.GlobalResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/workspaces")
+@Validated
+@RequestMapping("/{companyId}/{workspaceId}/members/roles")
 public class WorkspacesMembersRolesController {
-    private final WorkspacesMembersRolesServiceImpl wmrsi;
 
-    public WorkspacesMembersRolesController(WorkspacesMembersRolesServiceImpl wmri) {
-        this.wmrsi = wmri;
+    private final WorkspacesMembersRolesService wmrs;
+
+    @Autowired
+    public WorkspacesMembersRolesController(WorkspacesMembersRolesService wmrs) {
+        this.wmrs = wmrs;
     }
 
     //get the roles for all members in a workspace
-    @GetMapping("/workspaces/{workspaceId}/members/roles")
+    @GetMapping
     public ResponseEntity<GlobalResponse<List<WorkspacesMembersRolesRead>>> getWorkspacesMembersRoles(
             @PathVariable UUID workspaceId
     ) {
-        List<WorkspacesMembersRolesRead> wmrl = wmrsi
-                .getWorkspacesMembersRoles(workspaceId);
+        List<WorkspacesMembersRolesRead> wmrl = wmrs
+                .getMembersRolesForWorkspace(workspaceId);
 
         return new ResponseEntity<>(
                 new GlobalResponse<>(HttpStatus.OK.value(), wmrl),
@@ -34,25 +40,35 @@ public class WorkspacesMembersRolesController {
         );
     }
 
-    //probably don't need this as an end point: get the role for a user in a workspace using workspace id and user id
-//    @GetMapping("/workspaces/{workspaceId}/members/{userId}/role")
-//    public ResponseEntity<GlobalResponse<WorkspacesMembersRolesRead>> getWorkspacesMembersRoles(@PathVariable UUID userId, @PathVariable UUID workspaceId) {
-//        Optional<WorkspacesMembersRolesRead> workspacesMembersRoles = workspacesMembersRolesService.getWorkspacesMembersRolesForUser(userId, workspaceId);
-//
-//        return workspacesMembersRoles
-//                .map(workspacesMembersRolesRead -> new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), workspacesMembersRolesRead), HttpStatus.OK))
-//                .orElseGet(() -> new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), null), HttpStatus.NOT_FOUND));
-//    }
+    //create a role for a user in a workspace == add a user to a workspace
+    @PostMapping
+    public ResponseEntity<GlobalResponse<WorkspacesMembersRolesRead>> createWorkspacesMembersRoles(
+            @RequestBody @Valid WorkspacesMembersRolesCreate wmrCreate
+    ) {
+        WorkspacesMembersRolesRead wmrr = wmrs
+                .createMembersRolesForWorkspace(wmrCreate);
+
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), wmrr), HttpStatus.CREATED);
+    }
 
     //update role for a user in a workspace using its own id
-    @PutMapping("/workspaces/members/roles/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<GlobalResponse<WorkspacesMembersRolesRead>> updateWorkspacesMembersRoles(
             @PathVariable UUID id,
             @RequestBody WorkspacesMembersRolesCreate newWorkspacesMembersRoles
     ) {
-        WorkspacesMembersRolesRead wmrr = wmrsi
+        WorkspacesMembersRolesRead wmrr = wmrs
                 .updateWorkspacesMembersRoles(id, newWorkspacesMembersRoles);
 
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), wmrr), HttpStatus.OK);
+    }
+
+    //delete role for a user in a workspace using its own id
+    @DeleteMapping("/{id}")
+    public ResponseEntity<GlobalResponse<Void>> deleteWorkspacesMembersRoles(
+            @PathVariable UUID id
+    ) {
+        wmrs.deleteWorkspacesMembersRoles(id);
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NO_CONTENT.value(), null), HttpStatus.NO_CONTENT);
     }
 }

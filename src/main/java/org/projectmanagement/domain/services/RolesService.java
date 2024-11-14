@@ -10,12 +10,12 @@ import java.util.UUID;
 public interface RolesService {
     Roles createRole(RolesCreate rc);
 
-    Roles updateRoleName(Roles role);
+    Roles updateRoleName(UUID id, RolesCreate role);
 
-    void deleteRole(UUID id);
+    Boolean deleteRole(UUID id);
 
-    Optional<Roles> findByExactName(String name);
+    Optional<Roles> findByExactName(String name, UUID companyId);
     Optional<Roles> findById(UUID id);
 
-    List<Roles> findAllRoles();
+    List<Roles> findAllRoles(UUID companyId);
 }
