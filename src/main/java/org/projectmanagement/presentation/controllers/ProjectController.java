@@ -35,8 +35,7 @@ public class ProjectController {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projectService.getProjectsByWorkspaceId(workspaceId)), HttpStatus.OK);
     }
 
-    /*
-    Not implemented until we decine on MapStruct
+
     @PostMapping
     public ResponseEntity<GlobalResponse<Projects>> createProject(@RequestBody @Valid ProjectsCreateDTO project) {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), projectService.createProject(project)), HttpStatus.CREATED);
@@ -47,8 +46,5 @@ public class ProjectController {
         Projects updatedProject = projectService.updateProject(id, project);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedProject), HttpStatus.OK);
     }
-
-     */
-
 
 }

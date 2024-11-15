@@ -11,6 +11,7 @@ import org.projectmanagement.domain.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,7 +40,21 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     public Projects createProject(ProjectsCreateDTO dto){
-        Projects project = null; //ProjectMapper.INSTANCE.toProjectsFromProjectsCreateDTO(dto);
+        Projects project = projectsRepository.save(
+            Projects.builder()
+                    .id(UUID.randomUUID())
+                    .name(dto.name())
+                    .description(dto.description())
+                    .endDate(dto.endDate())
+                    .startDate(dto.startDate())
+                    .priority(dto.priority())
+                    .status(dto.status())
+                    .leaderId(dto.leaderId())
+                    .workspaceId(dto.workspaceId())
+                    .createdAt(Instant.now())
+                    .updatedAt(Instant.now())
+                    .build()
+        );
         return projectsRepository.save(project);
     }
 
