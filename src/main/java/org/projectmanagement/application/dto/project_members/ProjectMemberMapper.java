@@ -1,27 +1,21 @@
 package org.projectmanagement.application.dto.project_members;
 
+import org.mapstruct.*;
+import org.mapstruct.factory.Mappers;
+import org.projectmanagement.application.dto.projects.ProjectMapper;
 import org.projectmanagement.domain.entities.ProjectMembers;
 
-import java.time.Instant;
-import java.util.UUID;
 
-public class  ProjectMemberMapper {
+@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+public interface  ProjectMemberMapper {
 
-    public static ProjectMembers createDTOtoProjectMembers(ProjectMemberCreateDTO dto) {
-        return ProjectMembers.builder()
-                .userId(dto.getUserId())
-                .projectId(dto.getProjectId())
-                .subscribed(dto.getSubscribed())
-                .createdAt(Instant.now())
-                .updatedAt(Instant.now())
-                .build();
+    ProjectMemberMapper INSTANCE = Mappers.getMapper(ProjectMemberMapper.class);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "userId", ignore = true)
+    @Mapping(target = "projectId", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void toProjectMemberFromProjectMemberDTO(ProjectMemberUpdateDTO dto, @MappingTarget ProjectMembers projectMember);
 
-    }
-
-    public static ProjectMembers updateDTOtoProjectMembers(UUID id, ProjectMemberUpdateDTO dto) {
-        return ProjectMembers.builder()
-                .id(id)
-                .subscribed(dto.getSubscribed())
-                .build();
-    }
 }
