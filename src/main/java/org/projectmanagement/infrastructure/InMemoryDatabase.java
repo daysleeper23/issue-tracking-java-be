@@ -2,6 +2,7 @@ package org.projectmanagement.infrastructure;
 
 import lombok.Getter;
 import org.projectmanagement.domain.entities.*;
+import org.projectmanagement.domain.enums.DefaultStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -23,6 +24,9 @@ public class InMemoryDatabase {
     public List<Roles> roles;
     public List<Companies> companies;
     public List<WorkspacesMembersRoles> wmrs;
+    public List<Projects> projects;
+    public List<CompanyManagers> companyManagers;
+    public List<ProjectMembers> projectMembers;
 
     UUID companyId = UUID.fromString("b541ade4-9cfa-4664-b9e3-d9923ae02fb4");
     UUID roleAdminId = UUID.fromString("7b149139-6b39-4e5c-9e24-70c092df4a5d");
@@ -31,6 +35,12 @@ public class InMemoryDatabase {
     UUID workspaceId2 = UUID.fromString("f7e6c463-7930-446c-b871-59db53cf5c01");
     UUID user1 = UUID.fromString("03093311-73ce-4264-99c9-886caa7bd1e1");
     UUID user2 = UUID.fromString("6ea39d08-9f8d-4271-ad98-be7eddd4c7fc");
+    UUID user3 = UUID.fromString("c15fa709-67aa-4b8a-b82d-dac8f306e673"); // company manager
+    UUID project1 = UUID.fromString("6aff4b4a-55e1-41ed-9b9d-56927b2f3f7b");
+    UUID project2 = UUID.fromString("95034052-1401-41f7-adb4-bcb1b9c23daf");
+    UUID projectMember = UUID.fromString("216967d1-9f2d-4f53-8e8a-12c269a9c535");
+    UUID companyManager = UUID.fromString("96cdb8ba-7304-4ae1-9be5-b6a8551bc64c");
+
 
     public InMemoryDatabase() {
 
@@ -54,6 +64,18 @@ public class InMemoryDatabase {
                                 "u2@test.com",
                                 "password",
                                 "Developer",
+                                true,
+                                companyId,
+                                false,
+                                false,
+                                Instant.now(),
+                                Instant.now()
+                        ),
+                        new Users(user3,
+                                "User 3",
+                                "u3@test.com",
+                                "password",
+                                "CTO",
                                 true,
                                 companyId,
                                 false,
@@ -146,6 +168,63 @@ public class InMemoryDatabase {
                                 Instant.now()
                         )
 
+                )
+        );
+
+        projects = new ArrayList<>(
+                List.of(
+                        Projects.builder()
+                                .id(project1)
+                                .name("Project A")
+                                .description("Belongs to Workspace A")
+                                .startDate(null)
+                                .endDate(null)
+                                .priority(0)
+                                .status(DefaultStatus.TODO)
+                                .leaderId(users.get(0).getId())
+                                .workspaceId(workspaces.get(0).getId())
+                                .createdAt(Instant.now())
+                                .updatedAt(Instant.now())
+                                .build(),
+                        Projects.builder()
+                                .id(project2)
+                                .name("Project B")
+                                .description("Belongs to Workspace B")
+                                .startDate(null)
+                                .endDate(null)
+                                .priority(2)
+                                .status(DefaultStatus.IN_PROGRESS)
+                                .leaderId(users.get(1).getId())
+                                .workspaceId(workspaces.get(1).getId())
+                                .createdAt(Instant.now())
+                                .updatedAt(Instant.now())
+                                .build()
+                )
+        );
+
+        projectMembers = new ArrayList<>(
+                List.of(
+                        ProjectMembers.builder()
+                                .id(UUID.randomUUID())
+                                .userId(users.get(1).getId())
+                                .projectId(projects.get(0).getId())
+                                .subscribed(false)
+                                .createdAt(Instant.now())
+                                .updatedAt(Instant.now())
+                                .build()
+                )
+        );
+
+        companyManagers = new ArrayList<>(
+                List.of(
+                        CompanyManagers.builder()
+                                .id(UUID.randomUUID())
+                                .companyId(companyId)
+                                .userId(user3)
+                                .roleId(roles.get(0).getId())
+                                .createdAt(Instant.now())
+                                .updatedAt(Instant.now())
+                                .build()
                 )
         );
     }
@@ -269,5 +348,38 @@ public class InMemoryDatabase {
         workspaces.removeIf(w -> w.getId().equals(id));
         workspaces.add(workspace);
         return workspace;
+    }
+
+    /*
+     *
+     * Projects
+     *
+     */
+
+    public Projects saveProject(Projects project) {
+        projects.add(project);
+        return project;
+    }
+
+    /*
+     *
+     * CompanyManagers
+     *
+     */
+
+    public CompanyManagers saveCompanyManager(CompanyManagers companyManager) {
+        companyManagers.add(companyManager);
+        return companyManager;
+    }
+
+    /*
+     *
+     * ProjectMembers
+     *
+     */
+
+    public ProjectMembers saveProjectMember(ProjectMembers projectMember) {
+        projectMembers.add(projectMember);
+        return projectMember;
     }
 }
