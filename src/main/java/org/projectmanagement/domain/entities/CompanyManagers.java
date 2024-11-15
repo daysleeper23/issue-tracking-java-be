@@ -7,6 +7,7 @@ import java.util.UUID;
 
 @ToString
 @Getter
+@Setter
 @Builder
 public class CompanyManagers {
     private UUID id;
@@ -26,14 +27,4 @@ public class CompanyManagers {
     @NonNull
     private Instant updatedAt;
 
-    public void updateTimestamp() {
-        this.updatedAt = Instant.now();
-    }
-
-    public void setRoleId(@NonNull UUID roleId) {
-        //has to be updated later to implement logic below
-        //admin or company managers roles allowed
-        this.roleId = roleId;
-        updateTimestamp();
-    }
 }
