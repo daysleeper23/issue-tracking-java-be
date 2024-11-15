@@ -7,6 +7,7 @@ import java.util.UUID;
 
 @ToString
 @Getter
+@Setter
 @Builder
 public class ProjectMembers {
     private UUID id;
@@ -26,12 +27,4 @@ public class ProjectMembers {
     @NonNull
     private Instant updatedAt;
 
-    public void updateTimestamp() {
-        this.updatedAt = Instant.now();
-    }
-
-    public void setSubscribed(@NonNull Boolean subscribed) {
-        this.subscribed = subscribed;
-        updateTimestamp();
-    }
 }
