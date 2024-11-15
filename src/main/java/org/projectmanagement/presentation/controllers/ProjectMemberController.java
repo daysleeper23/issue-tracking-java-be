@@ -2,6 +2,7 @@ package org.projectmanagement.presentation.controllers;
 
 import jakarta.validation.Valid;
 import org.projectmanagement.application.dto.project_members.ProjectMemberCreateDTO;
+import org.projectmanagement.application.dto.project_members.ProjectMemberUpdateDTO;
 import org.projectmanagement.application.services.ProjectMembersServiceImpl;
 import org.projectmanagement.domain.entities.ProjectMembers;
 import org.projectmanagement.presentation.response.GlobalResponse;
@@ -10,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -35,19 +35,17 @@ public class ProjectMemberController {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projectMembersService.getAllProjectsMemberIsPartOfByUserId(userId)), HttpStatus.OK);
     }
 
-/*
-    Not implemented until we decide upon mapstruct
     @PostMapping
-    public ResponseEntity<GlobalResponse<ProjectMembers>> createProjectMember(@Valid @PathVariable  userId, @Valid ProjectMemberCreateDTO dto) {
-        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projectMembersService.createProjectMember(dto)), HttpStatus.OK);
+    public ResponseEntity<GlobalResponse<ProjectMembers>> createProjectMember(@RequestBody @Valid ProjectMemberCreateDTO dto) {
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), projectMembersService.createProjectMember(dto)), HttpStatus.CREATED);
     }
 
     @PatchMapping("{id}")
-    public ResponseEntity<GlobalResponse<ProjectMembers>> updateProjectMember(@Valid @PathVariable  userId, @Valid ProjectMemberUpdateDTO dto) {
-        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projectMembersService.updateProjectMember(dto)), HttpStatus.OK);
+    public ResponseEntity<GlobalResponse<ProjectMembers>> updateProjectMember(@Valid @PathVariable UUID id, @Valid ProjectMemberUpdateDTO dto) {
+        ProjectMembers updatedProjectMember = projectMembersService.updateProjectMember(id, dto);
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedProjectMember), HttpStatus.OK);
     }
 
-*/
     @DeleteMapping("{id}")
     public ResponseEntity<GlobalResponse<Void>> deleteProjectMemberById(@Valid @PathVariable UUID id) {
         projectMembersService.deleteProjectMemberById(id);
@@ -59,8 +57,6 @@ public class ProjectMemberController {
         projectMembersService. deleteProjectMemberByProjectIdAndUserId(projectId, userId);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), null), HttpStatus.OK);
     }
-
-
 
 
 }

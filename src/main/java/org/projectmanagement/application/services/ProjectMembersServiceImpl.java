@@ -12,6 +12,7 @@ import org.projectmanagement.domain.repository.ProjectsRepository;
 import org.projectmanagement.domain.repository.UsersRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -55,20 +56,29 @@ public class ProjectMembersServiceImpl {
     }
 
     public ProjectMembers createProjectMember(ProjectMemberCreateDTO dto) {
-        ProjectMembers projectMember = ProjectMemberMapper.createDTOtoProjectMembers(dto);
-        ProjectMembers createdProjectMember = projectMembersRepository.save(projectMember);
-        return createdProjectMember;
+        return projectMembersRepository.save(
+                ProjectMembers.builder()
+                        .id(UUID.randomUUID())
+                        .userId(dto.userId())
+                        .projectId(dto.projectId())
+                        .subscribed(dto.subscribed())
+                        .createdAt(Instant.now())
+                        .updatedAt(Instant.now())
+                        .build()
+        );
     }
 
-    public Optional<ProjectMembers> updateProjectMember(UUID id, ProjectMemberUpdateDTO dto) {
-        ProjectMembers projectMembers = ProjectMemberMapper.updateDTOtoProjectMembers(id, dto);
+    public ProjectMembers updateProjectMember(UUID id, ProjectMemberUpdateDTO dto) {
+
         ProjectMembers projectMemberToUpdate = projectMembersRepository.findOneById(id).orElse(null);
         if (projectMemberToUpdate == null) {
             throw new ResourceNotFoundException("Project Member with id: " + id + " was not found.");
         }
 
+        ProjectMemberMapper.INSTANCE.toProjectMemberFromProjectMemberDTO(dto, projectMemberToUpdate);
+
         ProjectMembers updatedProjectMember = projectMembersRepository.save(projectMemberToUpdate);
-        return Optional.of(updatedProjectMember);
+        return updatedProjectMember;
     }
 
 
