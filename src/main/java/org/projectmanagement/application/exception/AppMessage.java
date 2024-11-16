@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum AppMessage {
     //Task errors
     TASK_NOT_FOUND("Task not found"),
-    TASK_NO_CHANGE("No change was made for task")
+    TASK_NO_CHANGE("No change was made for task"),
+    TASK_SUBSCRIBE_ERROR("Error subscribing to task"),
     ;
     final String message;
 }

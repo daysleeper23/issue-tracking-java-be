@@ -1,8 +1,8 @@
 package org.projectmanagement.presentation.controllers;
 
 import jakarta.validation.Valid;
-import org.projectmanagement.application.dto.projects.ProjectsCreateDTO;
-import org.projectmanagement.application.dto.projects.ProjectsUpdateDTO;
+//import org.projectmanagement.application.dto.projects.ProjectsCreateDTO;
+//import org.projectmanagement.application.dto.projects.ProjectsUpdateDTO;
 import org.projectmanagement.domain.entities.Projects;
 import org.projectmanagement.domain.services.ProjectService;
 import org.projectmanagement.presentation.response.GlobalResponse;

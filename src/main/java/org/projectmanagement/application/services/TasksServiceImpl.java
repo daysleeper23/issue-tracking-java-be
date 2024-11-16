@@ -1,8 +1,7 @@
 package org.projectmanagement.application.services;
 
 import lombok.RequiredArgsConstructor;
-import org.projectmanagement.application.dto.tasks.TaskDTO;
-import org.projectmanagement.application.dto.tasks.TaskInfo;
+import org.projectmanagement.application.dto.tasks.*;
 import org.projectmanagement.application.exception.AppMessage;
 import org.projectmanagement.application.exception.ApplicationException;
 import org.projectmanagement.domain.entities.TaskSubscribers;
@@ -12,6 +11,7 @@ import org.projectmanagement.domain.repository.TasksRepository;
 import org.projectmanagement.domain.repository.TaskSubscribersRepository;
 import org.projectmanagement.domain.services.TasksService;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -29,16 +29,8 @@ public class TasksServiceImpl implements TasksService {
 
 
     @Override
-    public Tasks addTask(TaskDTO newTask) {
-        Tasks newTasks = Tasks.builder()
-                .id(UUID.randomUUID())
-                .name(newTask.name())
-                .description(newTask.description())
-                .projectId(UUID.fromString(newTask.projectId()))
-                .priority(newTask.priority())
-                .startedAt(newTask.startedAt())
-                .status(DefaultStatus.TODO)
-                .endedAt(newTask.endedAt()).build();
+    public Tasks addTask(TasksCreate newTask) {
+        Tasks newTasks = TasksMapper.mapper.createDtoToEntity(newTask);
         if (newTask.assigneeId() != null && !newTask.assigneeId().isEmpty()) {
             newTasks.toBuilder().assigneeId(UUID.fromString(newTask.assigneeId())).build();
         }
@@ -49,7 +41,7 @@ public class TasksServiceImpl implements TasksService {
     }
 
     @Override
-    public Tasks updateTask(String taskId, TaskDTO taskDTO){
+    public Tasks updateTask(String taskId, TasksUpdate taskDTO){
         Tasks existed = tasksRepository.findOne(UUID.fromString(taskId));
         if (existed == null){
             throw new ApplicationException(HttpStatus.NOT_FOUND,TASK_NOT_FOUND);
@@ -57,25 +49,16 @@ public class TasksServiceImpl implements TasksService {
         if (!isChanged(taskDTO,existed)){
             throw new ApplicationException(AppMessage.TASK_NO_CHANGE);
         }
-        existed.toBuilder()
-                .name(taskDTO.name())
-                .description(taskDTO.description())
-                .priority(taskDTO.priority())
-                .stringToStatus(taskDTO.status())
-                .assigneeId(UUID.fromString(taskDTO.assigneeId()))
-                .startedAt(taskDTO.startedAt())
-                .endedAt(taskDTO.endedAt())
-                .updatedAt(Instant.now())
-                .build();
+        TasksMapper.mapper.updateDtoToEntity(taskDTO,existed);
         return tasksRepository.save(existed);
     }
 
     @Override
-    public List<Tasks> getAllTask(String projectId) {
+    public List<TasksCompact> getAllTask(String projectId) {
         if (projectId != null) {
-            return tasksRepository.getTasksByProjectId(UUID.fromString(projectId));
+            return TasksMapper.mapper.entitiesToCompactDtoList(tasksRepository.getTasksByProjectId(UUID.fromString(projectId)));
         }
-        return tasksRepository.getTasks();
+        return TasksMapper.mapper.entitiesToCompactDtoList(tasksRepository.getTasks());
     }
 
     @Override
@@ -86,19 +69,7 @@ public class TasksServiceImpl implements TasksService {
         }
         List<TaskSubscribers> subscribers = subscribersRepository.getSubscriberByTaskId(info.getId());
         //Move to dto
-        return TaskInfo.builder()
-                .id(info.getId())
-                .name(info.getName())
-                .description(info.getName())
-                .status(info.getStatus())
-                .priority(info.getPriority())
-                .startedAt(info.getStartedAt())
-                .endedAt(info.getEndedAt())
-                .subscribers(subscribers)
-                .projectId(info.getProjectId())
-                .createdAt(info.getCreatedAt())
-                .updatedAt(info.getUpdatedAt())
-                .build();
+        return TasksMapper.mapper.entityToInfoDto(info, subscribers);
     }
 
     @Override
@@ -112,7 +83,7 @@ public class TasksServiceImpl implements TasksService {
         return true;
     }
 
-    private boolean isChanged(TaskDTO updates,Tasks target){
+    private boolean isChanged(TasksUpdate updates, Tasks target){
         return !(updates.name().equals(target.getName()) &&
                 target.getStatus().toString().equals(updates.status()) &&
                 updates.description().equals(target.getDescription()) &&

@@ -3,13 +3,14 @@ package org.projectmanagement.presentation.controllers;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import org.projectmanagement.application.dto.tasks.TaskDTO;
+import org.projectmanagement.application.dto.tasks.TasksCompact;
+import org.projectmanagement.application.dto.tasks.TasksCreate;
+import org.projectmanagement.application.dto.tasks.TasksUpdate;
 import org.projectmanagement.application.dto.tasks.TaskInfo;
 import org.projectmanagement.domain.entities.Tasks;
 import org.projectmanagement.domain.services.TaskSubscribersService;
 import org.projectmanagement.domain.services.TasksService;
 import org.projectmanagement.presentation.response.GlobalResponse;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -35,7 +36,7 @@ public class TasksController {
 
     @PostMapping
     public ResponseEntity<GlobalResponse<Tasks>> addTask(
-           @RequestBody @Valid TaskDTO dto) {
+           @RequestBody @Valid TasksCreate dto) {
         Tasks createdTask = tasksService.addTask(dto);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), createdTask), null, HttpStatus.CREATED);
     }
@@ -43,17 +44,17 @@ public class TasksController {
     @PutMapping("/{taskId}")
     public ResponseEntity<GlobalResponse<Tasks>> updateTask(
             @PathVariable String taskId,
-            @RequestBody @Valid TaskDTO dto
+            @RequestBody @Valid TasksUpdate dto
     ){
         Tasks updatedTask = tasksService.updateTask(taskId,dto);
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), updatedTask));
     }
 
     @GetMapping
-    public ResponseEntity<GlobalResponse<List<Tasks>>> getTasks(
+    public ResponseEntity<GlobalResponse<List<TasksCompact>>> getTasks(
             @RequestBody RequestTasksFromProject requestTasks
     ) {
-        List<Tasks> listTasks = tasksService.getAllTask(requestTasks.projectId());
+        List<TasksCompact> listTasks = tasksService.getAllTask(requestTasks.projectId());
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), listTasks));
     }
 
