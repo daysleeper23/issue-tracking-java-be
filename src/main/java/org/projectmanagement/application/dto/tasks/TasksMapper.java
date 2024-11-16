@@ -14,7 +14,6 @@ public interface TasksMapper {
     TasksMapper mapper = Mappers.getMapper( TasksMapper.class );
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "tasks.status", source = "taskUpdate.status",qualifiedByName = "statusToEnum")
     void updateDtoToEntity(TasksUpdate taskUpdate, @MappingTarget Tasks tasks);
 
     Tasks createDtoToEntity(TasksCreate taskCreate);
