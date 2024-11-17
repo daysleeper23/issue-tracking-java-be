@@ -19,9 +19,9 @@ import java.util.UUID;
 
 @Service
 public class ProjectMembersServiceImpl {
-    private ProjectMembersRepository projectMembersRepository;
-    private ProjectsRepository projectRepository;
-    private UsersRepository usersRepository;
+    private final ProjectMembersRepository projectMembersRepository;
+    private final ProjectsRepository projectRepository;
+    private final UsersRepository usersRepository;
 
     ProjectMembersServiceImpl(ProjectMembersRepository projectMembersRepository,
                               ProjectsRepository projectRepository,

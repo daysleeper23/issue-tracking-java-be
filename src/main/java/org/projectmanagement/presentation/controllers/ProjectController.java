@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.projectmanagement.application.dto.projects.ProjectsCreateDTO;
 import org.projectmanagement.application.dto.projects.ProjectsUpdateDTO;
 import org.projectmanagement.domain.entities.Projects;
+import org.projectmanagement.domain.services.ProjectService;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @RequestMapping("/projects")
 public class ProjectController {
     @Autowired
-    private final ProjectServiceImpl projectService;
+    private final ProjectService projectService;
 
     public ProjectController(ProjectServiceImpl projectService) {
         this.projectService = projectService;
