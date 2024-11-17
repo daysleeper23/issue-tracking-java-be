@@ -29,9 +29,9 @@ public class InMemoryDatabase {
     public List<ProjectMembers> projectMembers;
 
     @Getter
-    public final List<Tasks> tasks;
+    private final List<Tasks> tasks;
     @Getter
-    public final List<TaskSubscribers> taskSubscribers;
+    private final List<TaskSubscribers> taskSubscribers;
 
     UUID companyId = UUID.fromString("b541ade4-9cfa-4664-b9e3-d9923ae02fb4");
     UUID roleAdminId = UUID.fromString("7b149139-6b39-4e5c-9e24-70c092df4a5d");

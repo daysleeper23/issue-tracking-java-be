@@ -9,19 +9,23 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderClassName = "TasksBuilder",toBuilder = true)
 public class Tasks {
 
-    @Setter(AccessLevel.NONE)
+    //Todo: Uncomment the line below after implementing jpa
+//    @Setter(AccessLevel.NONE)
     private UUID id;
 
     private String name;
 
     private String description;
 
-    private DefaultStatus status;
+    //Todo: Redundant annotation, remove it after implementing jpa
+    @Builder.Default
+    private DefaultStatus status= DefaultStatus.TODO;
 
     private UUID assigneeId;
 
@@ -47,25 +51,17 @@ public class Tasks {
             return this;
         }
 
-        public TasksBuilder stringToStatus(String status){
-            if (!EnumUtils.isValidEnum(DefaultStatus.class,status)){
-                throw new InvalidInputException("Illegal task status");
-            }
-            this.status = DefaultStatus.valueOf(status);
-            return this;
-        }
-
         public TasksBuilder startedAt(Instant startedAt) {
-            if (startedAt != null && startedAt.isAfter(this.endedAt)) {
-                throw new InvalidInputException("Started at cannot be in the future");
+            if (startedAt != null && this.endedAt != null && startedAt.isAfter(this.endedAt)) {
+                throw new InvalidInputException("Started at cannot be after ended at");
             }
             this.startedAt = startedAt;
             return this;
         }
 
         public TasksBuilder endedAt(Instant endedAt) {
-            if (endedAt != null && endedAt.isBefore(this.startedAt)) {
-                throw new InvalidInputException("Ended at cannot be in the past");
+            if (endedAt != null && this.startedAt != null && endedAt.isBefore(this.startedAt)) {
+                throw new InvalidInputException("Ended at cannot be before started at");
             }
             this.endedAt = endedAt;
             return this;

@@ -3,10 +3,11 @@ package org.projectmanagement.presentation.controllers;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
 import org.projectmanagement.application.dto.tasks.TasksCompact;
 import org.projectmanagement.application.dto.tasks.TasksCreate;
 import org.projectmanagement.application.dto.tasks.TasksUpdate;
-import org.projectmanagement.application.dto.tasks.TaskInfo;
+import org.projectmanagement.application.dto.tasks.TasksInfo;
 import org.projectmanagement.domain.entities.Tasks;
 import org.projectmanagement.domain.services.TaskSubscribersService;
 import org.projectmanagement.domain.services.TasksService;
@@ -21,45 +22,42 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/{companyId}/tasks")
-@Validated
+@RequiredArgsConstructor
 //Todo: Roles and Privileges check
 public class TasksController {
 
     private final TasksService tasksService;
     private final TaskSubscribersService subscribersService;
 
-    public TasksController(TasksService tasksService,
-                           TaskSubscribersService subscribersService) {
-        this.tasksService = tasksService;
-        this.subscribersService = subscribersService;
-    }
 
     @PostMapping
-    public ResponseEntity<GlobalResponse<Tasks>> addTask(
+    public ResponseEntity<GlobalResponse<TasksInfo>> addTask(
            @RequestBody @Valid TasksCreate dto) {
-        Tasks createdTask = tasksService.addTask(dto);
+        TasksInfo createdTask = tasksService.addTask(dto);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), createdTask), null, HttpStatus.CREATED);
     }
 
     @PutMapping("/{taskId}")
-    public ResponseEntity<GlobalResponse<Tasks>> updateTask(
+    public ResponseEntity<GlobalResponse<TasksInfo>> updateTask(
             @PathVariable String taskId,
             @RequestBody @Valid TasksUpdate dto
     ){
-        Tasks updatedTask = tasksService.updateTask(taskId,dto);
+        TasksInfo updatedTask = tasksService.updateTask(taskId,dto);
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), updatedTask));
     }
 
     @GetMapping
     public ResponseEntity<GlobalResponse<List<TasksCompact>>> getTasks(
-            @RequestBody RequestTasksFromProject requestTasks
+            @RequestParam(value = "projectId", required = false) @org.hibernate.validator.constraints.UUID String projectId,
+            @RequestParam(value = "assigneeId", required = false) @org.hibernate.validator.constraints.UUID String assigneeId
+
     ) {
-        List<TasksCompact> listTasks = tasksService.getAllTask(requestTasks.projectId());
+        List<TasksCompact> listTasks = tasksService.getAllTask(projectId, assigneeId);
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), listTasks));
     }
 
     @GetMapping("/{taskId}")
-    public ResponseEntity<GlobalResponse<TaskInfo>> getTaskInfo(
+    public ResponseEntity<GlobalResponse<TasksInfo>> getTaskInfo(
             @PathVariable @NotBlank(message = "Task id must not be empty") String taskId
     ){
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), tasksService.getTaskInfo(taskId)));
@@ -90,8 +88,5 @@ public class TasksController {
     ) {
         boolean isArchived = tasksService.archiveTasks(taskId);
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), isArchived));
-    }
-
-    public record RequestTasksFromProject(String projectId) {
     }
 }

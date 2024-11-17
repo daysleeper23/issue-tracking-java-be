@@ -2,22 +2,21 @@ package org.projectmanagement.domain.services;
 
 import org.projectmanagement.application.dto.tasks.TasksCompact;
 import org.projectmanagement.application.dto.tasks.TasksCreate;
+import org.projectmanagement.application.dto.tasks.TasksInfo;
 import org.projectmanagement.application.dto.tasks.TasksUpdate;
-import org.projectmanagement.application.dto.tasks.TaskInfo;
-import org.projectmanagement.domain.entities.Tasks;
 
 import java.util.List;
 
 
 public interface TasksService {
 
-    Tasks addTask(TasksCreate dto);
+    TasksInfo addTask(TasksCreate dto);
 
-    Tasks updateTask(String taskId, TasksUpdate dto);
+    TasksInfo updateTask(String taskId, TasksUpdate dto);
 
-    List<TasksCompact> getAllTask(String projectId);
+    List<TasksCompact> getAllTask(String projectId, String assigneeId);
 
-    TaskInfo getTaskInfo(String taskId);
+    TasksInfo getTaskInfo(String taskId);
 
     boolean archiveTasks(String taskId);
 

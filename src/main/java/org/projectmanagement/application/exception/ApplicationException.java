@@ -20,4 +20,9 @@ public class ApplicationException extends RuntimeException {
         this.message = from.getMessage();
     }
 
+    public ApplicationException( String message){
+        this.status = HttpStatus.BAD_REQUEST;
+        this.message = message;
+    }
+
 }

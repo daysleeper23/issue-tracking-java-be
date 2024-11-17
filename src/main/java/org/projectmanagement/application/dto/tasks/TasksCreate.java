@@ -3,21 +3,26 @@ package org.projectmanagement.application.dto.tasks;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import lombok.Getter;
+import org.hibernate.validator.constraints.UUID;
+import org.projectmanagement.application.utils.validation.annotation.EnumValidation;
+import org.projectmanagement.domain.enums.DefaultStatus;
 
 import java.time.Instant;
 
 @Builder
 public record TasksCreate(
-        @NotBlank(message = "Name length must greater than 0") String name,
+        @NotBlank(message = "length must greater than 0")
+        String name,
         String description,
-        @NotNull String projectId,
-        @Min(value = 0, message = "Priority must be greater than 0")
-        @Max(value = 4, message = "Priority must be lesser than 4")
+        @UUID(message = "must be a valid UUID")
+        String projectId,
+        @Min(value = 0, message = "must be greater than 0")
+        @Max(value = 4, message = "must be lesser than 4")
         short priority,
+        @EnumValidation(target = DefaultStatus.class)
         String status,
+        @UUID(message = "must be a valid UUID")
         String assigneeId,
         Instant startedAt,
         Instant endedAt
