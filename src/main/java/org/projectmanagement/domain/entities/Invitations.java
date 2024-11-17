@@ -1,7 +1,12 @@
 package org.projectmanagement.domain.entities;
 
+import jakarta.validation.constraints.Email;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.projectmanagement.domain.exceptions.InvalidInputException;
-import lombok.*;
+
 
 import java.time.Instant;
 import java.util.UUID;
@@ -15,17 +20,15 @@ public class Invitations {
 
     private String url;
 
-    @NonNull
+    @Email
     private String userEmail;
 
-    @NonNull
     private UUID companyId;
 
     private UUID workspaceId;
 
     private UUID roleId;
 
-    @NonNull
     private UUID invitedBy;
 
     private Instant expiredAt;
