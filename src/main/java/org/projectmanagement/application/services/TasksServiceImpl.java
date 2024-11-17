@@ -43,7 +43,7 @@ public class TasksServiceImpl implements TasksService {
             throw new ApplicationException(HttpStatus.NOT_FOUND,TASK_NOT_FOUND);
         }
         if (!isChanged(taskDTO,existed)){
-            throw new ApplicationException(AppMessage.TASK_NO_CHANGE);
+            throw new ApplicationException(AppMessage.NO_CHANGE);
         }
         TasksMapper.mapper.updateDtoToEntity(taskDTO,existed);
         return TasksMapper.mapper.entityToInfoDto(

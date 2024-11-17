@@ -1,6 +1,8 @@
 package org.projectmanagement.application.services;
 
 import org.projectmanagement.application.dto.companies.CompanyDTO;
+import org.projectmanagement.application.exception.AppMessage;
+import org.projectmanagement.application.exception.ApplicationException;
 import org.projectmanagement.domain.entities.Companies;
 import org.projectmanagement.domain.repository.CompaniesRepository;
 import org.projectmanagement.domain.services.CompaniesService;
@@ -21,9 +23,11 @@ public class CompaniesServiceImpl implements CompaniesService {
 
     @Override
     public Companies createNewCompany(CompanyDTO dto) {
-        //Get userId from actual security context holder
+        /*Todo: Implement security context holder
+            Get userId from actual security context holder
+            Check if user already joined a company or own a company
+         */
         UUID userId = UUID.randomUUID();
-        //Check if user already joined a company or own a company
         Companies companies = new Companies(dto.name(), dto.description(),userId);
         return companiesRepository.save(companies);
     }
@@ -32,8 +36,6 @@ public class CompaniesServiceImpl implements CompaniesService {
     public Companies getCompany(String id) {
         //Check if user's companyId matches with provided companyId
         return companiesRepository.findOne(UUID.fromString(id));
-
-
     }
 
     @Override
@@ -41,12 +43,10 @@ public class CompaniesServiceImpl implements CompaniesService {
         //Check if company is existed
         Companies existed = companiesRepository.findOne(UUID.fromString(id));
         if (existed == null){
-            //thr application exception not found
-            return null;
+            throw new ApplicationException(AppMessage.COMPANY_NOT_FOUND);
         }
         if (isNotChange(dto,existed)){
-            //thr application exception no change
-            return null;
+            throw new ApplicationException(AppMessage.NO_CHANGE);
         }
         existed.setName(dto.name());
         existed.setDescription(dto.description());
@@ -66,6 +66,7 @@ public class CompaniesServiceImpl implements CompaniesService {
     }
 
     public boolean isNotChange(CompanyDTO updates, Companies target){
-        return updates.name().equals(target.getName()) && updates.description().equals(target.getDescription());
+        return  updates.name().equals(target.getName()) &&
+                updates.description().equals(target.getDescription());
     }
 }
