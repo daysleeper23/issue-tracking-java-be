@@ -1,6 +1,7 @@
 package org.projectmanagement.presentation.controllers;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.projectmanagement.application.dto.companies.CompanyDTO;
 import org.projectmanagement.domain.entities.Companies;
 import org.projectmanagement.domain.services.CompaniesService;
@@ -12,12 +13,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/companies")
 @RestController
+@RequiredArgsConstructor
 public class CompaniesController {
-    private final CompaniesService companiesService;
 
-    public CompaniesController(CompaniesService companiesService){
-        this.companiesService = companiesService;
-    }
+    private final CompaniesService companiesService;
 
     @PostMapping
     public ResponseEntity<GlobalResponse<Companies>> createCompany(
