@@ -19,7 +19,7 @@ import java.util.UUID;
 @Service
 public class CompanyManagersServiceImpl implements CompanyManagersService {
 
-    CompanyManagersRepository companyManagersRepository;
+    private final CompanyManagersRepository companyManagersRepository;
     // Inject company repository here
 
     @Autowired
