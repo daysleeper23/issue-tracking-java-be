@@ -1,32 +1,39 @@
 package org.projectmanagement.domain.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@NonNull
+
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Entity
+@Table(name = "workspaces_members_roles")
 public class WorkspacesMembersRoles {
+
     @Id
-    private final UUID id;
+    @GeneratedValue(generator = "UUID")
+    private UUID id;
 
-    private final UUID workspaceId;
+    @Column(nullable = false)
+    private UUID workspaceId;
 
-    private final UUID userId;
+    @Column(nullable = false)
+    private UUID userId;
 
     @Setter
+    @Column(nullable = false)
     private UUID roleId;
 
 //    @CreatedDate
-    private final Instant createdAt;
+    private Instant createdAt;
 
 //    @LastModifiedDate
     private Instant updatedAt;
