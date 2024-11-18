@@ -19,6 +19,7 @@ public class RolesRepoImpl implements RolesRepository {
                 role.getName(),
                 role.getCompanyId(),
                 role.getIsDeleted(),
+                role.getIsSystemRole(),
                 role.getCreatedAt(),
                 role.getUpdatedAt()
         );

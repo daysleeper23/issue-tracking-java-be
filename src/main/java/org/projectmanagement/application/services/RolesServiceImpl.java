@@ -29,6 +29,7 @@ public class RolesServiceImpl implements RolesService {
                     role.getName(),
                     role.getCompanyId(),
                     false,
+                    false,
                     Instant.now(),
                     Instant.now()
             );
