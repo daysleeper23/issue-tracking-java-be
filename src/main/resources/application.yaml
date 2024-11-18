@@ -7,13 +7,14 @@ spring:
     active: "dev"
 ## Database Configuration
   datasource:
-    url: jdbc:postgresql://localhost:5432/fs-19-pm # change this to your database name
+    url: jdbc:postgresql://localhost:5432/postgres # change this to your database name
     username: postgres
-    password: 110320
+    password: postgres
   jpa:
     hibernate:
       ddl-auto: create-drop #for testing purpose changing it to 'update' or 'validate' and has your schema created in your database
       show-sql: true
+      format_sql: true
 springdoc:
   swagger-ui:
     path : "/swagger-ui.html"

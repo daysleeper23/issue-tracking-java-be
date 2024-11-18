@@ -24,31 +24,28 @@ public class RolesServiceImpl implements RolesService {
     public Roles createRole(RolesCreate role) {
         Optional<Roles> roles = rolesRepository.findByExactName(role.getName(), role.getCompanyId());
         if (roles.isEmpty()) {
-            Roles newRole = new Roles(
-                    UUID.randomUUID(),
-                    role.getName(),
-                    role.getCompanyId(),
-                    false,
-                    false,
-                    Instant.now(),
-                    Instant.now()
+            return rolesRepository.save(
+                    Roles.builder()
+                    .name(role.getName())
+                    .companyId(role.getCompanyId())
+                    .isDeleted(false)
+                    .isSystemRole(false)
+                    .createdAt(Instant.now())
+                    .updatedAt(Instant.now())
+                    .build()
             );
-            return rolesRepository.save(newRole);
         } else {
             return null;
         }
     }
 
     public Roles updateRoleName(UUID id, RolesCreate role) {
-        Roles existingRole = rolesRepository.findById(id).orElse(null);
-        if (existingRole == null) {
-            return null;
-        }
+        Optional<Roles> existingRole = rolesRepository.findById(id);
 
         Optional<Roles> rolesWithSameName = rolesRepository.findByExactName(role.getName(), role.getCompanyId());
-        if (rolesWithSameName.isEmpty()) {
-            existingRole.setName(role.getName());
-            return rolesRepository.save(existingRole);
+        if (rolesWithSameName.isEmpty() && existingRole.isPresent()) {
+            existingRole.get().setName(role.getName());
+            return rolesRepository.save(existingRole.get());
         } else {
             return null;
         }
