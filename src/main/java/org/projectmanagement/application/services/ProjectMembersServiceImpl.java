@@ -33,14 +33,24 @@ public class ProjectMembersServiceImpl {
         this.usersRepository = usersRepository;
     }
 
-    public List<ProjectMembers> getAllProjectMembersByProjectId(UUID id) {
-        Projects projectFromDB = projectRepository.findOneById(id).orElse(null);
+    public ProjectMembers getProjectMemberById(UUID id){
+         ProjectMembers projectMemberFromDB = projectMembersRepository.findOneById(id).orElse(null);
+
+         if (projectMemberFromDB == null) {
+             throw new ResourceNotFoundException("Project Member with id: " + id + " was not found.");
+         }
+
+        return projectMemberFromDB;
+    }
+
+    public List<ProjectMembers> getAllProjectMembersByProjectId(UUID projectId) {
+        Projects projectFromDB = projectRepository.findOneById(projectId).orElse(null);
 
         if (projectFromDB == null) {
-            throw new ResourceNotFoundException("Project with id: " + id + " was not found.");
+            throw new ResourceNotFoundException("Project with id: " + projectId + " was not found.");
         }
 
-        List<ProjectMembers> projectMembers = projectMembersRepository.findAllProjectMembersByProjectId(id);
+        List<ProjectMembers> projectMembers = projectMembersRepository.findAllProjectMembersByProjectId(projectId);
         return projectMembers;
     }
 

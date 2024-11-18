@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/projectMembers")
+@RequestMapping("/{projectId}/projectMembers")
 public class ProjectMemberController {
     private ProjectMembersServiceImpl projectMembersService;
 
@@ -22,17 +22,14 @@ public class ProjectMemberController {
         this.projectMembersService = projectMembersService;
     }
 
-    //naming for mapping is hard -_-
-    //return all members of given project
-    @GetMapping("byProject/{projectId}")
+    @GetMapping
     public ResponseEntity<GlobalResponse<List<ProjectMembers>>> getAllMembersByProjectId(@Valid @PathVariable UUID projectId) {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projectMembersService.getAllProjectMembersByProjectId(projectId)), HttpStatus.OK);
     }
 
-    //return all projects of a given member
-    @GetMapping("byUser/{userId}")
-    public ResponseEntity<GlobalResponse<List<ProjectMembers>>> getAllProjectsMemberIsPartOfByUserId(@Valid @PathVariable UUID userId) {
-        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projectMembersService.getAllProjectsMemberIsPartOfByUserId(userId)), HttpStatus.OK);
+    @GetMapping("/{id}")
+    public ResponseEntity<GlobalResponse<ProjectMembers>> getAllProjectsMemberIsPartOfByUserId(@Valid @PathVariable UUID id) {
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projectMembersService.getProjectMemberById(id)), HttpStatus.OK);
     }
 
     @PostMapping
@@ -40,23 +37,16 @@ public class ProjectMemberController {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), projectMembersService.createProjectMember(dto)), HttpStatus.CREATED);
     }
 
-    @PatchMapping("{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<GlobalResponse<ProjectMembers>> updateProjectMember(@Valid @PathVariable UUID id, @Valid ProjectMemberUpdateDTO dto) {
         ProjectMembers updatedProjectMember = projectMembersService.updateProjectMember(id, dto);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedProjectMember), HttpStatus.OK);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<GlobalResponse<Void>> deleteProjectMemberById(@Valid @PathVariable UUID id) {
         projectMembersService.deleteProjectMemberById(id);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), null), HttpStatus.OK);
     }
-
-    @DeleteMapping("/{projectId}/{userId}")
-    public ResponseEntity<GlobalResponse<Void>> deleteProjectMemberByProjectIdAndUserId(@Valid @PathVariable UUID projectId,@Valid @PathVariable UUID userId) {
-        projectMembersService. deleteProjectMemberByProjectIdAndUserId(projectId, userId);
-        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), null), HttpStatus.OK);
-    }
-
 
 }

@@ -16,4 +16,6 @@ public interface ProjectService {
     Projects createProject(ProjectsCreateDTO dto);
 
     Projects updateProject(UUID id, ProjectsUpdateDTO dto);
+
+    void deleteProject(UUID id);
 }
