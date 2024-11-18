@@ -48,9 +48,9 @@ public class UsersControllerIntegrationTest {
         inMemoryDatabase = InMemoryDatabase.getInstance();
         inMemoryDatabase.users.clear();
 
-        inMemoryDatabase.roles.add(new Roles(roleAdminId, "Admin", companyId, false, Instant.now(), Instant.now()));
-        inMemoryDatabase.roles.add(new Roles(roleDeveloperId, "Developer", companyId, false, Instant.now(), Instant.now()));
-        inMemoryDatabase.roles.add(new Roles(roleProjectDirectorId, "Team Leader", companyId, false, Instant.now(), Instant.now()));
+        inMemoryDatabase.roles.add(new Roles(roleAdminId, "Admin", companyId, false, true, Instant.now(), Instant.now()));
+        inMemoryDatabase.roles.add(new Roles(roleDeveloperId, "Developer", companyId, false, true, Instant.now(), Instant.now()));
+        inMemoryDatabase.roles.add(new Roles(roleProjectDirectorId, "Team Leader", companyId, false, true, Instant.now(), Instant.now()));
 
         System.out.println("Users count in setup: " + inMemoryDatabase.users.size());
     }

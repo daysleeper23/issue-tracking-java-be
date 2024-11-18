@@ -119,6 +119,7 @@ public class InMemoryDatabase {
                                 "Admin",
                                 companyId,
                                 false,
+                                true,
                                 Instant.now(),
                                 Instant.now()
                         ),
@@ -126,6 +127,7 @@ public class InMemoryDatabase {
                                 "Developer",
                                 companyId,
                                 false,
+                                true,
                                 Instant.now(),
                                 Instant.now()
                         )
