@@ -27,6 +27,7 @@ public class InMemoryDatabase {
     public List<Projects> projects;
     public List<CompanyManagers> companyManagers;
     public List<ProjectMembers> projectMembers;
+    public List<Invitations> invitations;
 
     @Getter
     private final List<Tasks> tasks;
@@ -238,6 +239,8 @@ public class InMemoryDatabase {
         tasks = new ArrayList<>();
 
         taskSubscribers = new ArrayList<>();
+
+        invitations = new ArrayList<>();
     }
     /*
      *
