@@ -2,7 +2,6 @@ package org.projectmanagement.application.dto.project_members;
 
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
-import org.projectmanagement.application.dto.projects.ProjectMapper;
 import org.projectmanagement.domain.entities.ProjectMembers;
 
 

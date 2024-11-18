@@ -2,12 +2,11 @@ package org.projectmanagement.domain.entities;
 import java.time.Instant;
 import java.util.UUID;
 
+import jakarta.persistence.EntityListeners;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-
+import org.springframework.data.annotation.Id;
 import lombok.*;
-import javax.persistence.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Data

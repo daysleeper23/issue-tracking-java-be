@@ -28,6 +28,11 @@ public class InMemoryDatabase {
     public List<CompanyManagers> companyManagers;
     public List<ProjectMembers> projectMembers;
 
+    @Getter
+    private final List<Tasks> tasks;
+    @Getter
+    private final List<TaskSubscribers> taskSubscribers;
+
     UUID companyId = UUID.fromString("b541ade4-9cfa-4664-b9e3-d9923ae02fb4");
     UUID roleAdminId = UUID.fromString("7b149139-6b39-4e5c-9e24-70c092df4a5d");
     UUID roleDeveloperId = UUID.fromString("78b4fe40-5f93-40ef-9095-7b25c7bb62ff");
@@ -227,8 +232,13 @@ public class InMemoryDatabase {
                                 .build()
                 )
         );
-    }
 
+        roles = new ArrayList<>();
+
+        tasks = new ArrayList<>();
+
+        taskSubscribers = new ArrayList<>();
+    }
     /*
      *
      * COMPANIES
@@ -382,4 +392,5 @@ public class InMemoryDatabase {
         projectMembers.add(projectMember);
         return projectMember;
     }
+
 }
