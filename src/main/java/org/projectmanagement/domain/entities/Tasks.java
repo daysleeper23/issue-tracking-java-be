@@ -1,5 +1,6 @@
 package org.projectmanagement.domain.entities;
 
+import jakarta.persistence.*;
 import org.projectmanagement.domain.enums.DefaultStatus;
 import org.projectmanagement.domain.exceptions.InvalidInputException;
 import lombok.*;
@@ -13,10 +14,14 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderClassName = "TasksBuilder",toBuilder = true)
+@Entity
 public class Tasks {
 
     //Todo: Uncomment the line below after implementing jpa
 //    @Setter(AccessLevel.NONE)
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id",unique = true)
     private UUID id;
 
     private String name;
@@ -28,7 +33,6 @@ public class Tasks {
     private DefaultStatus status= DefaultStatus.TODO;
 
     private UUID assigneeId;
-
     private short priority;
 
     private UUID projectId;

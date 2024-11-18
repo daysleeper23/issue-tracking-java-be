@@ -8,7 +8,6 @@ import org.projectmanagement.domain.services.CompaniesService;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/companies")
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class CompaniesController {
 
     private final CompaniesService companiesService;
+
 
     @PostMapping
     public ResponseEntity<GlobalResponse<Companies>> createCompany(
