@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface ProjectsRepository {
     Projects save(Projects project);
 
-    Projects archiveOneById(UUID id);
+    Projects deleteOneById(UUID id);
 
     Optional<Projects> findOneById(UUID id);
 

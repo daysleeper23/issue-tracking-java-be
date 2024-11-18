@@ -1,30 +1,51 @@
 package org.projectmanagement.domain.entities;
 
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@ToString
+@Entity
+@Table(name = "project_members")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
+@ToString
 public class ProjectMembers {
+
+    @Id
+    @GeneratedValue(generator = "UUID")
     private UUID id;
 
     @NonNull
-    private final UUID userId;
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 
     @NonNull
-    private final UUID projectId;
+    @Column(name = "project_id", nullable = false)
+    private UUID projectId;
 
     @NonNull
+    @Column(name = "subscribed", nullable = false)
     private Boolean subscribed;
 
-    @NonNull
-    private final Instant createdAt;
+    @Column(name = "created_at")
+    private Instant createdAt;
 
-    @NonNull
+    @Column(name = "updated_at")
     private Instant updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = Instant.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = Instant.now();
+    }
 
 }

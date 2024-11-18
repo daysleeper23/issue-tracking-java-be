@@ -30,12 +30,7 @@ public class CompanyManagersController {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), companyManagersService.getById(id)), HttpStatus.OK);
     }
 
-    @GetMapping("/userId/{userId}")
-    public ResponseEntity<GlobalResponse<CompanyManagers>> getCompanyManagerByUserId(@PathVariable @Valid UUID userId) {
-        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), companyManagersService.getByUserId(userId)), HttpStatus.OK);
-    }
-
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<GlobalResponse<List<CompanyManagers>>> getAllManagersByCompanyId(@PathVariable @Valid UUID companyId) {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), companyManagersService.getAllManagersByCompanyId(companyId)), HttpStatus.OK);
     }
@@ -45,21 +40,16 @@ public class CompanyManagersController {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), companyManagersService.createCompanyManager(dto)), HttpStatus.CREATED);
     }
 
-    @PatchMapping("{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<GlobalResponse<CompanyManagers>> updateCompanyManager(@PathVariable @Valid UUID id,@RequestBody @Valid UpdateCompanyManagersDTO dto) {
         CompanyManagers updatedCompanyManager = companyManagersService.updateCompanyManager(id, dto);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedCompanyManager), HttpStatus.OK);
     }
 
-
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<GlobalResponse<String>> deleteById(@PathVariable @Valid UUID id) {
         companyManagersService.deleteById(id);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), "User deleted"), HttpStatus.OK);
     }
-
-
-
-
 
 }

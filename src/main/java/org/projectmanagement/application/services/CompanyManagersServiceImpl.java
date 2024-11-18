@@ -5,8 +5,12 @@ import org.projectmanagement.application.dto.company_managers.CreateCompanyManag
 import org.projectmanagement.application.dto.company_managers.UpdateCompanyManagersDTO;
 import org.projectmanagement.domain.entities.Companies;
 import org.projectmanagement.domain.entities.CompanyManagers;
+import org.projectmanagement.domain.entities.Roles;
+import org.projectmanagement.domain.exceptions.InvalidInputException;
 import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
+import org.projectmanagement.domain.repository.CompaniesRepository;
 import org.projectmanagement.domain.repository.CompanyManagersRepository;
+import org.projectmanagement.domain.repository.RolesRepository;
 import org.projectmanagement.domain.services.CompanyManagersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,12 +24,18 @@ import java.util.UUID;
 public class CompanyManagersServiceImpl implements CompanyManagersService {
 
     private final CompanyManagersRepository companyManagersRepository;
-    // Inject company repository here
+    private final RolesRepository rolesRepository;
+    private final CompaniesRepository companiesRepository;
 
     @Autowired
-    CompanyManagersServiceImpl(CompanyManagersRepository companyManagersRepository) {
+    CompanyManagersServiceImpl(
+        CompanyManagersRepository companyManagersRepository,
+        RolesRepository rolesRepository,
+        CompaniesRepository companiesRepository
+    ) {
         this.companyManagersRepository = companyManagersRepository;
-        //this.companyRepository = companyRepository;
+        this.rolesRepository = rolesRepository;
+        this.companiesRepository = companiesRepository;
     }
 
     @Override
@@ -44,11 +54,17 @@ public class CompanyManagersServiceImpl implements CompanyManagersService {
 
     @Override
     public CompanyManagers updateCompanyManager(UUID id, UpdateCompanyManagersDTO dto) {
+        Roles role = rolesRepository.findById(dto.roleId()).orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " is not found"));
+
+        if (!role.getName().equals("ADMIN") && !role.getName().equals("COMPANY_MANAGER")) {
+            throw new InvalidInputException("Company Managers can only be assigned to ADMIN or COMPANY_MANAGER roles.");
+        }
+
         CompanyManagers companyManagerToUpdate = companyManagersRepository.findById(id).orElse(null);
         if (companyManagerToUpdate == null) {
            throw new ResourceNotFoundException("Company Manager with id: " + id + "is not found");
         }
-        // Here I need to apply the check that new Role Id is either Admin or Company Manager
+
         CompanyManagerMapper.INSTANCE.updateCompanManagersDTOToCompanyManagers(dto, companyManagerToUpdate);
 
         return companyManagersRepository.save(companyManagerToUpdate);
@@ -56,7 +72,6 @@ public class CompanyManagersServiceImpl implements CompanyManagersService {
 
     @Override
     public CompanyManagers getById(UUID id) {
-
         return companyManagersRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Company Manager with id: " + id + " is not found"));
     }
@@ -69,7 +84,10 @@ public class CompanyManagersServiceImpl implements CompanyManagersService {
 
     @Override
     public List<CompanyManagers> getAllManagersByCompanyId(UUID companyId) {
-        // create a check here if company exists and if not throw not found error.
+        Companies companyFromDB = companiesRepository.findOne(companyId);
+        if (companyFromDB == null) {
+            throw new ResourceNotFoundException("Company with id: " + companyId + " was not found.");
+        }
         return companyManagersRepository.findAllFromCompany(companyId);
     }
 

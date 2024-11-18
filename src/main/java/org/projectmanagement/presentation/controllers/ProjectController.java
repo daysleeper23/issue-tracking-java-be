@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/projects")
+@RequestMapping("/{companyId}/{workspaceId}/projects")
 public class ProjectController {
     @Autowired
     private final ProjectService projectService;
@@ -31,7 +31,7 @@ public class ProjectController {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projectService.getProjectById(id)), HttpStatus.OK);
     }
 
-    @GetMapping("/workspace/{workspaceId}")
+    @GetMapping
     public ResponseEntity<GlobalResponse<List<Projects>>> getProjectsByWorkspaceId(@PathVariable @Valid UUID workspaceId) {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projectService.getProjectsByWorkspaceId(workspaceId)), HttpStatus.OK);
     }
@@ -46,6 +46,12 @@ public class ProjectController {
     public ResponseEntity<GlobalResponse<Projects>> updateProject(@PathVariable @Valid UUID id, @RequestBody @Valid ProjectsUpdateDTO project) {
         Projects updatedProject = projectService.updateProject(id, project);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedProject), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<GlobalResponse<String>> deleteProject(@PathVariable @Valid UUID id) {
+        projectService.deleteProject(id);
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), "Project Deleted"), HttpStatus.OK);
     }
 
 }

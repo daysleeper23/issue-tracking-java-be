@@ -42,7 +42,7 @@ public class ProjectServiceImpl implements ProjectService {
     public Projects createProject(ProjectsCreateDTO dto){
         Projects project = projectsRepository.save(
             Projects.builder()
-                    .id(UUID.randomUUID())
+                    //.id(UUID.randomUUID())
                     .name(dto.name())
                     .description(dto.description())
                     .endDate(dto.endDate())
@@ -51,8 +51,8 @@ public class ProjectServiceImpl implements ProjectService {
                     .status(dto.status())
                     .leaderId(dto.leaderId())
                     .workspaceId(dto.workspaceId())
-                    .createdAt(Instant.now())
-                    .updatedAt(Instant.now())
+                    //.createdAt(Instant.now())
+                    //.updatedAt(Instant.now())
                     .build()
         );
         return projectsRepository.save(project);
@@ -67,6 +67,17 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectMapper.INSTANCE.toProjectsFromProjectsUpdateDTO(dto, projectToUpdate);
 
         return projectsRepository.save(projectToUpdate);
+    }
+
+    public void deleteProject(UUID id) {
+        Projects projectToDelete = projectsRepository.findOneById(id).orElse(null);
+
+        if (projectToDelete == null) {
+            throw new ResourceNotFoundException("Project with id: " + id + " was not found.");
+        }
+
+        projectToDelete.setIsDeleted(true);
+        projectsRepository.save(projectToDelete);
     }
 
 }
