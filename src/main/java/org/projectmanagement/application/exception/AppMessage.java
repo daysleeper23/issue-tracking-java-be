@@ -8,13 +8,14 @@ import lombok.Getter;
 public enum AppMessage {
     //Task errors
     TASK_NOT_FOUND("Task not found"),
-    TASK_NO_CHANGE("No change was made for task"),
     TASK_SUBSCRIBE_ERROR("Error subscribing to task"),
     //Common errors
+    NO_CHANGE("No change was made"),
     INVALID_STATUS("Invalid status value"),
     INVALID_UUID("Invalid UUID"),
     //Severe errors
     INTERNAL_ERROR("Internal server error"),
-    ;;
+    //Company
+    COMPANY_NOT_FOUND("Company not found");
     final String message;
 }

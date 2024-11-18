@@ -8,22 +8,23 @@ import java.util.UUID;
 @Data
 public class Companies {
 
-    @Setter(AccessLevel.NONE)
+    //TODO: Uncomment after integrate with db
+//    @Setter(AccessLevel.NONE)
     private UUID id;
-    @NonNull
+
     private String name;
 
     private String description;
 
-    @NonNull
     private UUID ownerId;
 
     private Instant createdAt;
 
     private Instant updatedAt;
 
-    public Companies(@NonNull String name, @NonNull UUID userId){
+    public Companies(String name,String description ,UUID userId){
         this.name = name;
+        this.description = description;
         this.ownerId = userId;
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
