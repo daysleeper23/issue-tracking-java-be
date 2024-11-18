@@ -11,8 +11,7 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 
 @Repository
-
-public class TaskRepositoryImp implements TasksRepository {
+public class TaskRepositoryImp {
 
     //Replace with actual implementation for jpa
     private InMemoryDatabase inMemoryDatabase;
@@ -47,7 +46,7 @@ public class TaskRepositoryImp implements TasksRepository {
         return inMemoryDatabase.getTasks();
     }
 
-    @Override
+
     public Tasks findOne(UUID taskId) {
         return inMemoryDatabase.getTasks().stream().filter(task -> task.getId().equals(taskId)).findFirst().orElse(null);
     }

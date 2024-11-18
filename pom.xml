@@ -1,3 +1,41 @@
+<!DOCTYPE project [
+        <!ELEMENT project (modelVersion|groupId|artifactId|version|name|properties|parent|description|dependencies|build)*>
+        <!ATTLIST project
+                xmlns CDATA #REQUIRED
+                xmlns:xsi CDATA #REQUIRED
+                xsi:schemaLocation CDATA #REQUIRED>
+        <!ELEMENT modelVersion (#PCDATA)>
+        <!ELEMENT groupId (#PCDATA)>
+        <!ELEMENT artifactId (#PCDATA)>
+        <!ELEMENT version (#PCDATA)>
+        <!ELEMENT name (#PCDATA)>
+        <!ELEMENT properties (org.mapstruct.version|org.projectlombok.version|org.junit.version|commons-lang3.version|org.mockito.version|lombok-mapstruct-binding.version)*>
+        <!ELEMENT org.mapstruct.version (#PCDATA)>
+        <!ELEMENT org.projectlombok.version (#PCDATA)>
+        <!ELEMENT org.junit.version (#PCDATA)>
+        <!ELEMENT commons-lang3.version (#PCDATA)>
+        <!ELEMENT org.mockito.version (#PCDATA)>
+        <!ELEMENT lombok-mapstruct-binding.version (#PCDATA)>
+        <!ELEMENT parent (groupId|artifactId|version|relativePath)*>
+        <!ELEMENT relativePath (#PCDATA)>
+        <!ELEMENT description (#PCDATA)>
+        <!ELEMENT dependencies (dependency)*>
+        <!ELEMENT dependency (groupId|artifactId|scope|optional|version)*>
+        <!ELEMENT scope (#PCDATA)>
+        <!ELEMENT optional (#PCDATA)>
+        <!ELEMENT build (plugins)*>
+        <!ELEMENT plugins (plugin)*>
+        <!ELEMENT plugin (groupId|artifactId|version|configuration)*>
+        <!ELEMENT configuration (source|target|annotationProcessorPaths|compilerArgs|excludes)*>
+        <!ELEMENT source (#PCDATA)>
+        <!ELEMENT target (#PCDATA)>
+        <!ELEMENT annotationProcessorPaths (path)*>
+        <!ELEMENT path (groupId|artifactId|version)*>
+        <!ELEMENT compilerArgs (arg)*>
+        <!ELEMENT arg (#PCDATA)>
+        <!ELEMENT excludes (exclude)*>
+        <!ELEMENT exclude (groupId|artifactId)*>
+        ]>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -112,6 +150,12 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.6.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>

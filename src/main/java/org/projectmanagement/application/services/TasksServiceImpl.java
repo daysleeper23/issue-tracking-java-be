@@ -38,7 +38,7 @@ public class TasksServiceImpl implements TasksService {
 
     @Override
     public TasksInfo updateTask(String taskId, TasksUpdate taskDTO){
-        Tasks existed = tasksRepository.findOne(UUID.fromString(taskId));
+        Tasks existed = tasksRepository.findTaskById(UUID.fromString(taskId));
         if (existed == null){
             throw new ApplicationException(HttpStatus.NOT_FOUND,TASK_NOT_FOUND);
         }
@@ -63,7 +63,7 @@ public class TasksServiceImpl implements TasksService {
 
     @Override
     public TasksInfo getTaskInfo(String taskId) {
-        Tasks info = tasksRepository.findOne(UUID.fromString(taskId));
+        Tasks info = tasksRepository.findTaskById(UUID.fromString(taskId));
         if (info == null) {
             throw new ApplicationException(TASK_NOT_FOUND);
         }
@@ -74,7 +74,7 @@ public class TasksServiceImpl implements TasksService {
 
     @Override
     public boolean archiveTasks(String taskId) {
-        Tasks findTasks = tasksRepository.findOne(UUID.fromString(taskId));
+        Tasks findTasks = tasksRepository.findTaskById(UUID.fromString(taskId));
         if (findTasks == null) {
             throw new ApplicationException(TASK_NOT_FOUND);
         }

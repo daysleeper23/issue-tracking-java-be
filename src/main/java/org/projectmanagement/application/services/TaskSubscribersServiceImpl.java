@@ -21,17 +21,18 @@ public class TaskSubscribersServiceImpl implements TaskSubscribersService {
 
     @Override
     public boolean subscribeToTask(String taskId, String userId) {
-        if (tasksRepository.findOne(UUID.fromString(taskId)) == null){
+        if (tasksRepository.findTaskById(UUID.fromString(taskId)) == null){
             throw new ApplicationException(AppMessage.TASK_NOT_FOUND);
         }
         TaskSubscribers sub = new TaskSubscribers(UUID.fromString(taskId),UUID.fromString(userId));
-        return subscribersRepository.save(sub);
+        subscribersRepository.save(sub);
+        return true;
     }
 
     @Override
     public boolean unsubscribeToTask(String taskId, String userId) {
         if (subscribersRepository.getSubscriberByTaskIdAndUserId(UUID.fromString(taskId), UUID.fromString(userId)) != null){
-            return subscribersRepository.deleteOne(UUID.fromString(taskId), UUID.fromString(userId));
+            return subscribersRepository.deleteByTaskIdAndUserId(UUID.fromString(taskId), UUID.fromString(userId));
         }
         return false;
     }

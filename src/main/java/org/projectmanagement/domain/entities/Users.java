@@ -2,10 +2,9 @@ package org.projectmanagement.domain.entities;
 import java.time.Instant;
 import java.util.UUID;
 
-import jakarta.persistence.EntityListeners;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -14,9 +13,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor
 @Getter
 @Setter
-@EntityListeners(AuditingEntityListener.class)
+//@EntityListeners(AuditingEntityListener.class)
+@Entity
 public class Users {
+
   @Id
+  @Column(name = "id", unique = true)
   private UUID id;
 
   private String name;

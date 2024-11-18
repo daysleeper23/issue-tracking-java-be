@@ -5,6 +5,15 @@ spring:
     name: "project-management-service"
   profiles:
     active: "dev"
+## Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fs-19-pm # change this to your database name
+    username: postgres
+    password: 110320
+  jpa:
+    hibernate:
+      ddl-auto: create-drop #for testing purpose changing it to 'update' or 'validate' and has your schema created in your database
+      show-sql: true
 springdoc:
   swagger-ui:
     path : "/swagger-ui.html"
