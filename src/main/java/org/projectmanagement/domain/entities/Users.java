@@ -2,44 +2,48 @@ package org.projectmanagement.domain.entities;
 import java.time.Instant;
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Data
-@ToString
 @AllArgsConstructor
-@Getter
-@Setter
+@NoArgsConstructor
 //@EntityListeners(AuditingEntityListener.class)
+@Builder
 @Entity
+@Table(name = "users")
 public class Users {
 
-  @Id
-  @Column(name = "id", unique = true)
-  private UUID id;
+    @Id
+    @GeneratedValue(generator = "UUID")
+    private UUID id;
 
-  private String name;
+    @Column(nullable = false)
+    private String name;
 
-  private String email;
+    @Column(nullable = false)
+    private String email;
 
-  private String passwordHash;
+    @Column(nullable = false)
+    private String passwordHash;
 
-  private String title;
+    private String title;
 
-  private Boolean isActive;
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private Boolean isActive;
 
-  private UUID companyId;
+    private UUID companyId;
 
-  private Boolean isOwner;
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private Boolean isOwner;
 
-  private Boolean isDeleted;
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private Boolean isDeleted;
 
 //  @CreatedDate
-  private final Instant createdAt;
+    private Instant createdAt;
 
 //  @LastModifiedDate
-  private Instant updatedAt;
+    private Instant updatedAt;
 }

@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.projectmanagement.application.dto.users.UsersCreate;
-import org.projectmanagement.application.dto.users.UsersMapper;
-import org.projectmanagement.application.dto.users.UsersRead;
-import org.projectmanagement.application.dto.users.UsersUpdate;
+import org.projectmanagement.application.dto.users.*;
 import org.projectmanagement.domain.entities.Users;
 import org.projectmanagement.domain.repository.UsersRepository;
 import org.projectmanagement.domain.services.UsersService;
@@ -24,6 +21,23 @@ public class UsersServiceImpl implements UsersService {
     @Autowired
     public UsersServiceImpl(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
+    }
+
+    public OwnersRead createOwner(OwnersCreate ownersCreate) {
+        Users newUser = usersRepository.save(
+                Users.builder()
+                        .name(ownersCreate.name())
+                        .email(ownersCreate.email())
+                        .passwordHash(ownersCreate.passwordHash())
+                        .isActive(true)
+                        .isOwner(true)
+                        .isDeleted(false)
+                        .createdAt(Instant.now())
+                        .updatedAt(Instant.now())
+                        .build()
+        );
+
+        return new OwnersRead(newUser.getId(), newUser.getName(), newUser.getEmail());
     }
 
     public UsersRead createUser(UsersCreate user) {

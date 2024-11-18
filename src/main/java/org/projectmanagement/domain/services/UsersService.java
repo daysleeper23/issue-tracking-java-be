@@ -4,12 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.projectmanagement.application.dto.users.UsersCreate;
-import org.projectmanagement.application.dto.users.UsersRead;
-import org.projectmanagement.application.dto.users.UsersUpdate;
+import org.projectmanagement.application.dto.users.*;
 
 public interface UsersService {
 
+  OwnersRead createOwner(OwnersCreate user);
   UsersRead createUser(UsersCreate user);
 
   Optional<UsersRead> getUserById(UUID id);
