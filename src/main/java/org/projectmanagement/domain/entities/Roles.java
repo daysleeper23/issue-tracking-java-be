@@ -25,6 +25,8 @@ public class Roles {
 
     private Boolean isDeleted;
 
+    private Boolean isSystemRole;
+
 //    @CreatedDate
     private final Instant createdAt;
 
