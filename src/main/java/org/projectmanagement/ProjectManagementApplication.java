@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 //Todo: Remove the exclude attribute from the @SpringBootApplication annotation after setting up the database
 @SpringBootApplication
-@EnableJpaRepositories
 //@EnableJpaAuditing
 public class ProjectManagementApplication {
 
