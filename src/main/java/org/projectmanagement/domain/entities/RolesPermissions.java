@@ -5,9 +5,10 @@ import lombok.*;
 import java.time.Instant;
 import java.util.UUID;
 
-@ToString
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true) // here only for frameworks
 @Getter
-@Builder
+@Setter
 public class RolesPermissions {
     private UUID id;
 
@@ -17,6 +18,4 @@ public class RolesPermissions {
     @NotNull
     private UUID permissionId;
 
-    @NotNull
-    private final Instant createdAt;
 }
