@@ -10,15 +10,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@RequiredArgsConstruct
+@RequiredArgsConstructor
 @Repository
 public class CompanyManagersRepoImpl implements CompanyManagersRepository {
 
     private final CompanyManagersJpaRepo companyManagersJpaRepo;
-
-    CompanyManagersRepoImpl(CompanyManagersJpaRepo companyManagersJpaRepo) {
-        this.companyManagersJpaRepo = companyManagersJpaRepo;
-    }
 
     @Override
     public CompanyManagers save(CompanyManagers companyManager) {
