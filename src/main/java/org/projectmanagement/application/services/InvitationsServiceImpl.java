@@ -12,6 +12,8 @@ import org.projectmanagement.domain.services.InvitationsService;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,7 +64,7 @@ public class InvitationsServiceImpl implements InvitationsService {
         if (invitations.getExpiredAt().isAfter(Instant.now())){
             throw new ApplicationException(AppMessage.INVITATION_STILL_VALID);
         }
-        return invitationsRepository.save(invitations.toBuilder().refreshExpired(days).build());
+        return invitationsRepository.save(invitations.toBuilder().expiredAt(Instant.now().plus(days, ChronoUnit.DAYS)).build());
     }
 
     @Override

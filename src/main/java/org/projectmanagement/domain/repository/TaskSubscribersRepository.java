@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface TaskSubscribersRepository extends JpaRepository<TaskSubscribers, UUID> {
+public interface TaskSubscribersRepository {
 
-    @Query("SELECT ts FROM task_subscribers ts WHERE ts.taskId = :taskId")
+    TaskSubscribers save(TaskSubscribers taskSubscribers);
+
     List<TaskSubscribers> getSubscriberByTaskId(UUID taskId);
 
-    @Query("SELECT ts FROM task_subscribers ts WHERE ts.taskId = :taskId AND ts.userId = :userId")
+
     TaskSubscribers getSubscriberByTaskIdAndUserId(UUID taskId, UUID userId);
 
-    @Query("DELETE FROM task_subscribers ts WHERE ts.taskId = :taskId AND ts.userId = :userId")
     boolean deleteByTaskIdAndUserId(UUID taskId, UUID userId);
 }

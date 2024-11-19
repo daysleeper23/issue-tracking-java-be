@@ -84,7 +84,7 @@ public class CompanyManagersServiceImpl implements CompanyManagersService {
 
     @Override
     public List<CompanyManagers> getAllManagersByCompanyId(UUID companyId) {
-        Companies companyFromDB = companiesRepository.findOne(companyId);
+        Companies companyFromDB = companiesRepository.findById(companyId);
         if (companyFromDB == null) {
             throw new ResourceNotFoundException("Company with id: " + companyId + " was not found.");
         }

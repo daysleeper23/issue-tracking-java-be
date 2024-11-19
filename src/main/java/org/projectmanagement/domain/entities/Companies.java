@@ -1,41 +1,52 @@
 package org.projectmanagement.domain.entities;
 
+import jakarta.persistence.*;
 import lombok.*;
+import org.apache.catalina.User;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@Data
-public class Companies {
+@Getter
+@Setter
+@Entity
+@Table(name = "companies")
+@NoArgsConstructor
+public class Companies extends BaseEntity {
 
-    //TODO: Uncomment after integrate with db
-//    @Setter(AccessLevel.NONE)
+    @Id
+    @Setter(AccessLevel.NONE)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private UUID id;
 
     private String name;
 
     private String description;
 
+    @Column(name = "owner_id")
     private UUID ownerId;
 
-    private Instant createdAt;
 
-    private Instant updatedAt;
-
-    public Companies(String name,String description ,UUID userId){
-        this.name = name;
-        this.description = description;
-        this.ownerId = userId;
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
-    }
-
-    public Companies(UUID id, @NonNull String name, String description, @NonNull UUID ownerId, Instant createdAt, Instant updatedAt){
+    public Companies( UUID id, String name, String description, UUID ownerId, Instant createdAt, Instant updatedAt) {
+        super(createdAt, updatedAt);
         this.id = id;
         this.name = name;
         this.description = description;
         this.ownerId = ownerId;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    }
+
+    public Companies(UUID id, String name, String description, UUID ownerId) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.ownerId = ownerId;
+    }
+
+    public Companies(BaseEntityBuilder<?, ?> b, UUID id, String name, String description, UUID ownerId) {
+        super(b);
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.ownerId = ownerId;
     }
 }

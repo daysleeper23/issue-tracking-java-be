@@ -4,12 +4,11 @@ import java.util.UUID;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-//@EntityListeners(AuditingEntityListener.class)
 @Builder
 @Entity
 @Table(name = "users")

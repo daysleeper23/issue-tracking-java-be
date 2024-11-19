@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.projectmanagement.domain.exceptions.InvalidInputException;
 
 
@@ -12,8 +13,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Getter
-@Builder(builderClassName = "InvitationsBuilder",toBuilder = true)
-public class Invitations {
+@SuperBuilder(toBuilder = true)
+public class Invitations extends BaseEntity {
 
     @Setter(AccessLevel.NONE)
     private UUID id;
@@ -32,21 +33,17 @@ public class Invitations {
     private UUID invitedBy;
 
     private Instant expiredAt;
-    @Builder.Default
-    private Instant createdAt = Instant.now() ;
-    @Builder.Default
-    private Instant updatedAt = Instant.now();
 
-    public static class InvitationsBuilder{
-
-        public InvitationsBuilder refreshExpired(int day){
-            if (day < 0) {
-                throw new InvalidInputException("Refresh day cannot be negative");
-            }
-            this.expiredAt = Instant.now().plus(day, java.time.temporal.ChronoUnit.DAYS);
-            return this;
-        }
-
-    }
+//    public static class InvitationsBuilder{
+//
+//        public InvitationsBuilder refreshExpired(int day){
+//            if (day < 0) {
+//                throw new InvalidInputException("Refresh day cannot be negative");
+//            }
+//            this.expiredAt = Instant.now().plus(day, java.time.temporal.ChronoUnit.DAYS);
+//            return this;
+//        }
+//
+//    }
 
 }

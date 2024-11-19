@@ -11,6 +11,7 @@ import org.projectmanagement.domain.repository.TasksRepository;
 import org.projectmanagement.domain.repository.TaskSubscribersRepository;
 import org.projectmanagement.domain.services.TasksService;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
@@ -38,13 +39,14 @@ public class TasksServiceImpl implements TasksService {
 
     @Override
     public TasksInfo updateTask(String taskId, TasksUpdate taskDTO){
-        Tasks existed = tasksRepository.findTaskById(UUID.fromString(taskId));
+        Tasks existed = tasksRepository.findById(UUID.fromString(taskId));
         if (existed == null){
             throw new ApplicationException(HttpStatus.NOT_FOUND,TASK_NOT_FOUND);
         }
         if (!isChanged(taskDTO,existed)){
             throw new ApplicationException(AppMessage.NO_CHANGE);
         }
+
         TasksMapper.mapper.updateDtoToEntity(taskDTO,existed);
         return TasksMapper.mapper.entityToInfoDto(
                 tasksRepository.save(existed),
@@ -55,15 +57,15 @@ public class TasksServiceImpl implements TasksService {
     @Override
     public List<TasksCompact> getAllTask(String projectId, String assigneeId) {
         if (projectId != null) {
-            return TasksMapper.mapper.entitiesToCompactDtoList(tasksRepository.getTasksByProjectId(UUID.fromString(projectId)));
+            return TasksMapper.mapper.entitiesToCompactDtoList(tasksRepository.findByProjectId(UUID.fromString(projectId)));
         }
         //Todo:only get all tasks from projects that user has access to (custom query planed)
-        return TasksMapper.mapper.entitiesToCompactDtoList(tasksRepository.getTasks());
+        return TasksMapper.mapper.entitiesToCompactDtoList(tasksRepository.getAllTasks());
     }
 
     @Override
     public TasksInfo getTaskInfo(String taskId) {
-        Tasks info = tasksRepository.findTaskById(UUID.fromString(taskId));
+        Tasks info = tasksRepository.findById(UUID.fromString(taskId));
         if (info == null) {
             throw new ApplicationException(TASK_NOT_FOUND);
         }
@@ -74,7 +76,7 @@ public class TasksServiceImpl implements TasksService {
 
     @Override
     public boolean archiveTasks(String taskId) {
-        Tasks findTasks = tasksRepository.findTaskById(UUID.fromString(taskId));
+        Tasks findTasks = tasksRepository.findById(UUID.fromString(taskId));
         if (findTasks == null) {
             throw new ApplicationException(TASK_NOT_FOUND);
         }
