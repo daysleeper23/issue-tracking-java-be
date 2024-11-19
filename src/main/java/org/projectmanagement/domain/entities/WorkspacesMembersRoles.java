@@ -32,7 +32,8 @@ public class WorkspacesMembersRoles extends BaseEntity {
     @Setter
     @Column(nullable = false)
     private UUID roleId;
-
+    //Todo: Lombok does not support the creation with super class constructor
+    // so either remove the constructor or keep it if you are using it for testing
     public WorkspacesMembersRoles(UUID id, UUID workspaceId, UUID userId, UUID roleId, Instant createdAt, Instant updatedAt) {
         super(createdAt, updatedAt);
         this.id = id;

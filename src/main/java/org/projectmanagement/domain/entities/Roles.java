@@ -38,7 +38,8 @@ public class Roles extends BaseEntity {
 //
 //    @Column(nullable = false, columnDefinition = "timestamp with time zone default now()")
 //    private Instant updatedAt;
-
+    //Todo: Lombok does not support the creation with super class constructor
+    // so either remove the constructor or keep it if you are using it for testing
     public Roles(UUID id, String name, UUID companyId, Boolean isDeleted, Boolean isSystemRole, Instant createdAt, Instant updatedAt) {
         super(createdAt, updatedAt);
         this.id = id;

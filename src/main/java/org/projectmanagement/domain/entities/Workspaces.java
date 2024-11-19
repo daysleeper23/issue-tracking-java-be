@@ -31,7 +31,8 @@ public class Workspaces extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean isDeleted;
-
+    //Todo: Lombok does not support the creation with super class constructor
+    // so either remove the constructor or keep it if you are using it for testing
     public Workspaces(UUID id, String name, String description, UUID companyId, Boolean isDeleted, Instant createdAt, Instant updatedAt) {
         super(createdAt, updatedAt);
         this.id = id;

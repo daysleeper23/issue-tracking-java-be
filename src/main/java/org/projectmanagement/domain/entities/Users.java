@@ -41,12 +41,8 @@ public class Users extends BaseEntity{
     @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean isDeleted;
 
-//    @Column(nullable = false, columnDefinition = "timestamp with time zone default now()")
-//    private Instant createdAt;
-//
-//    @Column(nullable = false, columnDefinition = "timestamp with time zone default now()")
-//    private Instant updatedAt;
-    //Todo: Remove the constructor after you have implemented jpa
+    //Todo: Lombok does not support the creation with super class constructor
+    // so either remove the constructor or keep it if you are using it for testing
     public Users(UUID id, String name, String email, String passwordHash, String title, Boolean isActive, UUID companyId, Boolean isOwner, Boolean isDeleted, Instant createdAt, Instant updatedAt) {
         super(createdAt, updatedAt);
         this.id = id;
