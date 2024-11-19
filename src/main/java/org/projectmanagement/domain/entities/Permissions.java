@@ -1,18 +1,23 @@
 package org.projectmanagement.domain.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.UUID;
 
-@AllArgsConstructor
-@NoArgsConstructor
+@Entity
+@Table(name = "permissions")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
 public class Permissions {
+    @Id
+    @GeneratedValue(generator = "UUID")
     private UUID id;
 
+    @Column(nullable = false)
     private String name;
 }
