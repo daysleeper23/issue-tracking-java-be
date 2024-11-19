@@ -21,16 +21,16 @@ import java.time.Instant;
 @Setter
 public class BaseEntity{
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", columnDefinition = "timestamp with time zone default now()")
     private Instant createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", columnDefinition = "timestamp with time zone default now()")
     private Instant updatedAt;
 
     @PrePersist
     public void onPrePersist() {
         this.setCreatedAt(Instant.now());
-        this.setCreatedAt(Instant.now());
+        this.setUpdatedAt(Instant.now());
     }
 
     @PreUpdate
