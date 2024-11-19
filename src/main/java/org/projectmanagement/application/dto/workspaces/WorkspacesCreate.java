@@ -14,7 +14,4 @@ public class WorkspacesCreate {
     private String name;
 
     private String description;
-
-    @NotNull(message = "is required")
-    private UUID companyId;
 }

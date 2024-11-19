@@ -1,8 +1,7 @@
 package org.projectmanagement.infrastructure;
 
-import org.projectmanagement.application.dto.workspaces.WorkspacesCreate;
-import org.projectmanagement.application.dto.workspaces.WorkspacesRead;
 import org.projectmanagement.domain.entities.Workspaces;
+import org.projectmanagement.domain.repository.WorkspacesRepoJpa;
 import org.projectmanagement.domain.repository.WorkspacesRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,47 +10,30 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class WorkspacesRepoImpl {
-    private final InMemoryDatabase inMemoryDatabase;
+public class WorkspacesRepoImpl implements WorkspacesRepository {
+    private final WorkspacesRepoJpa jpaRepo;
 
-    public WorkspacesRepoImpl(InMemoryDatabase inMemoryDatabase) {
-        this.inMemoryDatabase = inMemoryDatabase;
-    }
-
-    //return a complete copy of the object instead of its reference
-    public Workspaces safeCopy(Workspaces workspace) {
-        return new Workspaces(
-                workspace.getId(),
-                workspace.getName(),
-                workspace.getDescription(),
-                workspace.getCompanyId(),
-                workspace.getIsDeleted(),
-                workspace.getCreatedAt(),
-                workspace.getUpdatedAt()
-        );
+    public WorkspacesRepoImpl(WorkspacesRepoJpa workspaceJpaRepo) {
+        this.jpaRepo = workspaceJpaRepo;
     }
 
     public Workspaces save(Workspaces workspace) {
-        Workspaces newWorkspace = inMemoryDatabase.saveWorkspace(workspace);
-        return safeCopy(newWorkspace);
+        return jpaRepo.save(workspace);
     }
 
     public Optional<Workspaces> findById(UUID id) {
-        return Optional.ofNullable(
-                safeCopy(inMemoryDatabase.getActiveWorkspaceById(id))
-        );
+        return jpaRepo.findById(id);
     }
 
     public List<Workspaces> findAllWorkspaces(UUID companyId) {
-        return inMemoryDatabase.getActiveWorkspacesByCompany(companyId).stream().map(this::safeCopy).toList();
+        return jpaRepo.findAllByCompanyId(companyId);
     }
 
     public Optional<Workspaces> findByIdAndUpdate(UUID id, Workspaces workspace) {
-        Workspaces updatedWorkspace = inMemoryDatabase.getWorkspaceByIdAndUpdate(id, workspace);
-        return safeCopy(updatedWorkspace) == null ? Optional.empty() : Optional.of(safeCopy(updatedWorkspace));
+        return jpaRepo.updateById(id, workspace);
     }
 
     public void deleteById(UUID id) {
-        inMemoryDatabase.deleteWorkspaceById(id);
+        jpaRepo.deleteById(id);
     }
 }

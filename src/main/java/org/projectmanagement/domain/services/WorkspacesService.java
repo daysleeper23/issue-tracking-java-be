@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface WorkspacesService {
-    Optional<WorkspacesRead> createWorkspace(WorkspacesCreate workspace);
+    Optional<WorkspacesRead> createWorkspace(UUID companyId, WorkspacesCreate workspace);
 
     Optional<WorkspacesRead> findById(UUID id);
 
