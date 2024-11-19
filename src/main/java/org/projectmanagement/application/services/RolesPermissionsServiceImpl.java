@@ -19,13 +19,13 @@ import java.util.UUID;
 @Service
 public class RolesPermissionsServiceImpl implements RolesPermissionsService {
     private final RolesPermissionsRepository rolesPermissionsRepository;
-//    private final RolesRepository rolesRepository;
+    private final RolesRepository rolesRepository;
 
     RolesPermissionsServiceImpl(RolesPermissionsRepository rolesPermissionsRepository
-//            , RolesRepository rolesRepository
+            , RolesRepository rolesRepository
     ) {
         this.rolesPermissionsRepository = rolesPermissionsRepository;
-//        this.rolesRepository = rolesRepository;
+        this.rolesRepository = rolesRepository;
     }
 
 
@@ -47,11 +47,11 @@ public class RolesPermissionsServiceImpl implements RolesPermissionsService {
     public List<RolesPermissions> createRolePermissions(RolesPermissionsCreateDTO dto) {
         List<RolesPermissions> rolesPermissions = new ArrayList<>();
 
-//        Roles roleFromDB = rolesRepository.findById(dto.roleId()).orElse(null);
-//
-//        if (roleFromDB == null) {
-//            throw new ResourceNotFoundException("Role with id:" + dto.roleId() + " was not found.");
-//        }
+        Roles roleFromDB = rolesRepository.findById(dto.roleId()).orElse(null);
+
+        if (roleFromDB == null) {
+            throw new ResourceNotFoundException("Role with id:" + dto.roleId() + " was not found.");
+       }
 
         for (UUID permissionId : dto.permissions()) {
             rolesPermissions.add(
@@ -65,11 +65,11 @@ public class RolesPermissionsServiceImpl implements RolesPermissionsService {
     public List<RolesPermissions> addPermissionsToRole(UUID roleId, RolesPermissionsUpdateDTO dto) {
         List<RolesPermissions> rolesPermissions = new ArrayList<>();
 
-//        Roles roleFromDB = rolesRepository.findById(roleId).orElse(null);
-//
-//        if (roleFromDB == null) {
-//            throw new ResourceNotFoundException("Role with id:" + roleId + " was not found.");
-//        }
+        Roles roleFromDB = rolesRepository.findById(roleId).orElse(null);
+
+        if (roleFromDB == null) {
+            throw new ResourceNotFoundException("Role with id:" + roleId + " was not found.");
+        }
 
         List<UUID> permissionsOfRole = rolesPermissionsRepository.findAllPermissionsOfRoleByRoleId(roleId);
 
@@ -86,15 +86,15 @@ public class RolesPermissionsServiceImpl implements RolesPermissionsService {
 
     @Override
     public void removePermissionsFromRole(UUID roleId, RolesPermissionsUpdateDTO dto) {
-//        Roles roleFromDB = rolesRepository.findById(roleId).orElse(null);
-//
-//        if (roleFromDB == null) {
-//            throw new ResourceNotFoundException("Role with id:" + roleId + " was not found.");
-//        }
+        Roles roleFromDB = rolesRepository.findById(roleId).orElse(null);
+
+        if (roleFromDB == null) {
+            throw new ResourceNotFoundException("Role with id:" + roleId + " was not found.");
+        }
 
         List<RolesPermissions> rolesPermissions = rolesPermissionsRepository.findAllRolePermissionsByRoleId(roleId);
 
-        /*
+
         for (UUID permissionId : dto.permissions()) {
             //call repo to delete
             rolesPermissions.stream()
@@ -102,6 +102,5 @@ public class RolesPermissionsServiceImpl implements RolesPermissionsService {
                     .findFirst() // Find the first matching RolesPermissions entity
                     .ifPresent(rolePermission -> rolesPermissionsRepository.deleteById(rolePermission.getId())); // Delete by entity ID
         }
-         */
     }
 }

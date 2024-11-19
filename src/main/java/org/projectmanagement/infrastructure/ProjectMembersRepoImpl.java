@@ -3,7 +3,6 @@ package org.projectmanagement.infrastructure;
 import org.projectmanagement.domain.entities.ProjectMembers;
 import org.projectmanagement.domain.repository.ProjectMembersJpaRepo;
 import org.projectmanagement.domain.repository.ProjectMembersRepository;
-import org.projectmanagement.domain.repository.ProjectsJpaRepo;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
