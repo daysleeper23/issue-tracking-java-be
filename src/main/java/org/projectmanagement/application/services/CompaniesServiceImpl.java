@@ -6,10 +6,10 @@ import org.projectmanagement.application.exception.ApplicationException;
 import org.projectmanagement.domain.entities.Companies;
 import org.projectmanagement.domain.repository.CompaniesRepository;
 import org.projectmanagement.domain.services.CompaniesService;
-import org.springframework.context.ApplicationContextException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,21 +27,26 @@ public class CompaniesServiceImpl implements CompaniesService {
             Get userId from actual security context holder
             Check if user already joined a company or own a company
          */
-        UUID userId = UUID.randomUUID();
-        Companies companies = new Companies(dto.name(), dto.description(),userId);
+        Companies companies = new Companies();
+        companies.setName(dto.name());
+        companies.setDescription(dto.description());
         return companiesRepository.save(companies);
     }
 
     @Override
     public Companies getCompany(String id) {
+        Companies company = companiesRepository.findById(UUID.fromString(id));
+        if (company == null){
+            throw new ApplicationException(AppMessage.COMPANY_NOT_FOUND);
+        }
         //Check if user's companyId matches with provided companyId
-        return companiesRepository.findOne(UUID.fromString(id));
+        return company;
     }
 
     @Override
     public Companies updateCompany(String id, CompanyDTO dto) {
         //Check if company is existed
-        Companies existed = companiesRepository.findOne(UUID.fromString(id));
+        Companies existed = companiesRepository.findById(UUID.fromString(id));
         if (existed == null){
             throw new ApplicationException(AppMessage.COMPANY_NOT_FOUND);
         }
@@ -50,18 +55,17 @@ public class CompaniesServiceImpl implements CompaniesService {
         }
         existed.setName(dto.name());
         existed.setDescription(dto.description());
-        existed.setUpdatedAt(Instant.now());
         return companiesRepository.save(existed);
     }
 
     @Override
     public boolean archiveCompany(String id) {
         //Retrieve companyId from owner and check if it matches with provided companyId
-        Companies existed = companiesRepository.findOne(UUID.fromString(id));
+        Companies existed = companiesRepository.findById(UUID.fromString(id));
         if (existed == null){
-            //thr application exception not found
+            throw new ApplicationException(AppMessage.COMPANY_NOT_FOUND);
         }
-        companiesRepository.save(existed);
+//        companiesRepository.delete(existed.get());
         return true;
     }
 

@@ -5,8 +5,8 @@ import org.projectmanagement.domain.entities.Companies;
 
 import java.util.UUID;
 
-public interface CompaniesRepository {
-    Companies save(Companies companies);
+public interface CompaniesRepository{
+    Companies save(Companies company);
 
-    Companies findOne(UUID companyId);
+    Companies findById(UUID id);
 }

@@ -21,7 +21,7 @@ public class TaskSubscribersServiceImpl implements TaskSubscribersService {
 
     @Override
     public boolean subscribeToTask(String taskId, String userId) {
-        if (tasksRepository.findTaskById(UUID.fromString(taskId)) == null){
+        if (tasksRepository.findById(UUID.fromString(taskId)) == null){
             throw new ApplicationException(AppMessage.TASK_NOT_FOUND);
         }
         TaskSubscribers sub = new TaskSubscribers(UUID.fromString(taskId),UUID.fromString(userId));

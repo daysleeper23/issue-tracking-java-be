@@ -1,5 +1,6 @@
 package org.projectmanagement.infrastructure;
 
+import lombok.RequiredArgsConstructor;
 import org.projectmanagement.domain.entities.CompanyManagers;
 import org.projectmanagement.domain.repository.CompanyManagersRepository;
 import org.springframework.stereotype.Repository;
@@ -8,14 +9,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @Repository
 public class CompanyManagersRepoImpl implements CompanyManagersRepository {
 
     private final InMemoryDatabase inMemoryDatabase;
-
-    CompanyManagersRepoImpl(InMemoryDatabase inMemoryDatabase) {
-        this.inMemoryDatabase = inMemoryDatabase;
-    }
 
     @Override
     public CompanyManagers save(CompanyManagers companyManager) {
