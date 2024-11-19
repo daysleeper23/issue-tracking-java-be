@@ -42,19 +42,18 @@ public class UsersServiceImpl implements UsersService {
 
     public UsersRead createUser(UsersCreate user) {
         Users newUser = usersRepository.save(
-                new Users(
-                        UUID.randomUUID(),
-                        user.name(),
-                        user.email(),
-                        user.passwordHash(),
-                        user.title(),
-                        user.isActive(),
-                        user.companyId(),
-                        user.isOwner(),
-                        false,
-                        Instant.now(),
-                        Instant.now()
-                )
+               Users.builder()
+                        .name(user.name())
+                        .email(user.email())
+                        .passwordHash(user.passwordHash())
+                        .title(user.title())
+                        .isActive(user.isActive())
+                        .companyId(user.companyId())
+                        .isOwner(false)
+                        .isDeleted(false)
+                        .createdAt(Instant.now())
+                        .updatedAt(Instant.now())
+                        .build()
         );
 
         return UsersMapper.toUsersRead(newUser);
