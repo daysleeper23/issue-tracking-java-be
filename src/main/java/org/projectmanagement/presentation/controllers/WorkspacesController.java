@@ -40,8 +40,8 @@ public class WorkspacesController {
     }
 
     @PostMapping
-    public ResponseEntity<GlobalResponse<WorkspacesRead>> createWorkspace(@RequestBody WorkspacesCreate workspace) {
-        Optional<WorkspacesRead> createdWorkspace = workspacesService.createWorkspace(workspace);
+    public ResponseEntity<GlobalResponse<WorkspacesRead>> createWorkspace(@PathVariable UUID companyId, @RequestBody WorkspacesCreate workspace) {
+        Optional<WorkspacesRead> createdWorkspace = workspacesService.createWorkspace(companyId, workspace);
         return createdWorkspace
                 .map(workspacesRead -> new ResponseEntity<>(
                     new GlobalResponse<>(HttpStatus.CREATED.value(), workspacesRead),

@@ -24,17 +24,16 @@ public class WorkspacesServiceImpl implements WorkspacesService {
         this.workspacesRepository = workspacesRepository;
     }
 
-    public Optional<WorkspacesRead> createWorkspace(WorkspacesCreate workspace) {
+    public Optional<WorkspacesRead> createWorkspace(UUID companyId, WorkspacesCreate workspace) {
         Workspaces newWorkspace = workspacesRepository.save(
-                new Workspaces(
-                        UUID.randomUUID(),
-                        workspace.getName(),
-                        workspace.getDescription(),
-                        workspace.getCompanyId(),
-                        false,
-                        Instant.now(),
-                        Instant.now()
-                )
+                Workspaces.builder()
+                        .name(workspace.getName())
+                        .description(workspace.getDescription())
+                        .companyId(companyId)
+                        .isDeleted(false)
+                        .createdAt(Instant.now())
+                        .updatedAt(Instant.now())
+                        .build()
         );
         return Optional.of(WorkspacesMapper.toWorkspacesRead(newWorkspace));
     }
