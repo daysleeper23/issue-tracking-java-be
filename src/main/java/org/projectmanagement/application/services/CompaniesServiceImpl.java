@@ -1,5 +1,6 @@
 package org.projectmanagement.application.services;
 
+import lombok.RequiredArgsConstructor;
 import org.projectmanagement.application.dto.companies.CompanyDTO;
 import org.projectmanagement.application.exception.AppMessage;
 import org.projectmanagement.application.exception.ApplicationException;
@@ -12,14 +13,11 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @Service
 public class CompaniesServiceImpl implements CompaniesService {
 
     private final CompaniesRepository companiesRepository;
-
-    public CompaniesServiceImpl(CompaniesRepository companiesRepository) {
-        this.companiesRepository = companiesRepository;
-    }
 
     @Override
     public Companies createNewCompany(CompanyDTO dto) {
@@ -30,6 +28,7 @@ public class CompaniesServiceImpl implements CompaniesService {
         Companies companies = new Companies();
         companies.setName(dto.name());
         companies.setDescription(dto.description());
+        companies.setOwnerId(UUID.randomUUID());
         return companiesRepository.save(companies);
     }
 

@@ -4,15 +4,16 @@ import java.util.UUID;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "users")
-public class Users {
+public class Users extends BaseEntity{
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -40,9 +41,18 @@ public class Users {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean isDeleted;
 
-    @Column(nullable = false, columnDefinition = "timestamp with time zone default now()")
-    private Instant createdAt;
-
-    @Column(nullable = false, columnDefinition = "timestamp with time zone default now()")
-    private Instant updatedAt;
+    //Todo: Lombok does not support the creation with super class constructor
+    // so either remove the constructor or keep it if you are using it for testing
+    public Users(UUID id, String name, String email, String passwordHash, String title, Boolean isActive, UUID companyId, Boolean isOwner, Boolean isDeleted, Instant createdAt, Instant updatedAt) {
+        super(createdAt, updatedAt);
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.title = title;
+        this.isActive = isActive;
+        this.companyId = companyId;
+        this.isOwner = isOwner;
+        this.isDeleted = isDeleted;
+    }
 }

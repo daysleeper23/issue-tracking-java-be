@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.projectmanagement.domain.entities.Companies;
 import org.projectmanagement.domain.repository.CompaniesRepository;
 import org.projectmanagement.domain.repository.jpa.CompaniesJpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Repository
 public class CompaniesRepositoryImpl implements CompaniesRepository {
 
-    private CompaniesJpaRepository jpaRepository;
+    private final CompaniesJpaRepository jpaRepository;
 
     @Override
     public Companies save(Companies company) {
