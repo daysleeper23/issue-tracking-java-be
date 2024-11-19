@@ -1,7 +1,8 @@
 package org.projectmanagement.infrastructure;
 
-import org.projectmanagement.domain.entities.CompanyManagers;
+import lombok.RequiredArgsConstructor;
 import org.projectmanagement.domain.repository.CompanyManagersJpaRepo;
+import org.projectmanagement.domain.entities.CompanyManagers;
 import org.projectmanagement.domain.repository.CompanyManagersRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@RequiredArgsConstruct
 @Repository
 public class CompanyManagersRepoImpl implements CompanyManagersRepository {
 

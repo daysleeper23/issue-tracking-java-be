@@ -2,6 +2,7 @@ package org.projectmanagement.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -12,9 +13,9 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @ToString
-public class ProjectMembers {
+public class ProjectMembers extends BaseEntity {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -31,21 +32,5 @@ public class ProjectMembers {
     @NonNull
     @Column(name = "subscribed", nullable = false)
     private Boolean subscribed;
-
-    @Column(name = "created_at")
-    private Instant createdAt;
-
-    @Column(name = "updated_at")
-    private Instant updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = Instant.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = Instant.now();
-    }
 
 }

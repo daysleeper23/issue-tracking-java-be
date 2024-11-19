@@ -2,6 +2,7 @@ package org.projectmanagement.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -12,9 +13,9 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @ToString
-public class CompanyManagers {
+public class CompanyManagers extends BaseEntity{
     @Id
     @GeneratedValue(generator = "UUID")
     private UUID id;
@@ -30,21 +31,5 @@ public class CompanyManagers {
     @NonNull
     @Column(name = "role_id", nullable = false)
     private UUID roleId;
-
-    @Column(name = "created_at")
-    private  Instant createdAt;
-
-    @Column(name = "updated_at")
-    private Instant updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = Instant.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = Instant.now();
-    }
 
 }

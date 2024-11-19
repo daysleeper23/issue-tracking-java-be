@@ -3,6 +3,7 @@ package org.projectmanagement.infrastructure;
 import lombok.RequiredArgsConstructor;
 import org.projectmanagement.domain.entities.TaskSubscribers;
 import org.projectmanagement.domain.repository.TaskSubscribersRepository;
+import org.projectmanagement.domain.repository.jpa.TaskSubscribersJpaRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
@@ -11,33 +12,27 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Repository
-public class TaskSubscribersRepositoryImpl {
+public class TaskSubscribersRepositoryImpl implements TaskSubscribersRepository {
 
-    private final InMemoryDatabase inMemoryDatabase;
+    private TaskSubscribersJpaRepository jpaRepository;
 
-
-    public boolean save(TaskSubscribers sub) {
-        return inMemoryDatabase.getTaskSubscribers().add(sub);
+    @Override
+    public TaskSubscribers save(TaskSubscribers taskSubscribers) {
+        return jpaRepository.save(taskSubscribers);
     }
 
-
     public List<TaskSubscribers> getSubscriberByTaskId(UUID taskId) {
-        return inMemoryDatabase.getTaskSubscribers().stream().filter(sub -> sub.getTaskId().equals(taskId)).toList();
+        return jpaRepository.findByTaskId(taskId);
     }
 
 
     public TaskSubscribers getSubscriberByTaskIdAndUserId(UUID taskId, UUID userId) {
-        return inMemoryDatabase.getTaskSubscribers().stream()
-                .filter(sub -> sub.getTaskId().equals(taskId) && sub.getUserId().equals(userId))
-                .findFirst()
-                .orElse(null);
+        return jpaRepository.findByTaskIdAndUserId(taskId, userId);
     }
 
-
-    public boolean deleteOne(UUID taskId, UUID userId) {
-        TaskSubscribers subscribers =  inMemoryDatabase.getTaskSubscribers().stream().filter(sub ->
-                sub.getTaskId().equals( sub.getTaskId()) && sub.getUserId().equals(userId)).findFirst().orElse(null);
-        if (subscribers == null) return false;
-        return inMemoryDatabase.getTaskSubscribers().remove(subscribers);
+    @Override
+    public boolean deleteByTaskIdAndUserId(UUID taskId, UUID userId) {
+        return jpaRepository.deleteByTaskIdAndUserId(taskId, userId);
     }
+
 }
