@@ -43,10 +43,11 @@ public class WorkspacesMembersRolesController {
     //create a role for a user in a workspace == add a user to a workspace
     @PostMapping
     public ResponseEntity<GlobalResponse<WorkspacesMembersRolesRead>> createWorkspacesMembersRoles(
+            @PathVariable UUID workspaceId,
             @RequestBody @Valid WorkspacesMembersRolesCreate wmrCreate
     ) {
         WorkspacesMembersRolesRead wmrr = wmrs
-                .createMembersRolesForWorkspace(wmrCreate);
+                .createMembersRolesForWorkspace(workspaceId, wmrCreate);
 
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), wmrr), HttpStatus.CREATED);
     }
@@ -55,10 +56,11 @@ public class WorkspacesMembersRolesController {
     @PutMapping("/{id}")
     public ResponseEntity<GlobalResponse<WorkspacesMembersRolesRead>> updateWorkspacesMembersRoles(
             @PathVariable UUID id,
+            @PathVariable UUID workspaceId,
             @RequestBody WorkspacesMembersRolesCreate newWorkspacesMembersRoles
     ) {
         WorkspacesMembersRolesRead wmrr = wmrs
-                .updateWorkspacesMembersRoles(id, newWorkspacesMembersRoles);
+                .updateWorkspacesMembersRoles(id, workspaceId, newWorkspacesMembersRoles);
 
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), wmrr), HttpStatus.OK);
     }

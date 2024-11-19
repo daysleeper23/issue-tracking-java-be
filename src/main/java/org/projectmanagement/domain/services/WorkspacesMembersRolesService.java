@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.UUID;
 
 public interface WorkspacesMembersRolesService {
-    WorkspacesMembersRolesRead createMembersRolesForWorkspace(WorkspacesMembersRolesCreate wmrc);
+    WorkspacesMembersRolesRead createMembersRolesForWorkspace(UUID workspaceId, WorkspacesMembersRolesCreate wmrc);
 
     WorkspacesMembersRolesRead getWorkspacesMembersRolesForUser(UUID userId, UUID workspaceId);
 
     List<WorkspacesMembersRolesRead> getMembersRolesForWorkspace(UUID workspaceId);
 
-    WorkspacesMembersRolesRead updateWorkspacesMembersRoles(UUID id, WorkspacesMembersRolesCreate newRole);
+    WorkspacesMembersRolesRead updateWorkspacesMembersRoles(UUID id, UUID workspaceId, WorkspacesMembersRolesCreate newRole);
 
     void deleteWorkspacesMembersRoles(UUID id);
 }
