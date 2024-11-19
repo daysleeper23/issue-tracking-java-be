@@ -41,9 +41,9 @@ public class Users {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean isDeleted;
 
-//  @CreatedDate
+    @Column(nullable = false, columnDefinition = "timestamp with time zone default now()")
     private Instant createdAt;
 
-//  @LastModifiedDate
+    @Column(nullable = false, columnDefinition = "timestamp with time zone default now()")
     private Instant updatedAt;
 }

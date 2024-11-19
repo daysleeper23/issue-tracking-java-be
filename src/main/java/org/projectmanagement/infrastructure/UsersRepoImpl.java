@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository
-public class UsersRepoImpl implements UsersRepository {
+public class UsersRepoImpl{
     private final InMemoryDatabase inMemoryDatabase;
 
     public UsersRepoImpl(InMemoryDatabase inMemoryDatabase) {

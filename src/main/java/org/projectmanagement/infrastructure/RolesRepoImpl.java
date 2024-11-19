@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository
-public class RolesRepoImpl implements RolesRepository {
+
+public class RolesRepoImpl {
     private final InMemoryDatabase inMemoryDatabase;
 
     public Roles safeCopy(Roles role) {
@@ -30,6 +30,7 @@ public class RolesRepoImpl implements RolesRepository {
     }
 
     public Roles save(Roles role) {
+        System.out.println("this RolesRepoImpl.save");
         return safeCopy(inMemoryDatabase.saveRole(role));
     }
 

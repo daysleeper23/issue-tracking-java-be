@@ -32,9 +32,9 @@ public class Roles {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean isSystemRole;
 
-//    @CreatedDate
+    @Column(nullable = false, columnDefinition = "timestamp with time zone default now()")
     private Instant createdAt;
 
-//    @LastModifiedDate
+    @Column(nullable = false, columnDefinition = "timestamp with time zone default now()")
     private Instant updatedAt;
 }
