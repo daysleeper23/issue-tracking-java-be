@@ -1,21 +1,30 @@
 package org.projectmanagement.domain.entities;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true) // here only for frameworks
+@Entity
+@Table(name = "roles_permissions")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
 public class RolesPermissions {
+    @Id
+    @GeneratedValue(generator = "UUID")
     private UUID id;
 
     @NotNull
+    @Column(name = "role_id", nullable = false)
     private UUID roleId;
 
     @NotNull
+    @Column(name = "permission_id", nullable = false)
     private UUID permissionId;
 
 }
