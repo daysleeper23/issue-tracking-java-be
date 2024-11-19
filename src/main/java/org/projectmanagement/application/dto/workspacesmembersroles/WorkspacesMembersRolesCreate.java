@@ -13,6 +13,5 @@ import java.util.UUID;
 @AllArgsConstructor
 public class WorkspacesMembersRolesCreate {
     private UUID userId;
-    private UUID workspaceId;
     private UUID roleId;
 }

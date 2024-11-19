@@ -33,21 +33,23 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
     }
 
     //create a role for a user in a workspace == add a user to a workspace
-    public WorkspacesMembersRolesRead createMembersRolesForWorkspace(WorkspacesMembersRolesCreate wmrc) {
+    public WorkspacesMembersRolesRead createMembersRolesForWorkspace(
+            @NotNull UUID workspaceId,
+            WorkspacesMembersRolesCreate wmrc) {
         //MISSING: check if the user id and workspace id and role id are valid
         if (rolesService.findById(wmrc.getRoleId()).isEmpty()) {
             return null;
         }
 
         //check if a role for the user in the workspace exists already, if it does return null
-        if (wmrRepository.findByUserIdAndWorkspaceId(wmrc.getUserId(), wmrc.getWorkspaceId()).isPresent()) {
+        if (wmrRepository.findByUserIdAndWorkspaceId(wmrc.getUserId(), workspaceId).isPresent()) {
             return null;
         }
 
         WorkspacesMembersRoles wmr = new WorkspacesMembersRoles(
                 UUID.randomUUID(),
                 wmrc.getUserId(),
-                wmrc.getWorkspaceId(),
+                workspaceId,
                 wmrc.getRoleId(),
                 Instant.now(),
                 Instant.now()
@@ -76,7 +78,8 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
 
     //update role for a user in a workspace
     public WorkspacesMembersRolesRead updateWorkspacesMembersRoles(
-            UUID id,
+            @NotNull UUID id,
+            @NotNull UUID workspaceId,
             WorkspacesMembersRolesCreate newRole)
     {
         //check if the role exists already, if not return null
@@ -87,7 +90,7 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
 
         //check if the workspace id and user id of the new role are the same as the existing role
         //if not return null
-        if (wmr.getWorkspaceId() != newRole.getWorkspaceId() || wmr.getUserId() != newRole.getUserId()) {
+        if (wmr.getWorkspaceId() != workspaceId || wmr.getUserId() != newRole.getUserId()) {
             return null;
         }
 
