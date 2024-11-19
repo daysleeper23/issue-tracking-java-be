@@ -31,10 +31,10 @@ public class CompanyManagers {
     @Column(name = "role_id", nullable = false)
     private UUID roleId;
 
-
+    @Column(name = "created_at")
     private  Instant createdAt;
 
-
+    @Column(name = "updated_at")
     private Instant updatedAt;
 
     @PrePersist
