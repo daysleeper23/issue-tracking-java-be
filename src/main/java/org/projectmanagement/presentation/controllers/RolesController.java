@@ -35,9 +35,11 @@ public class RolesController {
     }
 
     @PostMapping
-    public ResponseEntity<GlobalResponse<Roles>> createRole(@RequestBody @Valid RolesCreate newRole) {
-        System.out.println("name:" + newRole.getName() + ", companyId:" + newRole.getCompanyId());
-        Roles createdRole = rolesService.createRole(newRole);
+    public ResponseEntity<GlobalResponse<Roles>> createRole(
+            @PathVariable UUID companyId
+            , @RequestBody @Valid RolesCreate newRole
+    ) {
+        Roles createdRole = rolesService.createRole(companyId, newRole);
         if (createdRole == null) {
             return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CONFLICT.value(), null), HttpStatus.CONFLICT);
         }
@@ -45,8 +47,12 @@ public class RolesController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GlobalResponse<Roles>> updateRole(@PathVariable UUID id, @RequestBody @Valid RolesCreate role) {
-        Roles updatedRole = rolesService.updateRoleName(id, role);
+    public ResponseEntity<GlobalResponse<Roles>> updateRole(
+            @PathVariable UUID id,
+            @PathVariable UUID companyId,
+            @RequestBody @Valid RolesCreate role
+    ) {
+        Roles updatedRole = rolesService.updateRoleName(id, companyId, role);
         if (updatedRole == null) {
             return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), null), HttpStatus.NOT_FOUND);
         }
