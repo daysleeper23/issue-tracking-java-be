@@ -9,16 +9,16 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.time.Instant;
 import java.util.UUID;
 
-@Getter
-@Setter
-@NonNull
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Entity
+@Table(name = "roles")
 public class Roles {
     @Id
     @GeneratedValue(generator = "UUID")
-    private final UUID id;
+    private UUID id;
 
     @Column(nullable = false)
     private String name;

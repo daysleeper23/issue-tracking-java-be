@@ -8,9 +8,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface RolesService {
-    Roles createRole(RolesCreate rc);
+    Roles createRole(UUID companyId, RolesCreate rc);
 
-    Roles updateRoleName(UUID id, RolesCreate role);
+    Roles updateRoleName(UUID id, UUID companyId, RolesCreate role);
 
     Boolean deleteRole(UUID id);
 

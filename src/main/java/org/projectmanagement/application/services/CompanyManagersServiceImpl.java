@@ -24,17 +24,17 @@ import java.util.UUID;
 public class CompanyManagersServiceImpl implements CompanyManagersService {
 
     private final CompanyManagersRepository companyManagersRepository;
-    private final RolesRepository rolesRepository;
+//    private final RolesRepository rolesRepository;
     private final CompaniesRepository companiesRepository;
 
     @Autowired
     CompanyManagersServiceImpl(
         CompanyManagersRepository companyManagersRepository,
-        RolesRepository rolesRepository,
+//        RolesRepository rolesRepository,
         CompaniesRepository companiesRepository
     ) {
         this.companyManagersRepository = companyManagersRepository;
-        this.rolesRepository = rolesRepository;
+//        this.rolesRepository = rolesRepository;
         this.companiesRepository = companiesRepository;
     }
 
@@ -54,11 +54,11 @@ public class CompanyManagersServiceImpl implements CompanyManagersService {
 
     @Override
     public CompanyManagers updateCompanyManager(UUID id, UpdateCompanyManagersDTO dto) {
-        Roles role = rolesRepository.findById(dto.roleId()).orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " is not found"));
+//        Roles role = rolesRepository.findById(dto.roleId()).orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " is not found"));
 
-        if (!role.getName().equals("ADMIN") && !role.getName().equals("COMPANY_MANAGER")) {
-            throw new InvalidInputException("Company Managers can only be assigned to ADMIN or COMPANY_MANAGER roles.");
-        }
+//        if (!role.getName().equals("ADMIN") && !role.getName().equals("COMPANY_MANAGER")) {
+//            throw new InvalidInputException("Company Managers can only be assigned to ADMIN or COMPANY_MANAGER roles.");
+//        }
 
         CompanyManagers companyManagerToUpdate = companyManagersRepository.findById(id).orElse(null);
         if (companyManagerToUpdate == null) {

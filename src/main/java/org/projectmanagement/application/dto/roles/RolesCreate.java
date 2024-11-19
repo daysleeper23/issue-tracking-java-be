@@ -15,7 +15,4 @@ public class RolesCreate {
 
     @NotBlank(message = "cannot be blank")
     private String name;
-
-    @NotNull(message = "cannot be null")
-    private UUID companyId;
 }

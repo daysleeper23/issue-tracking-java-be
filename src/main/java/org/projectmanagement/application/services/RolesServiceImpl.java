@@ -21,13 +21,13 @@ public class RolesServiceImpl implements RolesService {
         this.rolesRepository = rolesRepository;
     }
 
-    public Roles createRole(RolesCreate role) {
-        Optional<Roles> roles = rolesRepository.findByExactName(role.getName(), role.getCompanyId());
+    public Roles createRole(UUID companyId, RolesCreate role) {
+        Optional<Roles> roles = rolesRepository.findByExactName(role.getName(), companyId);
         if (roles.isEmpty()) {
             return rolesRepository.save(
                     Roles.builder()
                     .name(role.getName())
-                    .companyId(role.getCompanyId())
+                    .companyId(companyId)
                     .isDeleted(false)
                     .isSystemRole(false)
                     .createdAt(Instant.now())
@@ -39,10 +39,10 @@ public class RolesServiceImpl implements RolesService {
         }
     }
 
-    public Roles updateRoleName(UUID id, RolesCreate role) {
+    public Roles updateRoleName(UUID id, UUID companyId, RolesCreate role) {
         Optional<Roles> existingRole = rolesRepository.findById(id);
 
-        Optional<Roles> rolesWithSameName = rolesRepository.findByExactName(role.getName(), role.getCompanyId());
+        Optional<Roles> rolesWithSameName = rolesRepository.findByExactName(role.getName(), companyId);
         if (rolesWithSameName.isEmpty() && existingRole.isPresent()) {
             existingRole.get().setName(role.getName());
             return rolesRepository.save(existingRole.get());
