@@ -1,7 +1,7 @@
 package org.projectmanagement.domain.repository;
 
 import org.projectmanagement.domain.entities.CompanyManagers;
-import org.springframework.stereotype.Repository;
+
 
 import java.util.List;
 import java.util.Optional;
