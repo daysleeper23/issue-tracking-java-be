@@ -1,32 +1,39 @@
 package org.projectmanagement.domain.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@Setter
-@Getter
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Entity
+@Table(name = "workspaces")
 public class Workspaces {
     @Id
-    private final UUID id;
+    @GeneratedValue(generator = "UUID")
+    private UUID id;
 
+    @Column(nullable = false)
     private String name;
 
     private String description;
-    
+
+    @Column(nullable = false)
     private UUID companyId;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean isDeleted;
 
-    private final Instant createdAt;
+    @Column(nullable = false, columnDefinition = "timestamp with time zone default now()")
+    private Instant createdAt;
 
+    @Column(nullable = false, columnDefinition = "timestamp with time zone default now()")
     private Instant updatedAt;
 }

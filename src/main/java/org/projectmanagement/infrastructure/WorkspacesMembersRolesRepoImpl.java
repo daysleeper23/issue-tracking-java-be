@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class WorkspacesMembersRolesRepoImpl implements WorkspacesMembersRolesRepository {
+public class WorkspacesMembersRolesRepoImpl {
     private final InMemoryDatabase inMemoryDatabase;
 
     public WorkspacesMembersRolesRepoImpl(InMemoryDatabase inMemoryDatabase) {

@@ -32,9 +32,9 @@ public class WorkspacesMembersRoles {
     @Column(nullable = false)
     private UUID roleId;
 
-//    @CreatedDate
+    @Column(nullable = false, columnDefinition = "timestamp with time zone default now()")
     private Instant createdAt;
 
-//    @LastModifiedDate
+    @Column(nullable = false, columnDefinition = "timestamp with time zone default now()")
     private Instant updatedAt;
 }

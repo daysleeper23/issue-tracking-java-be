@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class WorkspacesRepoImpl implements WorkspacesRepository {
+public class WorkspacesRepoImpl {
     private final InMemoryDatabase inMemoryDatabase;
 
     public WorkspacesRepoImpl(InMemoryDatabase inMemoryDatabase) {
