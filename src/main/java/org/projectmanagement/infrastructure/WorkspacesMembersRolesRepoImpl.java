@@ -1,6 +1,7 @@
 package org.projectmanagement.infrastructure;
 
 import org.projectmanagement.domain.entities.WorkspacesMembersRoles;
+import org.projectmanagement.domain.repository.WorkspacesMembersRolesRepoJpa;
 import org.projectmanagement.domain.repository.WorkspacesMembersRolesRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,36 +11,34 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class WorkspacesMembersRolesRepoImpl {
-    private final InMemoryDatabase inMemoryDatabase;
+public class WorkspacesMembersRolesRepoImpl implements WorkspacesMembersRolesRepository {
+    private final WorkspacesMembersRolesRepoJpa jpaRepo;
 
-    public WorkspacesMembersRolesRepoImpl(InMemoryDatabase inMemoryDatabase) {
-        this.inMemoryDatabase = inMemoryDatabase;
+    public WorkspacesMembersRolesRepoImpl(WorkspacesMembersRolesRepoJpa workspacesMembersRolesRepoJpa) {
+        this.jpaRepo = workspacesMembersRolesRepoJpa;
     }
 
-    public WorkspacesMembersRoles save(WorkspacesMembersRoles workspacesMembersRoles){
-        return inMemoryDatabase.saveWmr(workspacesMembersRoles);
+    public WorkspacesMembersRoles save(WorkspacesMembersRoles workspacesMembersRoles) {
+        return jpaRepo.save(workspacesMembersRoles);
     }
 
     public Optional<WorkspacesMembersRoles> findByUserIdAndWorkspaceId(UUID userId, UUID workspaceId) {
-        return inMemoryDatabase.wmrs.stream()
-                .filter(wmr -> wmr.getUserId().equals(userId) && wmr.getWorkspaceId().equals(workspaceId))
-                .findFirst();
+        return jpaRepo.findByUserIdAndWorkspaceId(userId, workspaceId);
     }
 
     public Optional<WorkspacesMembersRoles> findById(UUID id) {
-        return inMemoryDatabase.wmrs.stream().filter(wmr -> wmr.getId().equals(id)).findFirst();
+        return jpaRepo.findById(id);
     }
 
     public List<WorkspacesMembersRoles> findAllByWorkspaceId(UUID workspaceId) {
-        return inMemoryDatabase.wmrs.stream().filter(wmr -> wmr.getWorkspaceId().equals(workspaceId)).toList();
+        return jpaRepo.findAllByWorkspaceId(workspaceId);
     }
 
     public WorkspacesMembersRoles updateWorkspacesMembersRoles(UUID id, UUID newRoleId) {
-        return new WorkspacesMembersRoles(id, UUID.randomUUID(), UUID.randomUUID(), newRoleId, Instant.now(), Instant.now());
+        return jpaRepo.updateWorkspacesMembersRoles(id, newRoleId);
     }
 
     public void deleteById(UUID id) {
-        inMemoryDatabase.wmrs.removeIf(wmr -> wmr.getId().equals(id));
+        jpaRepo.deleteById(id);
     }
 }
