@@ -7,9 +7,9 @@ spring:
     active: "dev"
 ## Database Configuration
   datasource:
-    url: jdbc:postgresql://localhost:5432/fs-19-pm # change this to your database name
-    username: postgres
-    password: 110320
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: create-drop #for testing purpose changing it to 'update' or 'validate' and has your schema created in your database
