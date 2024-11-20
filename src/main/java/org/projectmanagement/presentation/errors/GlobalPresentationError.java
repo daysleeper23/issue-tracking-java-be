@@ -1,7 +1,7 @@
 package org.projectmanagement.presentation.errors;
 
 import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
-import org.projectmanagement.application.exception.ApplicationException;
+import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

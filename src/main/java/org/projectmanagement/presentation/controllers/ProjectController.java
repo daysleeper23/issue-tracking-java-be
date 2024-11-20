@@ -1,8 +1,8 @@
 package org.projectmanagement.presentation.controllers;
 
 import jakarta.validation.Valid;
-import org.projectmanagement.application.dto.projects.ProjectsCreateDTO;
-import org.projectmanagement.application.dto.projects.ProjectsUpdateDTO;
+import org.projectmanagement.application.dto.projects.ProjectsCreate;
+import org.projectmanagement.application.dto.projects.ProjectsUpdate;
 import org.projectmanagement.domain.entities.Projects;
 import org.projectmanagement.domain.services.ProjectService;
 import org.projectmanagement.presentation.response.GlobalResponse;
@@ -38,12 +38,12 @@ public class ProjectController {
 
 
     @PostMapping
-    public ResponseEntity<GlobalResponse<Projects>> createProject(@RequestBody @Valid ProjectsCreateDTO project) {
+    public ResponseEntity<GlobalResponse<Projects>> createProject(@RequestBody @Valid ProjectsCreate project) {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), projectService.createProject(project)), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<GlobalResponse<Projects>> updateProject(@PathVariable @Valid UUID id, @RequestBody @Valid ProjectsUpdateDTO project) {
+    public ResponseEntity<GlobalResponse<Projects>> updateProject(@PathVariable @Valid UUID id, @RequestBody @Valid ProjectsUpdate project) {
         Projects updatedProject = projectService.updateProject(id, project);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedProject), HttpStatus.OK);
     }

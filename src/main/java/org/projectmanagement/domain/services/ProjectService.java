@@ -1,7 +1,7 @@
 package org.projectmanagement.domain.services;
 
-import org.projectmanagement.application.dto.projects.ProjectsCreateDTO;
-import org.projectmanagement.application.dto.projects.ProjectsUpdateDTO;
+import org.projectmanagement.application.dto.projects.ProjectsCreate;
+import org.projectmanagement.application.dto.projects.ProjectsUpdate;
 import org.projectmanagement.domain.entities.Projects;
 
 import java.util.List;
@@ -13,9 +13,9 @@ public interface ProjectService {
 
     List<Projects> getProjectsByWorkspaceId(UUID workspaceId);
 
-    Projects createProject(ProjectsCreateDTO dto);
+    Projects createProject(ProjectsCreate dto);
 
-    Projects updateProject(UUID id, ProjectsUpdateDTO dto);
+    Projects updateProject(UUID id, ProjectsUpdate dto);
 
     void deleteProject(UUID id);
 }

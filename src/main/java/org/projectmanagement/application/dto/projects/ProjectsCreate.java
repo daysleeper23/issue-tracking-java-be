@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 
-public record ProjectsCreateDTO(
+public record ProjectsCreate(
         @NotBlank(message = "Can not be empty string or null")
         String name,
         String description,

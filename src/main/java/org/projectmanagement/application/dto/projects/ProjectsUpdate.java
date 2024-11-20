@@ -6,7 +6,7 @@ import org.projectmanagement.domain.enums.DefaultStatus;
 
 import java.time.Instant;
 
-public record ProjectsUpdateDTO(
+public record ProjectsUpdate(
         String name,
         String description,
         Instant endDate,

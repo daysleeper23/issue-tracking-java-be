@@ -1,19 +1,17 @@
 package org.projectmanagement.application.services;
 
 import lombok.RequiredArgsConstructor;
-import org.projectmanagement.application.dto.invitations.InvitationsDTO;
+import org.projectmanagement.application.dto.invitations.Invitations;
 import org.projectmanagement.application.dto.invitations.InvitationsInfo;
 import org.projectmanagement.application.dto.invitations.InvitationsMapper;
-import org.projectmanagement.application.exception.AppMessage;
-import org.projectmanagement.application.exception.ApplicationException;
-import org.projectmanagement.domain.entities.Invitations;
+import org.projectmanagement.application.exceptions.AppMessage;
+import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.domain.repository.InvitationsRepository;
 import org.projectmanagement.domain.services.InvitationsService;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +23,7 @@ public class InvitationsServiceImpl implements InvitationsService {
 
 
     @Override
-    public boolean sendInvitation(String companyId, InvitationsDTO invitationsDTO, String loginId) {
+    public boolean sendInvitation(String companyId, Invitations invitationsDTO, String loginId) {
         /*
           Todo: Implement the following checks
            + Check if the company & role & workspace exists
@@ -35,7 +33,7 @@ public class InvitationsServiceImpl implements InvitationsService {
         if (invitationsRepository.findOneByEmail(invitationsDTO.userEmail())) {
             throw new ApplicationException(AppMessage.INVITATION_ALREADY_SENT);
         }
-        Invitations invitations = InvitationsMapper.mapper.dtoToEntity(invitationsDTO);
+        org.projectmanagement.domain.entities.Invitations invitations = InvitationsMapper.mapper.dtoToEntity(invitationsDTO);
         invitationsRepository.save(invitations.toBuilder()
                 .companyId(UUID.fromString(companyId))
                 .invitedBy(UUID.fromString(loginId))
@@ -57,7 +55,7 @@ public class InvitationsServiceImpl implements InvitationsService {
 
     @Override
     public boolean refreshInvitation(String companyId, String invitationId, int days) {
-        Invitations invitations = invitationsRepository.findOne(invitationId);
+        org.projectmanagement.domain.entities.Invitations invitations = invitationsRepository.findOne(invitationId);
         if (invitations == null || !invitations.getCompanyId().toString().equals(companyId)) {
             throw new ApplicationException(AppMessage.INVITATION_NOT_FOUND);
         }
@@ -69,7 +67,7 @@ public class InvitationsServiceImpl implements InvitationsService {
 
     @Override
     public boolean revokeInvitation(String companyId, String invitationId) {
-        Invitations invitations = invitationsRepository.findOne(invitationId);
+        org.projectmanagement.domain.entities.Invitations invitations = invitationsRepository.findOne(invitationId);
         if ( invitations == null|| !invitations.getCompanyId().toString().equals(companyId)) {
             throw new ApplicationException(AppMessage.INVITATION_NOT_FOUND);
         }

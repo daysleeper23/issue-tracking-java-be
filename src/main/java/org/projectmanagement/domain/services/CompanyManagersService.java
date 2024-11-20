@@ -1,16 +1,16 @@
 package org.projectmanagement.domain.services;
 
-import org.projectmanagement.application.dto.company_managers.CreateCompanyManagersDTO;
-import org.projectmanagement.application.dto.company_managers.UpdateCompanyManagersDTO;
+import org.projectmanagement.application.dto.company_managers.CreateCompanyManagers;
+import org.projectmanagement.application.dto.company_managers.UpdateCompanyManagers;
 import org.projectmanagement.domain.entities.CompanyManagers;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CompanyManagersService {
-    CompanyManagers createCompanyManager(CreateCompanyManagersDTO dto);
+    CompanyManagers createCompanyManager(CreateCompanyManagers dto);
 
-    CompanyManagers updateCompanyManager(UUID id, UpdateCompanyManagersDTO dto);
+    CompanyManagers updateCompanyManager(UUID id, UpdateCompanyManagers dto);
 
     CompanyManagers getById(UUID id);
 

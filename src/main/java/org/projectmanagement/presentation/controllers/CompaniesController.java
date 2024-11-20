@@ -2,7 +2,7 @@ package org.projectmanagement.presentation.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.projectmanagement.application.dto.companies.CompanyDTO;
+import org.projectmanagement.application.dto.companies.Company;
 import org.projectmanagement.domain.entities.Companies;
 import org.projectmanagement.domain.services.CompaniesService;
 import org.projectmanagement.presentation.response.GlobalResponse;
@@ -20,7 +20,7 @@ public class CompaniesController {
 
     @PostMapping
     public ResponseEntity<GlobalResponse<Companies>> createCompany(
-            @RequestBody @Valid CompanyDTO dto
+            @RequestBody @Valid Company dto
             ){
         return new ResponseEntity<>(
                 new GlobalResponse<>(HttpStatus.CREATED.value(), companiesService.createNewCompany(dto)),
@@ -40,7 +40,7 @@ public class CompaniesController {
     @PutMapping("{id}")
     public ResponseEntity<GlobalResponse<Companies>> updateCompany(
             @PathVariable String id,
-            @RequestBody @Valid CompanyDTO dto
+            @RequestBody @Valid Company dto
     ){
         return new ResponseEntity<>(
                 new GlobalResponse<>(HttpStatus.OK.value(), companiesService.updateCompany(id,dto)),

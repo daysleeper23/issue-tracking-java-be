@@ -1,9 +1,7 @@
-package org.projectmanagement.application.exception;
+package org.projectmanagement.application.exceptions;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-
-import java.util.List;
 
 @Getter
 public class ApplicationException extends RuntimeException {

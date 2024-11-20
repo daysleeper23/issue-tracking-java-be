@@ -1,8 +1,8 @@
 package org.projectmanagement.application.services;
 
 import org.projectmanagement.application.dto.company_managers.CompanyManagerMapper;
-import org.projectmanagement.application.dto.company_managers.CreateCompanyManagersDTO;
-import org.projectmanagement.application.dto.company_managers.UpdateCompanyManagersDTO;
+import org.projectmanagement.application.dto.company_managers.CreateCompanyManagers;
+import org.projectmanagement.application.dto.company_managers.UpdateCompanyManagers;
 import org.projectmanagement.domain.entities.Companies;
 import org.projectmanagement.domain.entities.CompanyManagers;
 import org.projectmanagement.domain.entities.Roles;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -39,7 +38,7 @@ public class CompanyManagersServiceImpl implements CompanyManagersService {
     }
 
     @Override
-    public CompanyManagers createCompanyManager(CreateCompanyManagersDTO dto) {
+    public CompanyManagers createCompanyManager(CreateCompanyManagers dto) {
         return companyManagersRepository.save(
                 CompanyManagers.builder()
                         .id(UUID.randomUUID())
@@ -53,7 +52,7 @@ public class CompanyManagersServiceImpl implements CompanyManagersService {
     }
 
     @Override
-    public CompanyManagers updateCompanyManager(UUID id, UpdateCompanyManagersDTO dto) {
+    public CompanyManagers updateCompanyManager(UUID id, UpdateCompanyManagers dto) {
         Roles role = rolesRepository.findById(dto.roleId()).orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " is not found"));
 
         if (!role.getName().equals("ADMIN") && !role.getName().equals("COMPANY_MANAGER")) {

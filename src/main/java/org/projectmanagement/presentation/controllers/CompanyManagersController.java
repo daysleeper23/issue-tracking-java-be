@@ -1,10 +1,9 @@
 package org.projectmanagement.presentation.controllers;
 
 import jakarta.validation.Valid;
-import org.projectmanagement.application.dto.company_managers.CreateCompanyManagersDTO;
-import org.projectmanagement.application.dto.company_managers.UpdateCompanyManagersDTO;
+import org.projectmanagement.application.dto.company_managers.CreateCompanyManagers;
+import org.projectmanagement.application.dto.company_managers.UpdateCompanyManagers;
 import org.projectmanagement.domain.entities.CompanyManagers;
-import org.projectmanagement.domain.entities.ProjectMembers;
 import org.projectmanagement.domain.services.CompanyManagersService;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +35,12 @@ public class CompanyManagersController {
     }
 
     @PostMapping
-    public ResponseEntity<GlobalResponse<CompanyManagers>> createCompanyManager(@RequestBody @Valid CreateCompanyManagersDTO dto) {
+    public ResponseEntity<GlobalResponse<CompanyManagers>> createCompanyManager(@RequestBody @Valid CreateCompanyManagers dto) {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), companyManagersService.createCompanyManager(dto)), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<GlobalResponse<CompanyManagers>> updateCompanyManager(@PathVariable @Valid UUID id,@RequestBody @Valid UpdateCompanyManagersDTO dto) {
+    public ResponseEntity<GlobalResponse<CompanyManagers>> updateCompanyManager(@PathVariable @Valid UUID id,@RequestBody @Valid UpdateCompanyManagers dto) {
         CompanyManagers updatedCompanyManager = companyManagersService.updateCompanyManager(id, dto);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedCompanyManager), HttpStatus.OK);
     }

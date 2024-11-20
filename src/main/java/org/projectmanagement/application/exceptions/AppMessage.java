@@ -1,4 +1,4 @@
-package org.projectmanagement.application.exception;
+package org.projectmanagement.application.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

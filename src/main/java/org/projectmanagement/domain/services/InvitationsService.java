@@ -1,13 +1,13 @@
 package org.projectmanagement.domain.services;
 
-import org.projectmanagement.application.dto.invitations.InvitationsDTO;
+import org.projectmanagement.application.dto.invitations.Invitations;
 import org.projectmanagement.application.dto.invitations.InvitationsInfo;
 
 import java.util.List;
 
 public interface InvitationsService {
 
-    boolean sendInvitation(String companyId,InvitationsDTO invitationsDTO,String loginId);
+    boolean sendInvitation(String companyId, Invitations invitations, String loginId);
 
     List<InvitationsInfo> getInvitations(String companyId);
 
