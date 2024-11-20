@@ -4,6 +4,7 @@ import org.projectmanagement.domain.entities.WorkspacesMembersRoles;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,19 +17,19 @@ public interface WorkspacesMembersRolesRepoJpa extends JpaRepository<WorkspacesM
             "FROM workspaces_members_roles w " +
             "WHERE w.workspace_id = :workspaceId"
         , nativeQuery = true)
-    List<WorkspacesMembersRoles> findAllByWorkspaceId(UUID workspaceId);
+    List<WorkspacesMembersRoles> findAllByWorkspaceId(@Param("workspaceId") UUID workspaceId);
 
     @Query(value = "SELECT * " +
             "FROM workspaces_members_roles w " +
             "WHERE w.user_id = :userId " +
             "AND w.workspace_id = :workspaceId"
         , nativeQuery = true)
-    Optional<WorkspacesMembersRoles> findByUserIdAndWorkspaceId(UUID userId, UUID workspaceId);
+    Optional<WorkspacesMembersRoles> findByUserIdAndWorkspaceId(@Param("userId") UUID userId, @Param("workspaceId") UUID workspaceId);
 
     @Modifying
     @Query(value = "UPDATE workspaces_members_roles w " +
             "SET w.role_id = :newRoleId " +
             "WHERE w.id = :id"
         , nativeQuery = true)
-    WorkspacesMembersRoles updateWorkspacesMembersRoles(UUID id, UUID newRoleId);
+    WorkspacesMembersRoles updateWorkspacesMembersRoles(@Param("id") UUID id, @Param("newRoleId") UUID newRoleId);
 }

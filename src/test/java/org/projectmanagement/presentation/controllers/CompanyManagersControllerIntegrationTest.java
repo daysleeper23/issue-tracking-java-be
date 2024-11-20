@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ExtendWith((SpringExtension.class))
+//@ExtendWith((SpringExtension.class))
 public class CompanyManagersControllerIntegrationTest {
 
     MockMvc mockMvc;
@@ -34,9 +34,9 @@ public class CompanyManagersControllerIntegrationTest {
         inMemoryDatabase = InMemoryDatabase.getInstance();
         inMemoryDatabase.roles.clear();
 
-        inMemoryDatabase.roles.add(new Roles(roleAdminId, "Admin", companyId, false, true, Instant.now(), Instant.now()));
-        inMemoryDatabase.roles.add(new Roles(roleDeveloperId, "Developer", companyId, false, true, Instant.now(), Instant.now()));
-        inMemoryDatabase.roles.add(new Roles(roleProjectDirectorId, "Team Leader", companyId, false, true, Instant.now(), Instant.now()));
+//        inMemoryDatabase.roles.add(new Roles(roleAdminId, "Admin", companyId, false, true, Instant.now(), Instant.now()));
+//        inMemoryDatabase.roles.add(new Roles(roleDeveloperId, "Developer", companyId, false, true, Instant.now(), Instant.now()));
+//        inMemoryDatabase.roles.add(new Roles(roleProjectDirectorId, "Team Leader", companyId, false, true, Instant.now(), Instant.now()));
 
         System.out.println("Roles count in setup: " + inMemoryDatabase.roles.size());
     }

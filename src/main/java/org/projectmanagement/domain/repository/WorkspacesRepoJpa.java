@@ -20,7 +20,7 @@ public interface WorkspacesRepoJpa extends JpaRepository<Workspaces, UUID> {
                     "AND is_deleted = false"
             , nativeQuery = true
     )
-    List<Workspaces> findAllByCompanyId(UUID companyId);
+    List<Workspaces> findAllByCompanyId(@Param("companyId") UUID companyId);
 
     @Modifying
     @Query(value = "UPDATE Workspaces w " +
@@ -28,7 +28,7 @@ public interface WorkspacesRepoJpa extends JpaRepository<Workspaces, UUID> {
                     "WHERE id = :id"
             , nativeQuery = true
     )
-    void deleteById(UUID id);
+    void deleteById(@Param("id") UUID id);
 
     @Modifying
     @Query(value = "UPDATE Workspaces w " +

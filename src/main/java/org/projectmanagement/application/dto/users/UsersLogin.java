@@ -1,5 +1,6 @@
 package org.projectmanagement.application.dto.users;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,8 +15,10 @@ import java.util.UUID;
 @Getter
 @Setter
 public class UsersLogin implements UserDetails {
-    private UUID id;
+    @NotBlank(message = "cannot be blank")
     private String email;
+
+    @NotBlank(message = "cannot be blank")
     private String password;
 
     @Override
