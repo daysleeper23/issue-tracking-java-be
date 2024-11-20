@@ -14,6 +14,21 @@ spring:
     hibernate:
       ddl-auto: update #for testing purpose changing it to 'update' or 'validate' and has your schema created in your database
       show-sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SMTP_USERNAME}
+    password : ${SMTP_PASSWORD}
+    test-connection: true
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
 springdoc:
   swagger-ui:
     path : "/swagger-ui.html"

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.UUID;
 import org.projectmanagement.application.dto.invitations.Invitations;
 import org.projectmanagement.application.dto.invitations.InvitationsInfo;
+import org.projectmanagement.domain.services.EmailsService;
 import org.projectmanagement.domain.services.InvitationsService;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.List;
 public class InvitationsController {
 
     private final InvitationsService invitationsService;
+    private final EmailsService emailsService;
 
     @PostMapping("/")
     public ResponseEntity<GlobalResponse<Boolean>> sendInvitation(
@@ -62,4 +64,14 @@ public class InvitationsController {
     ) {
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.revokeInvitation(companyId,invitationId)));
     }
+
+    @PostMapping("/test-send-mail")
+    public ResponseEntity<GlobalResponse<Boolean>> testSendMail(
+            @RequestBody @Valid EmailTest dto
+    ) {
+        emailsService.sendEmail(dto.to(), dto.subject(), dto.text());
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(),true));
+    }
+
+    public record EmailTest(String to, String text, String subject){}
 }

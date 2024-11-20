@@ -20,6 +20,9 @@ public enum AppMessage {
     //Invitation errors
     INVITATION_NOT_FOUND("Invitation not found"),
     INVITATION_ALREADY_SENT("Invitation already sent"),
-    INVITATION_STILL_VALID("Invitation still valid");
+    INVITATION_STILL_VALID("Invitation still valid"),
+    //User errors
+    USER_NOT_FOUND("User not found"),
+    USER_ALREADY_JOINED_COMPANY("User already joined a company"),;
     final String message;
 }

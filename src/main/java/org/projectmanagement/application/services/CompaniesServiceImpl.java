@@ -2,13 +2,19 @@ package org.projectmanagement.application.services;
 
 import lombok.RequiredArgsConstructor;
 import org.projectmanagement.application.dto.companies.Company;
+import org.projectmanagement.application.dto.company_managers.CreateCompanyManagers;
 import org.projectmanagement.application.exceptions.AppMessage;
 import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.domain.entities.Companies;
+import org.projectmanagement.domain.entities.Users;
 import org.projectmanagement.domain.repository.CompaniesRepository;
+import org.projectmanagement.domain.repository.UsersRepository;
 import org.projectmanagement.domain.services.CompaniesService;
+import org.projectmanagement.domain.services.CompanyManagersService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -16,18 +22,38 @@ import java.util.UUID;
 public class CompaniesServiceImpl implements CompaniesService {
 
     private final CompaniesRepository companiesRepository;
+    private final UsersRepository usersRepository;
+    private final CompanyManagersService companyManagersService;
 
     @Override
+    @Transactional
     public Companies createNewCompany(Company dto) {
         /*Todo: Implement security context holder
             Get userId from actual security context holder
             Check if user already joined a company or own a company
          */
+        Optional<Users> checkUser = usersRepository.findById(UUID.fromString(dto.userId()));
+        if (checkUser.isEmpty()){
+            throw new ApplicationException(AppMessage.USER_NOT_FOUND);
+        }
+        if (checkUser.get().getCompanyId() != null){
+            throw new ApplicationException(AppMessage.USER_ALREADY_JOINED_COMPANY);
+        }
         Companies companies = new Companies();
         companies.setName(dto.name());
         companies.setDescription(dto.description());
         companies.setOwnerId(UUID.randomUUID());
-        return companiesRepository.save(companies);
+        Companies saved = companiesRepository.save(companies);
+        Users updateUser = checkUser.get();
+        updateUser.setCompanyId(saved.getId());
+        usersRepository.save(updateUser);
+        //Get admin role here
+        companyManagersService.createCompanyManager(new CreateCompanyManagers(
+                updateUser.getId(),
+                saved.getId(),
+                UUID.randomUUID()
+        ));
+        return saved;
     }
 
     @Override
