@@ -2,8 +2,8 @@ package org.projectmanagement.application.services;
 
 
 import org.projectmanagement.application.dto.projects.ProjectMapper;
-import org.projectmanagement.application.dto.projects.ProjectsCreateDTO;
-import org.projectmanagement.application.dto.projects.ProjectsUpdateDTO;
+import org.projectmanagement.application.dto.projects.ProjectsCreate;
+import org.projectmanagement.application.dto.projects.ProjectsUpdate;
 import org.projectmanagement.domain.entities.Projects;
 import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
 import org.projectmanagement.domain.repository.ProjectsRepository;
@@ -11,7 +11,6 @@ import org.projectmanagement.domain.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,7 +38,7 @@ public class ProjectServiceImpl implements ProjectService {
         return projects;
     }
 
-    public Projects createProject(ProjectsCreateDTO dto){
+    public Projects createProject(ProjectsCreate dto){
         Projects project = projectsRepository.save(
             Projects.builder()
                     //.id(UUID.randomUUID())
@@ -58,7 +57,7 @@ public class ProjectServiceImpl implements ProjectService {
         return projectsRepository.save(project);
     }
 
-    public Projects updateProject(UUID id, ProjectsUpdateDTO dto) {
+    public Projects updateProject(UUID id, ProjectsUpdate dto) {
         Projects projectToUpdate = projectsRepository.findOneById(id).orElse(null);
 
         if (projectToUpdate == null) {

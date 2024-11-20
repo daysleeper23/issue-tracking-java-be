@@ -4,7 +4,7 @@ import lombok.*;
 
 import java.util.UUID;
 
-public record CreateCompanyManagersDTO(
+public record CreateCompanyManagers(
     @NonNull
     UUID userId,
     @NonNull

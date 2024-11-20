@@ -1,11 +1,10 @@
 package org.projectmanagement.presentation.controllers;
 
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.UUID;
-import org.projectmanagement.application.dto.invitations.InvitationsDTO;
+import org.projectmanagement.application.dto.invitations.Invitations;
 import org.projectmanagement.application.dto.invitations.InvitationsInfo;
 import org.projectmanagement.domain.services.InvitationsService;
 import org.projectmanagement.presentation.response.GlobalResponse;
@@ -26,7 +25,7 @@ public class InvitationsController {
     public ResponseEntity<GlobalResponse<Boolean>> sendInvitation(
             HttpServletRequest request,
             @PathVariable String companyId,
-            @RequestBody @Valid InvitationsDTO dto
+            @RequestBody @Valid Invitations dto
     ) {
         String appUrl = request.getContextPath();
         String userId = java.util.UUID.randomUUID().toString();

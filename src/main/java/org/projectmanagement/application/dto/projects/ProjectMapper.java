@@ -15,7 +15,7 @@ public interface ProjectMapper {
     @Mapping(target = "leaderId", ignore = true)
     @Mapping(target = "workspaceId", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void toProjectsFromProjectsUpdateDTO(ProjectsUpdateDTO projectsUpdateDTO, @MappingTarget Projects project);
+    void toProjectsFromProjectsUpdateDTO(ProjectsUpdate projectsUpdate, @MappingTarget Projects project);
 
 
     @AfterMapping

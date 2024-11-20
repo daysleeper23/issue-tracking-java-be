@@ -1,8 +1,8 @@
 package org.projectmanagement.presentation.controllers;
 
 import jakarta.validation.Valid;
-import org.projectmanagement.application.dto.project_members.ProjectMemberCreateDTO;
-import org.projectmanagement.application.dto.project_members.ProjectMemberUpdateDTO;
+import org.projectmanagement.application.dto.project_members.ProjectMemberCreate;
+import org.projectmanagement.application.dto.project_members.ProjectMemberUpdate;
 import org.projectmanagement.application.services.ProjectMembersServiceImpl;
 import org.projectmanagement.domain.entities.ProjectMembers;
 import org.projectmanagement.presentation.response.GlobalResponse;
@@ -33,12 +33,12 @@ public class ProjectMemberController {
     }
 
     @PostMapping
-    public ResponseEntity<GlobalResponse<ProjectMembers>> createProjectMember(@RequestBody @Valid ProjectMemberCreateDTO dto) {
+    public ResponseEntity<GlobalResponse<ProjectMembers>> createProjectMember(@RequestBody @Valid ProjectMemberCreate dto) {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), projectMembersService.createProjectMember(dto)), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<GlobalResponse<ProjectMembers>> updateProjectMember(@Valid @PathVariable UUID id, @Valid ProjectMemberUpdateDTO dto) {
+    public ResponseEntity<GlobalResponse<ProjectMembers>> updateProjectMember(@Valid @PathVariable UUID id, @Valid ProjectMemberUpdate dto) {
         ProjectMembers updatedProjectMember = projectMembersService.updateProjectMember(id, dto);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedProjectMember), HttpStatus.OK);
     }

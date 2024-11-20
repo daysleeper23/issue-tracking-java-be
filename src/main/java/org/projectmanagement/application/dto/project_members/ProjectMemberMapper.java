@@ -15,6 +15,6 @@ public interface  ProjectMemberMapper {
     @Mapping(target = "userId", ignore = true)
     @Mapping(target = "projectId", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void toProjectMemberFromProjectMemberDTO(ProjectMemberUpdateDTO dto, @MappingTarget ProjectMembers projectMember);
+    void toProjectMemberFromProjectMemberDTO(ProjectMemberUpdate dto, @MappingTarget ProjectMembers projectMember);
 
 }

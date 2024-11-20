@@ -1,6 +1,6 @@
 package org.projectmanagement.domain.services;
 
-import org.projectmanagement.application.dto.project_members.ProjectMemberCreateDTO;
+import org.projectmanagement.application.dto.project_members.ProjectMemberCreate;
 import org.projectmanagement.domain.entities.ProjectMembers;
 
 import java.util.List;
@@ -13,9 +13,9 @@ public interface ProjectMembersService {
 
     List<ProjectMembers> getAllProjectsMemberIsPartOfByUserId(UUID userId);
 
-    Optional<ProjectMembers> createProjectMember(ProjectMemberCreateDTO projectMember);
+    Optional<ProjectMembers> createProjectMember(ProjectMemberCreate projectMember);
 
-    Optional<ProjectMembers> updateProjectMember(ProjectMemberCreateDTO projectMember);
+    Optional<ProjectMembers> updateProjectMember(ProjectMemberCreate projectMember);
 
     void deleteProjectMemberById(UUID id);
 

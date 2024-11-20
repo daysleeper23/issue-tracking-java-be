@@ -2,8 +2,8 @@ package org.projectmanagement.application.services;
 
 import lombok.RequiredArgsConstructor;
 import org.projectmanagement.application.dto.tasks.*;
-import org.projectmanagement.application.exception.AppMessage;
-import org.projectmanagement.application.exception.ApplicationException;
+import org.projectmanagement.application.exceptions.AppMessage;
+import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.domain.entities.TaskSubscribers;
 import org.projectmanagement.domain.entities.Tasks;
 import org.projectmanagement.domain.enums.DefaultStatus;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.projectmanagement.application.exception.AppMessage.TASK_NOT_FOUND;
+import static org.projectmanagement.application.exceptions.AppMessage.TASK_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Service

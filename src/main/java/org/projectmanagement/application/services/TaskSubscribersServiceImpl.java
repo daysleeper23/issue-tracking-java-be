@@ -1,8 +1,8 @@
 package org.projectmanagement.application.services;
 
 import lombok.RequiredArgsConstructor;
-import org.projectmanagement.application.exception.AppMessage;
-import org.projectmanagement.application.exception.ApplicationException;
+import org.projectmanagement.application.exceptions.AppMessage;
+import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.domain.entities.TaskSubscribers;
 import org.projectmanagement.domain.repository.TasksRepository;
 import org.projectmanagement.domain.repository.TaskSubscribersRepository;

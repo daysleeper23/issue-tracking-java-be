@@ -12,6 +12,6 @@ public interface CompanyManagerMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    void updateCompanManagersDTOToCompanyManagers(UpdateCompanyManagersDTO dto, @MappingTarget CompanyManagers companyManager);
+    void updateCompanManagersDTOToCompanyManagers(UpdateCompanyManagers dto, @MappingTarget CompanyManagers companyManager);
 
 }

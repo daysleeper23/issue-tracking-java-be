@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.UUID;
 
 import java.time.Instant;
 
-public record InvitationsDTO(
+public record Invitations(
         @Email
         String userEmail,
         @UUID

@@ -1,8 +1,8 @@
 package org.projectmanagement.application.services;
 
 
-import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsCreateDTO;
-import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsUpdateDTO;
+import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsCreate;
+import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsUpdate;
 import org.projectmanagement.domain.entities.RolesPermissions;
 import org.projectmanagement.domain.entities.Roles;
 import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -44,7 +43,7 @@ public class RolesPermissionsServiceImpl implements RolesPermissionsService {
     }
 
     @Override
-    public List<RolesPermissions> createRolePermissions(RolesPermissionsCreateDTO dto) {
+    public List<RolesPermissions> createRolePermissions(RolesPermissionsCreate dto) {
         List<RolesPermissions> rolesPermissions = new ArrayList<>();
 
         Roles roleFromDB = rolesRepository.findById(dto.roleId()).orElse(null);
@@ -62,7 +61,7 @@ public class RolesPermissionsServiceImpl implements RolesPermissionsService {
     }
 
     @Override
-    public List<RolesPermissions> addPermissionsToRole(UUID roleId, RolesPermissionsUpdateDTO dto) {
+    public List<RolesPermissions> addPermissionsToRole(UUID roleId, RolesPermissionsUpdate dto) {
         List<RolesPermissions> rolesPermissions = new ArrayList<>();
 
         Roles roleFromDB = rolesRepository.findById(roleId).orElse(null);
@@ -85,7 +84,7 @@ public class RolesPermissionsServiceImpl implements RolesPermissionsService {
     }
 
     @Override
-    public void removePermissionsFromRole(UUID roleId, RolesPermissionsUpdateDTO dto) {
+    public void removePermissionsFromRole(UUID roleId, RolesPermissionsUpdate dto) {
         Roles roleFromDB = rolesRepository.findById(roleId).orElse(null);
 
         if (roleFromDB == null) {

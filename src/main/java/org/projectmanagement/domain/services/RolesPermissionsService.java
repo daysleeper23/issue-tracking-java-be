@@ -1,7 +1,7 @@
 package org.projectmanagement.domain.services;
 
-import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsCreateDTO;
-import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsUpdateDTO;
+import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsCreate;
+import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsUpdate;
 import org.projectmanagement.domain.entities.RolesPermissions;
 
 import java.util.List;
@@ -12,9 +12,9 @@ public interface RolesPermissionsService {
 
     List<UUID> getAllPermissionsOfRoleByRoleId(UUID roleId);
 
-    List<RolesPermissions> createRolePermissions(RolesPermissionsCreateDTO dto);
+    List<RolesPermissions> createRolePermissions(RolesPermissionsCreate dto);
 
-    List<RolesPermissions> addPermissionsToRole(UUID roleId, RolesPermissionsUpdateDTO dto);
+    List<RolesPermissions> addPermissionsToRole(UUID roleId, RolesPermissionsUpdate dto);
 
-    void removePermissionsFromRole(UUID roleId, RolesPermissionsUpdateDTO dto);
+    void removePermissionsFromRole(UUID roleId, RolesPermissionsUpdate dto);
 }

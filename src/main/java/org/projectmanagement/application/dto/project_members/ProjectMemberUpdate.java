@@ -2,7 +2,7 @@ package org.projectmanagement.application.dto.project_members;
 
 import lombok.*;
 
-public record ProjectMemberUpdateDTO (
+public record ProjectMemberUpdate(
         @NonNull
         Boolean subscribed
 ) {

@@ -1,16 +1,14 @@
 package org.projectmanagement.application.services;
 
 import lombok.RequiredArgsConstructor;
-import org.projectmanagement.application.dto.companies.CompanyDTO;
-import org.projectmanagement.application.exception.AppMessage;
-import org.projectmanagement.application.exception.ApplicationException;
+import org.projectmanagement.application.dto.companies.Company;
+import org.projectmanagement.application.exceptions.AppMessage;
+import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.domain.entities.Companies;
 import org.projectmanagement.domain.repository.CompaniesRepository;
 import org.projectmanagement.domain.services.CompaniesService;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -20,7 +18,7 @@ public class CompaniesServiceImpl implements CompaniesService {
     private final CompaniesRepository companiesRepository;
 
     @Override
-    public Companies createNewCompany(CompanyDTO dto) {
+    public Companies createNewCompany(Company dto) {
         /*Todo: Implement security context holder
             Get userId from actual security context holder
             Check if user already joined a company or own a company
@@ -43,7 +41,7 @@ public class CompaniesServiceImpl implements CompaniesService {
     }
 
     @Override
-    public Companies updateCompany(String id, CompanyDTO dto) {
+    public Companies updateCompany(String id, Company dto) {
         //Check if company is existed
         Companies existed = companiesRepository.findById(UUID.fromString(id));
         if (existed == null){
@@ -68,7 +66,7 @@ public class CompaniesServiceImpl implements CompaniesService {
         return true;
     }
 
-    public boolean isNotChange(CompanyDTO updates, Companies target){
+    public boolean isNotChange(Company updates, Companies target){
         return  updates.name().equals(target.getName()) &&
                 updates.description().equals(target.getDescription());
     }

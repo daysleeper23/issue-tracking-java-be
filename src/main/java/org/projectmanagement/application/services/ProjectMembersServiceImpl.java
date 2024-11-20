@@ -1,8 +1,8 @@
 package org.projectmanagement.application.services;
 
-import org.projectmanagement.application.dto.project_members.ProjectMemberCreateDTO;
+import org.projectmanagement.application.dto.project_members.ProjectMemberCreate;
 import org.projectmanagement.application.dto.project_members.ProjectMemberMapper;
-import org.projectmanagement.application.dto.project_members.ProjectMemberUpdateDTO;
+import org.projectmanagement.application.dto.project_members.ProjectMemberUpdate;
 import org.projectmanagement.domain.entities.ProjectMembers;
 import org.projectmanagement.domain.entities.Projects;
 import org.projectmanagement.domain.entities.Users;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -65,7 +64,7 @@ public class ProjectMembersServiceImpl {
         return projectMembers;
     }
 
-    public ProjectMembers createProjectMember(ProjectMemberCreateDTO dto) {
+    public ProjectMembers createProjectMember(ProjectMemberCreate dto) {
         return projectMembersRepository.save(
                 ProjectMembers.builder()
                         .id(UUID.randomUUID())
@@ -78,7 +77,7 @@ public class ProjectMembersServiceImpl {
         );
     }
 
-    public ProjectMembers updateProjectMember(UUID id, ProjectMemberUpdateDTO dto) {
+    public ProjectMembers updateProjectMember(UUID id, ProjectMemberUpdate dto) {
 
         ProjectMembers projectMemberToUpdate = projectMembersRepository.findOneById(id).orElse(null);
         if (projectMemberToUpdate == null) {
