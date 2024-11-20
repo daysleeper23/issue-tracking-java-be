@@ -4,6 +4,7 @@ import org.projectmanagement.domain.entities.Roles;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface RolesRepoJpa extends JpaRepository<Roles, UUID> {
             "AND r.company_id = :companyId " +
             "AND r.is_deleted = false"
             , nativeQuery = true)
-    Optional<Roles> findByExactName(String name, UUID companyId);
+    Optional<Roles> findByExactName(@Param("name") String name, @Param("companyId") UUID companyId);
 
     @Query(value = "SELECT * " +
             "FROM Roles r " +
@@ -27,7 +28,7 @@ public interface RolesRepoJpa extends JpaRepository<Roles, UUID> {
             "AND r.is_deleted = false"
             , nativeQuery = true
     )
-    List<Roles> findAllByCompanyId(UUID companyId);
+    List<Roles> findAllByCompanyId(@Param("companyId") UUID companyId);
 
     @Modifying
     @Query(value = "UPDATE Roles w " +
@@ -36,5 +37,5 @@ public interface RolesRepoJpa extends JpaRepository<Roles, UUID> {
             "AND w.is_system_role = false"
             , nativeQuery = true
     )
-    void deleteById(UUID id);
+    void deleteById(@Param("id") UUID id);
 }

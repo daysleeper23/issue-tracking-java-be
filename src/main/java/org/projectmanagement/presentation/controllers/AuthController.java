@@ -1,13 +1,77 @@
 package org.projectmanagement.presentation.controllers;
 
+import jakarta.validation.Valid;
+import org.projectmanagement.application.dto.users.*;
+import org.projectmanagement.domain.services.UsersService;
+import org.projectmanagement.presentation.response.GlobalResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
-@RequestMapping
+@RequestMapping("/auth")
 public class AuthController {
+    private final UsersService usersService;
+    private final AuthenticationManager authManager;
+
+    @Autowired
+    public AuthController(UsersService usersService, AuthenticationManager am) {
+        this.usersService = usersService;
+        this.authManager = am;
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<GlobalResponse<OwnersRead>> createOwner(@RequestBody @Valid OwnersCreate owner) {
+        Optional<OwnersRead> createdUser = usersService.createOwner(owner);
+        return createdUser
+            .map(ownersRead ->
+                new ResponseEntity<>(
+                    new GlobalResponse<>(HttpStatus.CREATED.value(), ownersRead)
+                    , HttpStatus.CREATED)
+            )
+            .orElseGet(() ->
+                new ResponseEntity<>(
+                    new GlobalResponse<>(HttpStatus.BAD_REQUEST.value(), null), HttpStatus.BAD_REQUEST
+                )
+            );
+    }
+
     @PostMapping("/login")
-    public void login() {
+    public ResponseEntity<GlobalResponse<UsersRead>> login(@RequestBody @Valid UsersLogin loginInfo) {
+        try {
+            Authentication authentication = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginInfo.getEmail(),
+                            loginInfo.getPassword()
+                    )
+            );
+            System.out.println("Login successful");
+            Optional<UsersRead> loggedInUser = usersService.login(loginInfo);
+            return loggedInUser
+                    .map(usersRead ->
+                            new ResponseEntity<>(
+                                    new GlobalResponse<>(HttpStatus.OK.value(), usersRead)
+                                    , HttpStatus.OK)
+                    )
+                    .orElseGet(() ->
+                            new ResponseEntity<>(
+                                    new GlobalResponse<>(HttpStatus.UNAUTHORIZED.value(), null)
+                                    , HttpStatus.UNAUTHORIZED)
+                    );
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>(
+                    new GlobalResponse<>(HttpStatus.UNAUTHORIZED.value(), null)
+                    , HttpStatus.UNAUTHORIZED);
+        }
     }
 }

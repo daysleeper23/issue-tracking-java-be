@@ -21,5 +21,5 @@ public interface UsersService {
 
   Boolean deleteUser(UUID id);
 
-  Optional<UsersRead> login(UsersCreate user);
+  Optional<UsersRead> login(UsersLogin user);
 }

@@ -49,7 +49,6 @@ public class UsersServiceImpl implements UsersService {
         //hash the password
         String hashedPassword = passwordEncoder.encode(ownersCreate.password());
 
-
         //create a new owner
         Users newUser = usersRepository.save(
                 Users.builder()
@@ -157,14 +156,14 @@ public class UsersServiceImpl implements UsersService {
         return UsersMapper.toUsersRead(updatedUser);
     }
 
-    public Optional<UsersRead> login(UsersCreate user) {
-        Optional<Users> existingUser = usersRepository.findOneByEmail(user.email());
+    public Optional<UsersRead> login(UsersLogin user) {
+        Optional<Users> existingUser = usersRepository.findOneByEmail(user.getEmail());
         if (existingUser.isEmpty()) {
             return Optional.empty();
         }
 
         Users userEntity = existingUser.get();
-        if (!passwordEncoder.matches(user.password(), userEntity.getPasswordHash())) {
+        if (!passwordEncoder.matches(user.getPassword(), userEntity.getPasswordHash())) {
             return Optional.empty();
         }
 
