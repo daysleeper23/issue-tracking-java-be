@@ -55,8 +55,6 @@ public class UsersControllerIntegrationTest {
         System.out.println("Users count in setup: " + inMemoryDatabase.users.size());
     }
 
-
-
     @Nested
     class CreateUser {
         @Test

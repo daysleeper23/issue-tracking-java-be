@@ -48,20 +48,38 @@ public class UsersController {
         UsersRead user = usersService.getUserById(id).orElse(null);
 
         if (user == null) {
-            return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), null), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(
+                    new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), null), HttpStatus.NOT_FOUND
+            );
         }
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), user), HttpStatus.OK);
     }
 
+    @PostMapping("/admin")
+    public ResponseEntity<GlobalResponse<UsersRead>> createAdminOrCompanyManager(
+            @RequestBody @Valid UsersCreate user
+            , @PathVariable UUID companyId) {
+        UsersRead createdUser = usersService.createAdminOrCompanyManagers(user, companyId);
+        return new ResponseEntity<>(
+                new GlobalResponse<>(HttpStatus.CREATED.value(), createdUser), HttpStatus.CREATED
+        );
+    }
+
     @PostMapping
-    public ResponseEntity<GlobalResponse<UsersRead>> createUser(@RequestBody @Valid UsersCreate user) {
-        UsersRead createdUser = usersService.createUser(user);
-        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), createdUser), HttpStatus.CREATED);
+    public ResponseEntity<GlobalResponse<UsersRead>> createUser(
+            @RequestBody @Valid UsersCreate user
+            , @PathVariable UUID companyId) {
+        UsersRead createdUser = usersService.createUser(user, companyId);
+        return new ResponseEntity<>(
+                new GlobalResponse<>(HttpStatus.CREATED.value(), createdUser), HttpStatus.CREATED
+        );
     }
 
     // Update a user by ID
     @PatchMapping("/{id}")
-    public ResponseEntity<GlobalResponse<UsersRead>> updateUser(@PathVariable UUID id, @RequestBody @Valid UsersUpdate user) {
+    public ResponseEntity<GlobalResponse<UsersRead>> updateUser(
+            @PathVariable UUID id
+            , @RequestBody @Valid UsersUpdate user) {
         UsersRead updatedUser = usersService.updateUser(id, user);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedUser), HttpStatus.OK);
     }

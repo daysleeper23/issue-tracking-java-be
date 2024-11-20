@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -18,6 +19,12 @@ public interface UsersRepoJpa extends JpaRepository<Users, UUID> {
             "AND u.is_deleted = false"
         , nativeQuery = true)
     List<Users> findAllByCompanyId(UUID companyId);
+
+    @Query(value = "SELECT * " +
+            "FROM users u " +
+            "WHERE u.email = :email"
+        , nativeQuery = true)
+    Optional<Users> findOneByEmail(String email);
 
     @Modifying
     @Query(value = "UPDATE users u " +

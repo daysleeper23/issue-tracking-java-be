@@ -12,7 +12,7 @@ spring:
     password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: create-drop #for testing purpose changing it to 'update' or 'validate' and has your schema created in your database
+      ddl-auto: update #for testing purpose changing it to 'update' or 'validate' and has your schema created in your database
       show-sql: true
 springdoc:
   swagger-ui:

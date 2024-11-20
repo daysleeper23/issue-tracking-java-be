@@ -10,6 +10,6 @@ public record OwnersCreate (
         String email,
 
         @NotBlank(message = "cannot be blank")
-        String passwordHash
+        String password
 ) {
 }

@@ -33,4 +33,8 @@ public class UsersRepoImpl implements UsersRepository {
     public void deleteById(UUID id) {
         jpaRepo.deleteById(id);
     }
+
+    public Optional<Users> findOneByEmail(String email) {
+        return jpaRepo.findOneByEmail(email);
+    }
 }
