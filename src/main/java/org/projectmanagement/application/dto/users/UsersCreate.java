@@ -2,8 +2,6 @@ package org.projectmanagement.application.dto.users;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jdk.jfr.BooleanFlag;
-import lombok.*;
 
 import java.util.UUID;
 
@@ -22,10 +20,9 @@ public record UsersCreate (
     @NotNull(message = "cannot be null")
     Boolean isActive,
 
-    @NotNull(message = "cannot be null")
-    UUID companyId,
+    UUID workspaceId,
 
-    @NotNull(message = "cannot be null")
-    Boolean isOwner
-    ) {
+    UUID roleId
+)
+    {
 }

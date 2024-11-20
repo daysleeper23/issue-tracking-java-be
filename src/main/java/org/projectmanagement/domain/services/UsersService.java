@@ -9,7 +9,9 @@ import org.projectmanagement.application.dto.users.*;
 public interface UsersService {
 
   OwnersRead createOwner(OwnersCreate user);
-  UsersRead createUser(UsersCreate user);
+
+  UsersRead createUser(UsersCreate user, UUID companyId);
+  UsersRead createAdminOrCompanyManagers(UsersCreate user, UUID companyId);
 
   Optional<UsersRead> getUserById(UUID id);
 
