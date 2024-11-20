@@ -13,7 +13,7 @@ public record UsersCreate (
     String email,
 
     @NotBlank(message = "cannot be blank")
-    String passwordHash,
+    String password,
 
     String title,
 
