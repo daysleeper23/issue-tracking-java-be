@@ -5,7 +5,6 @@ import org.projectmanagement.domain.repository.WorkspacesMembersRolesRepoJpa;
 import org.projectmanagement.domain.repository.WorkspacesMembersRolesRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,6 +19,10 @@ public class WorkspacesMembersRolesRepoImpl implements WorkspacesMembersRolesRep
 
     public WorkspacesMembersRoles save(WorkspacesMembersRoles workspacesMembersRoles) {
         return jpaRepo.save(workspacesMembersRoles);
+    }
+
+    public Optional<WorkspacesMembersRoles> findByUserId(UUID userId) {
+        return jpaRepo.findByUserId(userId);
     }
 
     public Optional<WorkspacesMembersRoles> findByUserIdAndWorkspaceId(UUID userId, UUID workspaceId) {
