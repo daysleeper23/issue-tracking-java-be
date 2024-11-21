@@ -5,21 +5,22 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.projectmanagement.application.dto.users.*;
+import org.projectmanagement.domain.entities.Users;
 
 public interface UsersService {
 
-  Optional<OwnersRead> createOwner(OwnersCreate user);
+    Optional<UsersRead> login(UsersLogin user);
+    String authenticate(UsersLogin user);
 
-  UsersRead createUser(UsersCreate user, UUID companyId);
-  UsersRead createAdminOrCompanyManagers(UsersCreate user, UUID companyId);
+    Optional<OwnersRead> createOwner(OwnersCreate user);
+    UsersRead createUser(UsersCreate user, UUID companyId);
+    UsersRead createAdminOrCompanyManagers(UsersCreate user, UUID companyId);
 
-  Optional<UsersRead> getUserById(UUID id);
+    Optional<UsersRead> getUserById(UUID id);
 
-  List<UsersRead> getAllUsersOfCompany(UUID companyId);
+    List<UsersRead> getAllUsersOfCompany(UUID companyId);
 
-  UsersRead updateUser(UUID id, UsersUpdate user);
+    UsersRead updateUser(UUID id, UsersUpdate user);
 
-  Boolean deleteUser(UUID id);
-
-  Optional<UsersRead> login(UsersLogin user);
+    Boolean deleteUser(UUID id);
 }

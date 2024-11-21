@@ -14,6 +14,7 @@ import org.projectmanagement.domain.repository.UsersRepository;
 import org.projectmanagement.domain.repository.WorkspacesMembersRolesRepository;
 import org.projectmanagement.domain.services.UsersService;
 
+import org.projectmanagement.presentation.config.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class UsersServiceImpl implements UsersService {
     private final WorkspacesMembersRolesRepository wmrRepository;
     private final CompanyManagersRepository cmRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtHelper jwtHelper;
 
     @Autowired
     public UsersServiceImpl(
@@ -32,11 +34,38 @@ public class UsersServiceImpl implements UsersService {
             , WorkspacesMembersRolesRepository wmrr
             , CompanyManagersRepository cmr
             , PasswordEncoder pe
+            , JwtHelper jwth
     ) {
         this.usersRepository = usersRepository;
         this.wmrRepository = wmrr;
         this.cmRepository = cmr;
         this.passwordEncoder = pe;
+        this.jwtHelper = jwth;
+    }
+
+    public Optional<UsersRead> login(UsersLogin user) {
+        Optional<Users> existingUser = usersRepository.findOneByEmail(user.getEmail());
+        if (existingUser.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Users userEntity = existingUser.get();
+        if (!passwordEncoder.matches(user.getPassword(), userEntity.getPasswordHash())) {
+            System.out.println("Password does not match");
+            return Optional.empty();
+        }
+
+        System.out.println("Password matches");
+        return Optional.of(UsersMapper.toUsersRead(userEntity));
+    }
+
+    public String authenticate(UsersLogin user) {
+        Optional<Users> existingUser = usersRepository.findOneByEmail(user.getEmail());
+        if (existingUser.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        return jwtHelper.generateToken(new UsersLogin(existingUser.get().getEmail(), existingUser.get().getPasswordHash()));
     }
 
     public Optional<OwnersRead> createOwner(OwnersCreate ownersCreate) {
@@ -46,6 +75,7 @@ public class UsersServiceImpl implements UsersService {
             return Optional.empty();
         }
 
+        System.out.println("Creating owner with pwd: " + ownersCreate.password());
         //hash the password
         String hashedPassword = passwordEncoder.encode(ownersCreate.password());
 
@@ -85,7 +115,7 @@ public class UsersServiceImpl implements UsersService {
         );
 
         //add the member to the workspace with the role
-        WorkspacesMembersRoles wmr = wmrRepository.save(
+        wmrRepository.save(
                 WorkspacesMembersRoles.builder()
                         .userId(newUser.getId())
                         .workspaceId(user.workspaceId())
@@ -115,7 +145,7 @@ public class UsersServiceImpl implements UsersService {
         );
 
         //add the member to the company managers list
-        CompanyManagers cm = cmRepository.save(
+        cmRepository.save(
                 CompanyManagers.builder()
                         .companyId(companyId)
                         .userId(newUser.getId())
@@ -154,19 +184,5 @@ public class UsersServiceImpl implements UsersService {
         UsersMapper.INSTANCE.toUsersFromUsersUpdate(user, existingUser);
         Users updatedUser = usersRepository.save(existingUser);
         return UsersMapper.toUsersRead(updatedUser);
-    }
-
-    public Optional<UsersRead> login(UsersLogin user) {
-        Optional<Users> existingUser = usersRepository.findOneByEmail(user.getEmail());
-        if (existingUser.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Users userEntity = existingUser.get();
-        if (!passwordEncoder.matches(user.getPassword(), userEntity.getPasswordHash())) {
-            return Optional.empty();
-        }
-
-        return Optional.of(UsersMapper.toUsersRead(userEntity));
     }
 }

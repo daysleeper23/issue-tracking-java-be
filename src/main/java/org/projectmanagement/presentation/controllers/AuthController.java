@@ -2,7 +2,9 @@ package org.projectmanagement.presentation.controllers;
 
 import jakarta.validation.Valid;
 import org.projectmanagement.application.dto.users.*;
+import org.projectmanagement.domain.services.AuthService;
 import org.projectmanagement.domain.services.UsersService;
+import org.projectmanagement.presentation.config.JwtHelper;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,12 +24,14 @@ import java.util.Optional;
 @RequestMapping("/auth")
 public class AuthController {
     private final UsersService usersService;
+    private final AuthService authService;
     private final AuthenticationManager authManager;
 
     @Autowired
-    public AuthController(UsersService usersService, AuthenticationManager am) {
+    public AuthController(UsersService usersService, AuthenticationManager am, AuthService as) {
         this.usersService = usersService;
         this.authManager = am;
+        this.authService = as;
     }
 
     @PostMapping("/signup")
@@ -47,7 +51,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<GlobalResponse<UsersRead>> login(@RequestBody @Valid UsersLogin loginInfo) {
+    public ResponseEntity<GlobalResponse<UsersAuth>> login(@RequestBody @Valid UsersLogin loginInfo) {
+        System.out.println("Login attempt " + loginInfo.getEmail() + " " + loginInfo.getPassword());
         try {
             Authentication authentication = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -55,8 +60,7 @@ public class AuthController {
                             loginInfo.getPassword()
                     )
             );
-            System.out.println("Login successful");
-            Optional<UsersRead> loggedInUser = usersService.login(loginInfo);
+            Optional<UsersAuth> loggedInUser = authService.login(loginInfo);
             return loggedInUser
                     .map(usersRead ->
                             new ResponseEntity<>(
