@@ -2,8 +2,6 @@ package org.projectmanagement.application.services;
 
 import org.projectmanagement.application.dto.users.UsersAuth;
 import org.projectmanagement.application.dto.users.UsersLogin;
-import org.projectmanagement.application.dto.users.UsersMapper;
-import org.projectmanagement.application.dto.users.UsersRead;
 import org.projectmanagement.domain.entities.Users;
 import org.projectmanagement.domain.repository.UsersRepository;
 import org.projectmanagement.domain.services.AuthService;
@@ -51,6 +49,11 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("User not found");
         }
 
-        return jwtHelper.generateToken(new UsersLogin(existingUser.get().getEmail(), "just a temp password"));
+        return jwtHelper.generateToken(
+                UsersAuth.builder()
+                        .id(existingUser.get().getId())
+                        .email(existingUser.get().getEmail())
+                        .build()
+        );
     }
 }

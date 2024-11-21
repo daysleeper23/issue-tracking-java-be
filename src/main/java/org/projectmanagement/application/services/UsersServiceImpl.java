@@ -115,7 +115,7 @@ public class UsersServiceImpl implements UsersService {
         );
 
         //add the member to the workspace with the role
-        WorkspacesMembersRoles wmr = wmrRepository.save(
+        wmrRepository.save(
                 WorkspacesMembersRoles.builder()
                         .userId(newUser.getId())
                         .workspaceId(user.workspaceId())
@@ -145,7 +145,7 @@ public class UsersServiceImpl implements UsersService {
         );
 
         //add the member to the company managers list
-        CompanyManagers cm = cmRepository.save(
+        cmRepository.save(
                 CompanyManagers.builder()
                         .companyId(companyId)
                         .userId(newUser.getId())

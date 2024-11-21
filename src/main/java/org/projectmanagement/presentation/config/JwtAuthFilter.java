@@ -44,30 +44,29 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
 //            String workspaceId = request.getHeader("workspace_id");
-//            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 //                UserDetails userDetails = userDetailsService.loadUserAndAuthByUsername(username, UUID.fromString(workspaceId));
-//                if (jwtHelper.isTokenValid(token, userDetails)) {
-//                    UsernamePasswordAuthenticationToken authenticationToken =
-//                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-//                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-//                }
-//            }
-//            filterChain.doFilter(request, response);
-
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                if (jwtHelper.isTokenValid(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
+            }
+            filterChain.doFilter(request, response);
         } catch (AccessDeniedException e) {
-
+            System.out.println("Access denied");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.getWriter().write(e.getMessage());
         } catch (java.io.IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        return path.equals("/auth/signup") || path.equals("/auth/login");
-    }
+//    @Override
+//    protected boolean shouldNotFilter(HttpServletRequest request) {
+//        String path = request.getRequestURI();
+//        return path.equals("/auth/signup") || path.equals("/auth/login");
+//    }
 }

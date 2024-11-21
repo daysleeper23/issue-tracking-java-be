@@ -40,11 +40,12 @@ public class JwtHelper {
     }
 
     public String generateToken(UserDetails userDetails) {
+        System.out.println("Generating token for user: " + userDetails.getUsername());
         return this.generateToken(new HashMap<>(), userDetails);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts
+        String newToken = Jwts
                 .builder()
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
@@ -52,6 +53,8 @@ public class JwtHelper {
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 14))
                 .signWith(getSignInKey())
                 .compact();
+        System.out.println("Generated token: " + newToken + " for user: " + userDetails.getUsername());
+        return newToken;
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

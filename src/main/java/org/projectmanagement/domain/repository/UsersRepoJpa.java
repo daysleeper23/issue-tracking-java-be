@@ -23,7 +23,8 @@ public interface UsersRepoJpa extends JpaRepository<Users, UUID> {
 
     @Query(value = "SELECT * " +
             "FROM users u " +
-            "WHERE u.email = :email"
+            "WHERE u.email = :email " +
+            "AND u.is_deleted = false"
         , nativeQuery = true)
     Optional<Users> findOneByEmail(@Param("email") String email);
 

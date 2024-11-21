@@ -29,7 +29,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        System.out.println("Creating password encoder");
         return new BCryptPasswordEncoder();
     }
 
@@ -48,7 +47,7 @@ public class SecurityConfig {
 //                    .requestMatchers("/**").permitAll()
                     .anyRequest().authenticated()
             )
-//            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .authenticationManager(authenticationManager(http));
         return http.build();
     }

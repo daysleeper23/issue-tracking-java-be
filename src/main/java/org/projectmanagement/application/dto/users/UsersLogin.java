@@ -28,6 +28,6 @@ public class UsersLogin implements UserDetails {
 
     @Override
     public String getUsername() {
-        return "";
+        return email;
     }
 }

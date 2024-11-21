@@ -39,8 +39,8 @@ public class UsersAuth implements UserDetails {
         return "";
     }
 
-    //    @Override
+    @Override
     public String getUsername() {
-        return "";
+        return email;
     }
 }

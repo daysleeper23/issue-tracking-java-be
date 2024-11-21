@@ -60,7 +60,6 @@ public class AuthController {
                             loginInfo.getPassword()
                     )
             );
-            System.out.println("Login successful");
             Optional<UsersAuth> loggedInUser = authService.login(loginInfo);
             return loggedInUser
                     .map(usersRead ->
