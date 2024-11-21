@@ -3,6 +3,7 @@ package org.projectmanagement.presentation.config;
 import org.projectmanagement.application.services.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -42,7 +43,131 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth ->
                 auth
-                    .requestMatchers("/auth/signup", "/auth/login").permitAll()
+                    .requestMatchers(
+                "/auth/signup"
+                        , "/auth/login"
+                        , "/{companyId}/invitations").permitAll()
+
+                    /*
+                        COMPANY PERMISSIONS
+                     */
+                    //Allow GET requests on /companies
+                    .requestMatchers(HttpMethod.GET,"/companies/{id}").hasAuthority("COMPANY_READ")
+
+                    //Allow POST requests on /companies
+                    .requestMatchers(HttpMethod.POST,"/companies").hasAuthority("COMPANY_UPDATE")
+
+                    //Allow PUT requests on /companies
+                    .requestMatchers(HttpMethod.PUT,"/companies/{id}").hasAuthority("COMPANY_UPDATE")
+
+                    //Allow GET requests on /{companyId}/companyManagers
+                    .requestMatchers(HttpMethod.GET,"/{companyId}/companyManagers")
+                        .hasAuthority("COMPANY_READ")
+
+                    //Allow POST/PATCH/DELETE requests on /{companyId}/companyManagers
+                    .requestMatchers(HttpMethod.POST,"/{companyId}/companyManagers")
+                        .hasAuthority("COMPANY_UPDATE")
+
+                    .requestMatchers(HttpMethod.PATCH,"/{companyId}/companyManagers/{id}")
+                        .hasAuthority("COMPANY_UPDATE")
+
+                    .requestMatchers(HttpMethod.DELETE,"/{companyId}/companyManagers/{id}")
+                        .hasAuthority("COMPANY_UPDATE")
+
+                    /*
+                        WORKSPACE PERMISSIONS
+                     */
+                    //Allow GET requests on /{companyId}/workspaces
+                    .requestMatchers(HttpMethod.GET,"/{companyId}/workspaces")
+                        .hasAuthority("WORKSPACE_READ_ALL")
+
+                    //Allow POST requests on /{companyId}/workspaces
+                    .requestMatchers(HttpMethod.POST,"/{companyId}/workspaces")
+                        .hasAuthority("WORKSPACE_CREATE")
+
+                    //Allow DELETE requests on /{companyId}/workspaces/{id}
+                    .requestMatchers(HttpMethod.DELETE,"/{companyId}/workspaces/{id}")
+                        .hasAnyAuthority("WORKSPACE_DELETE_ALL", "WORKSPACE_DELETE_ONE")
+
+                    //Allow PATCH requests on /{companyId}/workspaces/{id}
+                    .requestMatchers(HttpMethod.PATCH,"/{companyId}/workspaces/{id}")
+                        .hasAnyAuthority("WORKSPACE_UPDATE_ALL", "WORKSPACE_UPDATE_ONE")
+
+                    //Allow GET requests on /{companyId}/{workspaceId}/members/roles
+                    .requestMatchers(HttpMethod.GET,"/{companyId}/{workspaceId}/members/roles")
+                        .hasAnyAuthority("WORKSPACE_READ_ALL", "WORKSPACE_READ_ONE")
+
+                    //Allow POST requests on /{companyId}/{workspaceId}/members/roles
+                    .requestMatchers(HttpMethod.POST,"/{companyId}/{workspaceId}/members/roles")
+                        .hasAnyAuthority("PROJECT_UPDATE_ALL", "PROJECT_UPDATE_ONE")
+
+                    //Allow DELETE requests on /{companyId}/{workspaceId}/members/roles/{id}
+                    .requestMatchers(HttpMethod.DELETE,"/{companyId}/{workspaceId}/members/roles/{id}")
+                        .hasAnyAuthority("PROJECT_UPDATE_ALL", "PROJECT_UPDATE_ONE")
+
+                    //Allow PATCH requests on /{companyId}/{workspaceId}/members/roles/{id}
+                    .requestMatchers(HttpMethod.PATCH,"/{companyId}/{workspaceId}/members/roles/{id}")
+                        .hasAnyAuthority("PROJECT_UPDATE_ALL", "PROJECT_UPDATE_ONE")
+
+                    /*
+                        PROJECT PERMISSIONS
+                     */
+                    //Allow GET requests on /{companyId}/{workspaceId}/projects
+                    .requestMatchers(HttpMethod.GET,"/{companyId}/{workspaceId}/projects")
+                        .hasAuthority("PROJECT_READ_ALL")
+
+                        //TODO: Do we need this endpoint?
+                    .requestMatchers(HttpMethod.GET,"/{companyId}/{workspaceId}/projects/{id}")
+                        .hasAnyAuthority("PROJECT_READ_ALL", "PROJECT_READ_ONE")
+
+                    //Allow POST requests on /{companyId}/{workspaceId}/projects
+                    .requestMatchers(HttpMethod.POST,"/{companyId}/{workspaceId}/projects")
+                        .hasAuthority("PROJECT_CREATE")
+
+                    //Allow DELETE requests on /{companyId}/{workspaceId}/projects/{id}
+                    .requestMatchers(HttpMethod.DELETE,"/{companyId}/{workspaceId}/projects/{id}")
+                        .hasAnyAuthority("PROJECT_DELETE_ALL", "PROJECT_DELETE_ONE")
+
+                    //Allow PATCH requests on /{companyId}/{workspaceId}/projects/{id}
+                    .requestMatchers(HttpMethod.PATCH,"/{companyId}/{workspaceId}/projects/{id}")
+                        .hasAnyAuthority("PROJECT_UPDATE_ALL", "PROJECT_UPDATE_ONE")
+
+                    //Allow GET requests on /{projectId}/projectMembers
+                    .requestMatchers(HttpMethod.GET,"/{projectId}/projectMembers")
+                        .hasAnyAuthority("PROJECT_READ_ALL", "PROJECT_READ_ONE")
+
+                    //Allow POST requests on /{projectId}/projectMembers
+                    .requestMatchers(HttpMethod.POST,"/{projectId}/projectMembers")
+                        .hasAnyAuthority("PROJECT_UPDATE_ALL", "PROJECT_UPDATE_ONE")
+
+                    //Allow DELETE requests on /{projectId}/projectMembers/{id}
+                    .requestMatchers(HttpMethod.DELETE,"/{projectId}/projectMembers/{id}")
+                        .hasAnyAuthority("PROJECT_UPDATE_ALL", "PROJECT_UPDATE_ONE")
+
+                    //Allow PATCH requests on /{projectId}/projectMembers/{id}
+                    .requestMatchers(HttpMethod.PATCH,"/{projectId}/projectMembers/{id}")
+                        .hasAnyAuthority("PROJECT_UPDATE_ALL", "PROJECT_UPDATE_ONE")
+
+                    /*
+                        ROLE PERMISSIONS
+                    */
+                    //Allow GET requests on /roles
+                    .requestMatchers(HttpMethod.GET,"/{companyId}/roles").hasAuthority("ROLE_READ_ALL")
+
+                        //TODO: Roles should be created with permissions, not just name?
+                    //Allow POST requests on /roles
+                    .requestMatchers(HttpMethod.POST,"/{companyId}/roles").hasAuthority("ROLE_CREATE")
+
+                    //Allow DELETE requests on /roles
+                    .requestMatchers(HttpMethod.DELETE,"/{companyId}/roles").hasAuthority("ROLE_DELETE_ALL")
+
+                    //Allow PUT requests on /roles
+                    .requestMatchers(HttpMethod.PUT,"/{companyId}/roles").hasAuthority("ROLE_UPDATE_ALL")
+
+                        //TODO: Missing endpoints for updating permissions for a custom roles?
+                    //Allow GET requests on /rolesPermissions
+                    .requestMatchers(HttpMethod.GET,"/rolesPermissions").hasAuthority("ROLE_READ_ALL")
+
 //                    .requestMatchers("/**").permitAll()
                     .anyRequest().authenticated()
             )

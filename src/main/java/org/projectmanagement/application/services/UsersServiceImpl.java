@@ -55,7 +55,6 @@ public class UsersServiceImpl implements UsersService {
             return Optional.empty();
         }
 
-        System.out.println("Password matches");
         return Optional.of(UsersMapper.toUsersRead(userEntity));
     }
 

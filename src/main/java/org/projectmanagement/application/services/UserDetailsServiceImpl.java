@@ -1,9 +1,7 @@
 package org.projectmanagement.application.services;
 
-import org.projectmanagement.application.dto.users.UsersLogin;
-import org.projectmanagement.application.dto.users.UsersRead;
 import org.projectmanagement.domain.entities.Users;
-import org.projectmanagement.domain.repository.UsersRepository;
+import org.projectmanagement.domain.repository.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,14 +12,26 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UsersRepository usersRepository;
+    private final CompanyManagersRepository cmRepository;
+    private final WorkspacesMembersRolesRepository wmrRepository;
+    private final RolesPermissionsRepository rpRepository;
+    private final PermissionsJpaRepo pjRepository;
 
-    public UserDetailsServiceImpl(UsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
+    public UserDetailsServiceImpl(
+            UsersRepository ur
+            , CompanyManagersRepository cmr
+            , RolesPermissionsRepository rpr
+            , PermissionsJpaRepo pjr
+            , WorkspacesMembersRolesRepository wmrr) {
+        this.usersRepository = ur;
+        this.cmRepository = cmr;
+        this.rpRepository = rpr;
+        this.pjRepository = pjr;
+        this.wmrRepository = wmrr;
     }
 
     @Override
@@ -31,9 +41,37 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("User not found");
         }
 
+        //retrieve user roles and permissions
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        //Check if user is company manager or admin
+        cmRepository.findByUserId(user.get().getId())
+            //add permissions if user is company managers or admin
+            .ifPresent(cm ->
+                rpRepository.findAllPermissionsOfRoleByRoleId(cm.getRoleId()).forEach(rp ->
+                    pjRepository.findById(rp).ifPresent(p -> authorities.add(p::getName))
+                )
+            );
+
+        //Check if user is member of a workspace
+        wmrRepository.findByUserId(user.get().getId())
+            //add permissions if user has roles in some workplaces
+            .ifPresent(wmr ->
+                rpRepository.findAllPermissionsOfRoleByRoleId(wmr.getRoleId()).forEach(rp ->
+                    pjRepository.findById(rp).ifPresent(p -> {
+                        //check if the permission is already added
+                        if (authorities.stream().anyMatch(a -> a.getAuthority().equals(p.getName()))) {
+                            return;
+                        }
+                        authorities.add(p::getName);
+                    })
+                )
+            );
+
         return user.map(users -> User.builder()
                 .username(users.getEmail())
                 .password(users.getPasswordHash())
+                .authorities(authorities)
                 .build()).orElse(null);
     }
 
@@ -63,7 +101,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 //        user.get().setAuthorities(authorities);
 //
 //
-//        return org.springframework.security.core.userdetails.User
+//        return org.springframework.security.core.userDetails.User
 //                .builder()
 //                .username(user.get().getUsername())
 //                .password(user.get().getPassword())
