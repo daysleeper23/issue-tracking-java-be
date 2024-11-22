@@ -1,5 +1,6 @@
 package org.projectmanagement.presentation.errors;
 
+import org.projectmanagement.domain.exceptions.InvalidInputException;
 import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
 import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.presentation.response.GlobalResponse;
@@ -21,6 +22,13 @@ public class GlobalPresentationError {
         List<GlobalResponse.ErrorItem> errors = ex.getBindingResult().getFieldErrors().stream()
                 .map(err -> new GlobalResponse.ErrorItem(err.getField() + " " + err.getDefaultMessage()))
                 .toList();
+        return new ResponseEntity<>(new GlobalResponse(400, errors), null, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidInputException.class)
+    public ResponseEntity<GlobalResponse> handleValidationExceptions(InvalidInputException ex) {
+
+        List<GlobalResponse.ErrorItem> errors = List.of(new GlobalResponse.ErrorItem(ex.getMessage()));
         return new ResponseEntity<>(new GlobalResponse(400, errors), null, HttpStatus.BAD_REQUEST);
     }
 
