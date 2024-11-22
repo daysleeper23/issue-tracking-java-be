@@ -143,35 +143,34 @@ public class InMemoryDatabase {
 
         wmrs = new ArrayList<>(
                 List.of(
-                        new WorkspacesMembersRoles(UUID.randomUUID(),
-                                workspaceId1,
-                                users.get(0).getId(),
-                                roles.get(0).getId(),
-                                Instant.now(),
-                                Instant.now()
-                        ),
-                        new WorkspacesMembersRoles(UUID.randomUUID(),
-                                workspaceId1,
-                                users.get(1).getId(),
-                                roles.get(1).getId(),
-                                Instant.now(),
-                                Instant.now()
-                        ),
-                        new WorkspacesMembersRoles(UUID.randomUUID(),
-                                workspaceId2,
-                                users.get(0).getId(),
-                                roles.get(1).getId(),
-                                Instant.now(),
-                                Instant.now()
-                        ),
-                        new WorkspacesMembersRoles(UUID.randomUUID(),
-                                workspaceId2,
-                                users.get(1).getId(),
-                                roles.get(0).getId(),
-                                Instant.now(),
-                                Instant.now()
-                        )
-
+                        WorkspacesMembersRoles.builder()
+                                .workspaceId(workspaceId1)
+                                .userId(users.get(0).getId())
+                                .roleId(roles.get(0).getId())
+                                .createdAt(Instant.now())
+                                .updatedAt(Instant.now())
+                                .build(),
+                        WorkspacesMembersRoles.builder()
+                                .workspaceId(workspaceId1)
+                                .userId(users.get(1).getId())
+                                .roleId(roles.get(1).getId())
+                                .createdAt(Instant.now())
+                                .updatedAt(Instant.now())
+                                .build(),
+                        WorkspacesMembersRoles.builder()
+                                .workspaceId(workspaceId2)
+                                .userId(users.get(0).getId())
+                                .roleId(roles.get(1).getId())
+                                .createdAt(Instant.now())
+                                .updatedAt(Instant.now())
+                                .build(),
+                        WorkspacesMembersRoles.builder()
+                                .workspaceId(workspaceId2)
+                                .userId(users.get(1).getId())
+                                .roleId(roles.get(0).getId())
+                                .createdAt(Instant.now())
+                                .updatedAt(Instant.now())
+                                .build()
                 )
         );
 

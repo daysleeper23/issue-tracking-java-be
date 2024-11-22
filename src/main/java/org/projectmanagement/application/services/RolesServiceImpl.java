@@ -1,5 +1,6 @@
 package org.projectmanagement.application.services;
 
+import jakarta.transaction.Transactional;
 import org.projectmanagement.application.dto.roles.RolesCreate;
 import org.projectmanagement.domain.entities.Roles;
 import org.projectmanagement.domain.repository.RolesRepository;
@@ -39,6 +40,7 @@ public class RolesServiceImpl implements RolesService {
         }
     }
 
+    @Transactional
     public Roles updateRoleName(UUID id, UUID companyId, RolesCreate role) {
         Optional<Roles> existingRole = rolesRepository.findById(id);
 
@@ -51,6 +53,7 @@ public class RolesServiceImpl implements RolesService {
         }
     }
 
+    @Transactional
     public Boolean deleteRole(UUID id) {
         rolesRepository.deleteById(id);
         //considering update the status to archived instead of deleting

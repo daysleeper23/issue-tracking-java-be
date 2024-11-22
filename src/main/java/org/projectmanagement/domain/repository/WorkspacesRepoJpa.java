@@ -24,19 +24,20 @@ public interface WorkspacesRepoJpa extends JpaRepository<Workspaces, UUID> {
 
     @Modifying
     @Query(value = "UPDATE Workspaces w " +
-                    "SET is_deleted = true" +
+                    "SET is_deleted = true, " +
+                        "updated_at = CURRENT_TIMESTAMP " +
                     "WHERE id = :id"
             , nativeQuery = true
     )
     void deleteById(@Param("id") UUID id);
 
     @Modifying
-    @Query(value = "UPDATE Workspaces w " +
-                    "SET w.name = :#{#workspace.name}, " +
-                        "w.description = :#{#workspace.description}, " +
-                        "w.updatedAt = CURRENT_TIMESTAMP " +
-                    "WHERE w.id = :id" +
-                    "AND w.is_deleted = false"
+    @Query(value = "UPDATE Workspaces " +
+                    "SET name = :#{#workspace.name}, " +
+                        "description = :#{#workspace.description}, " +
+                        "updated_at = CURRENT_TIMESTAMP " +
+                    "WHERE id = :id " +
+                    "AND is_deleted = false"
             , nativeQuery = true)
-    Optional<Workspaces> updateById(@Param("id") UUID id, @Param("workspace") Workspaces workspace);
+    int updateById(@Param("id") UUID id, @Param("workspace") Workspaces workspace);
 }

@@ -9,6 +9,7 @@ import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,6 +55,7 @@ public class WorkspacesController {
     }
     
     @PatchMapping("/{id}")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnWorkspace(authentication, #id, 'WORKSPACE_UPDATE_ONE')")
     public ResponseEntity<GlobalResponse<WorkspacesRead>> updateWorkspace(@PathVariable UUID id, @RequestBody @Valid WorkspacesUpdate workspace) {
         Optional<WorkspacesRead> updatedWorkspace = workspacesService.updateWorkspace(id, workspace);
         return updatedWorkspace

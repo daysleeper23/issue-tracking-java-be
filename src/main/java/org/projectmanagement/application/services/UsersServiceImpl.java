@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.transaction.Transactional;
 import org.projectmanagement.application.dto.users.*;
 import org.projectmanagement.domain.entities.CompanyManagers;
 import org.projectmanagement.domain.entities.Users;
@@ -168,11 +169,13 @@ public class UsersServiceImpl implements UsersService {
         return users.stream().map(UsersMapper::toUsersRead).toList();
     }
 
+    @Transactional
     public Boolean deleteUser(UUID id) {
         usersRepository.deleteById(id);
         return true;
     }
 
+    @Transactional
     public UsersRead updateUser(UUID id, UsersUpdate user) {
         Users existingUser = usersRepository.findById(id).orElse(null);
 

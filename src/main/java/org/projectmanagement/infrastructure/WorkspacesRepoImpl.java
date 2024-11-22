@@ -1,5 +1,6 @@
 package org.projectmanagement.infrastructure;
 
+import jakarta.transaction.Transactional;
 import org.projectmanagement.domain.entities.Workspaces;
 import org.projectmanagement.domain.repository.WorkspacesRepoJpa;
 import org.projectmanagement.domain.repository.WorkspacesRepository;
@@ -29,10 +30,15 @@ public class WorkspacesRepoImpl implements WorkspacesRepository {
         return jpaRepo.findAllByCompanyId(companyId);
     }
 
+    @Transactional
     public Optional<Workspaces> findByIdAndUpdate(UUID id, Workspaces workspace) {
-        return jpaRepo.updateById(id, workspace);
+        if (jpaRepo.updateById(id, workspace) == 1) {
+            return Optional.of(workspace);
+        }
+        return Optional.empty();
     }
 
+    @Transactional
     public void deleteById(UUID id) {
         jpaRepo.deleteById(id);
     }

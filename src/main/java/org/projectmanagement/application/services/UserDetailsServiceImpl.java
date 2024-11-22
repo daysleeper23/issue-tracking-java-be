@@ -63,10 +63,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                         if (authorities.stream().anyMatch(a -> a.getAuthority().equals(p.getName()))) {
                             return;
                         }
-                        authorities.add(p::getName);
+
+                        if (p.getName().contains("WORKSPACE_") && p.getName().contains("_ONE")) {
+                            authorities.add(p.getName()::toString);
+                            authorities.add((p.getName() + "_" + wmr.getWorkspaceId())::toString);
+                        }
                     })
                 )
             );
+
+        authorities.forEach(a -> System.out.println("Final Authority: " + a.getAuthority()));
 
         return user.map(users -> User.builder()
                 .username(users.getEmail())

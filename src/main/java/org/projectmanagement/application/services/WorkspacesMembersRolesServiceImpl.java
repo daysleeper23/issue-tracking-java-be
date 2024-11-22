@@ -1,5 +1,6 @@
 package org.projectmanagement.application.services;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import org.projectmanagement.application.dto.workspacesmembersroles.WorkspacesMembersRolesCreate;
 import org.projectmanagement.application.dto.workspacesmembersroles.WorkspacesMembersRolesMapper;
@@ -44,15 +45,14 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
             return null;
         }
 
-        WorkspacesMembersRoles wmr = new WorkspacesMembersRoles(
-                UUID.randomUUID(),
-                wmrc.getUserId(),
-                workspaceId,
-                wmrc.getRoleId(),
-                Instant.now(),
-                Instant.now()
+        WorkspacesMembersRoles wmr = wmrRepository.save(
+                WorkspacesMembersRoles.builder().userId(wmrc.getUserId())
+                        .workspaceId(workspaceId)
+                        .roleId(wmrc.getRoleId())
+                        .createdAt(Instant.now())
+                        .updatedAt(Instant.now())
+                        .build()
         );
-        wmrRepository.save(wmr);
         return WorkspacesMembersRolesMapper.toWorkspacesMembersRolesRead(wmr);
     }
 
@@ -75,6 +75,7 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
     }
 
     //update role for a user in a workspace
+    @Transactional
     public WorkspacesMembersRolesRead updateWorkspacesMembersRoles(
             @NotNull UUID id,
             @NotNull UUID workspaceId,
