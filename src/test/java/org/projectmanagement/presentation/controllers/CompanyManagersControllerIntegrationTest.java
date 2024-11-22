@@ -15,10 +15,13 @@ import org.projectmanagement.domain.repository.CompanyManagersJpaRepo;
 import org.projectmanagement.domain.repository.RolesRepoJpa;
 import org.projectmanagement.domain.repository.UsersRepoJpa;
 import org.projectmanagement.domain.repository.jpa.CompaniesJpaRepository;
+import org.projectmanagement.presentation.config.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -26,7 +29,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 
-
+import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -64,6 +68,7 @@ public class CompanyManagersControllerIntegrationTest {
     UUID user2Id;
     UUID companyManagerId;
 
+
     @BeforeEach
     void setUp() {
         companyManagersJpaRepo.deleteAll();
@@ -71,30 +76,30 @@ public class CompanyManagersControllerIntegrationTest {
         rolesRepoJpa.deleteAll();
         companiesJpaRepository.deleteAll();
 
-         Companies company = companiesJpaRepository.save(Companies.builder()
+        Companies company = companiesJpaRepository.save(Companies.builder()
                 .id(companyId)
                 .name("Test Company")
                 .build());
 
-         companyId = company.getId();
+        companyId = company.getId();
 
         Roles role = rolesRepoJpa.save(Roles.builder()
-                        .name("ADMIN")
-                        .companyId(companyId)
-                        .isDeleted(false)
-                        .isSystemRole(true)
+                .name("ADMIN")
+                .companyId(companyId)
+                .isDeleted(false)
+                .isSystemRole(true)
                 .build());
 
         roleAdminId = role.getId();
 
         Users user1 = usersRepoJpa.save(Users.builder()
-                        .name("user1")
-                        .email("email")
-                        .passwordHash("asdf")
-                        .isActive(true)
-                        .isDeleted(false)
-                        .isOwner(true)
-                        .companyId(companyId)
+                .name("user1")
+                .email("email")
+                .passwordHash("asdf")
+                .isActive(true)
+                .isDeleted(false)
+                .isOwner(true)
+                .companyId(companyId)
                 .build());
         user1Id = user1.getId();
 
@@ -111,9 +116,9 @@ public class CompanyManagersControllerIntegrationTest {
         user2Id = user2.getId();
 
         CompanyManagers companyManager = companyManagersJpaRepo.save(CompanyManagers.builder()
-                        .userId(user1Id)
-                        .roleId(roleAdminId)
-                        .companyId(companyId)
+                .userId(user1Id)
+                .roleId(roleAdminId)
+                .companyId(companyId)
                 .build());
 
         companyManagerId = companyManager.getId();
@@ -130,6 +135,7 @@ public class CompanyManagersControllerIntegrationTest {
     class GetCompanyManagers {
         @Test
         void getAllCorrectly() throws Exception {
+
             mockMvc.perform(get("/"+ companyId + "/companyManagers"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
