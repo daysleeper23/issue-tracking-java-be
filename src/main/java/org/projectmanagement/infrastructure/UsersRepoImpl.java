@@ -1,5 +1,6 @@
 package org.projectmanagement.infrastructure;
 
+import org.projectmanagement.application.dto.users.UsersLogin;
 import org.projectmanagement.domain.entities.Roles;
 import org.projectmanagement.domain.entities.Users;
 import org.projectmanagement.domain.repository.UsersRepoJpa;
@@ -32,5 +33,9 @@ public class UsersRepoImpl implements UsersRepository {
 
     public void deleteById(UUID id) {
         jpaRepo.deleteById(id);
+    }
+
+    public Optional<Users> findOneByEmail(String email) {
+        return jpaRepo.findOneByEmail(email);
     }
 }
