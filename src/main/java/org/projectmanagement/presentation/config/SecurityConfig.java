@@ -45,10 +45,11 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth ->
                 auth
-                    .requestMatchers(
-                "/auth/signup"
-                        , "/auth/login"
-                        , "/{companyId}/invitations").permitAll()
+                    .requestMatchers("/auth/signup",
+                            "/auth/login",
+                            "/swagger-ui/**",
+                            "/api-docs/**",
+                            "/{companyId}/invitations").permitAll()
 
                     /*
                         COMPANY PERMISSIONS
@@ -169,7 +170,6 @@ public class SecurityConfig {
                         //TODO: Missing endpoints for updating permissions for a custom roles?
                     //Allow GET requests on /rolesPermissions
                     .requestMatchers(HttpMethod.GET,"/rolesPermissions").hasAuthority("ROLE_READ_ALL")
-
 //                    .requestMatchers("/**").permitAll()
                     .anyRequest().authenticated()
             )

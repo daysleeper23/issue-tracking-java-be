@@ -1,14 +1,17 @@
 package org.projectmanagement.presentation.config;
 
+import lombok.extern.log4j.Log4j2;
 import org.projectmanagement.domain.entities.Permissions;
 import org.projectmanagement.domain.repository.PermissionsJpaRepo;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Log4j2
 @Configuration
 public class DataInitializer {
 
@@ -38,9 +41,10 @@ public class DataInitializer {
             permissions.forEach(permissionName -> {
                 if (permissionsRepository.findByName(permissionName).isEmpty()) {
                     permissionsRepository.save(Permissions.builder().name(permissionName).build());
-                    System.out.println("Inserted permission: " + permissionName);
+                    log.info("Permission {} created", permissionName);
                 }
             });
         };
     }
+
 }

@@ -34,6 +34,7 @@ public class AuthController {
         this.authService = as;
     }
 
+
     @PostMapping("/signup")
     public ResponseEntity<GlobalResponse<OwnersRead>> createOwner(@RequestBody @Valid OwnersCreate owner) {
         Optional<OwnersRead> createdUser = usersService.createOwner(owner);
