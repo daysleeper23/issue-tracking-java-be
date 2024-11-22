@@ -1,5 +1,6 @@
 package org.projectmanagement.application.services;
 
+import jakarta.transaction.Transactional;
 import org.projectmanagement.application.dto.workspaces.WorkspacesCreate;
 import org.projectmanagement.application.dto.workspaces.WorkspacesMapper;
 import org.projectmanagement.application.dto.workspaces.WorkspacesRead;
@@ -48,6 +49,7 @@ public class WorkspacesServiceImpl implements WorkspacesService {
                 .stream().map(WorkspacesMapper::toWorkspacesRead).toList();
     }
 
+    @Transactional
     public Optional<WorkspacesRead> updateWorkspace(UUID id, WorkspacesUpdate wu) {
         Optional<Workspaces> existingWorkspace = workspacesRepository.findById(id);
         if (existingWorkspace.isEmpty()) {
@@ -67,6 +69,7 @@ public class WorkspacesServiceImpl implements WorkspacesService {
         return updatedWorkspace.map(WorkspacesMapper::toWorkspacesRead);
     }
 
+    @Transactional
     public void deleteWorkspace(UUID id) {
         workspacesRepository.deleteById(id);
     }
