@@ -22,4 +22,12 @@ public interface RolesPermissionsJpaRepo extends JpaRepository<RolesPermissions,
             "WHERE rm.role_id = :roleId ",
             nativeQuery = true)
     List<RolesPermissions> findAllRolePermissionsByRoleId(@Param("roleId") UUID roleId);
+
+    @Query(value = "SELECT rp.* " +
+            "FROM roles_permissions rp " +
+            "JOIN roles r ON rp.role_id = r.id " +
+            "WHERE r.company_id = :companyId",
+            nativeQuery = true)
+    List<RolesPermissions> findAllByCompanyId(@Param("companyId") UUID companyId);
+
 }

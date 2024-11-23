@@ -41,4 +41,9 @@ public class RolesPermissionsRepoImpl implements RolesPermissionsRepository {
     public List<RolesPermissions> findAllRolePermissionsByRoleId(UUID roleId) {
         return rolesPermissionsJpaRepo.findAllRolePermissionsByRoleId(roleId);
     }
+
+    @Override
+    public List<RolesPermissions> findAllRolesPermissionsForCompany(UUID companyId) {
+        return rolesPermissionsJpaRepo.findAllByCompanyId(companyId);
+    }
 }

@@ -18,4 +18,6 @@ public interface RolesPermissionsRepository {
 
     List<RolesPermissions> findAllRolePermissionsByRoleId(UUID roleId);
 
+    List<RolesPermissions> findAllRolesPermissionsForCompany(UUID companyId);
+
 }
