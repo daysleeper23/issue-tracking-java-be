@@ -32,6 +32,12 @@ public class RolesPermissionsServiceImpl implements RolesPermissionsService {
 
 
     @Override
+    public List<RolesPermissions> getAllRolesPermissionsForCompany(UUID companyId) {
+        return rolesPermissionsRepository.findAllRolesPermissionsForCompany(companyId);
+    }
+
+
+    @Override
     public RolesPermissions getOneById(UUID id) {
         RolesPermissions rolesPermissionsFromDB = rolesPermissionsRepository.findById(id).orElse(null);
         if (rolesPermissionsFromDB == null) {
@@ -116,4 +122,5 @@ public class RolesPermissionsServiceImpl implements RolesPermissionsService {
             rolesPermissionsRepository.deleteById(permissionId);
         }
     }
+
 }

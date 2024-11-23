@@ -17,4 +17,6 @@ public interface RolesPermissionsService {
     List<RolesPermissions> addPermissionsToRole(UUID roleId, RolesPermissionsUpdate dto);
 
     void removePermissionsFromRole(UUID roleId, RolesPermissionsUpdate dto);
+
+    List<RolesPermissions> getAllRolesPermissionsForCompany(UUID companyId);
 }

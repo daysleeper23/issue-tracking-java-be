@@ -23,7 +23,11 @@ public class RolesPermissionsController {
         this.rolesPermissionsService = rolesPermissionsService;
     }
 
-
+    @GetMapping
+    public ResponseEntity<GlobalResponse<List<RolesPermissions>>> getAllRolesPermissions(@PathVariable UUID companyId) {
+        List<RolesPermissions> rolesPermissions = rolesPermissionsService.getAllRolesPermissionsForCompany(companyId);
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), rolesPermissions), HttpStatus.OK);
+    }
 
     @PatchMapping("/{roleId}")
     public ResponseEntity<GlobalResponse<List<RolesPermissions>>> addPermissionsToRoles(@PathVariable @Valid UUID roleId,@RequestBody @Valid  RolesPermissionsUpdate dto) {
