@@ -1,8 +1,10 @@
 package org.projectmanagement.presentation.errors;
 
 import org.projectmanagement.domain.exceptions.InvalidInputException;
+import org.projectmanagement.domain.exceptions.ResourceAlreadyExistsException;
 import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
 import org.projectmanagement.application.exceptions.ApplicationException;
+import org.projectmanagement.domain.exceptions.SystemRoleUpdateException;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +59,18 @@ public class GlobalPresentationError {
     public ResponseEntity<GlobalResponse> handleApplicationException(ApplicationException ex){
         List<GlobalResponse.ErrorItem> errorItems = List.of(new GlobalResponse.ErrorItem(ex.getMessage()));
         return new ResponseEntity<>(new GlobalResponse(ex.getStatus().value(),errorItems),null,ex.getStatus());
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<GlobalResponse> handleAResourceAlreadyExistsException(ResourceAlreadyExistsException ex){
+        List<GlobalResponse.ErrorItem> errors = List.of(new GlobalResponse.ErrorItem(ex.getMessage()));
+        return new ResponseEntity<>(new GlobalResponse(409 ,errors),null,HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(SystemRoleUpdateException.class)
+    public ResponseEntity<GlobalResponse> handleSystemRoleUpdateException(SystemRoleUpdateException ex) {
+        List<GlobalResponse.ErrorItem> errors = List.of(new GlobalResponse.ErrorItem(ex.getMessage()));
+        return new ResponseEntity<>(new GlobalResponse(403, errors), null, HttpStatus.FORBIDDEN);
     }
 
 }
