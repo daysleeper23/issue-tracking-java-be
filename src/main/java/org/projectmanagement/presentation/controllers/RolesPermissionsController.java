@@ -36,7 +36,7 @@ public class RolesPermissionsController {
 
     @PostMapping
     public ResponseEntity<GlobalResponse<List<RolesPermissions>>> getRolesPermissions(@PathVariable @Valid UUID companyId, @RequestBody @Valid RolesPermissionsCreate dto) {
-        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), rolesPermissionsService.createRolePermissions(companyId, dto)), HttpStatus.OK);
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), rolesPermissionsService.createRolePermissions(companyId, dto)), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{roleId}")
