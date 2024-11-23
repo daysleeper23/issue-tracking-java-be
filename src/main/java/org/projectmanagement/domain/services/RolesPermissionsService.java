@@ -12,7 +12,7 @@ public interface RolesPermissionsService {
 
     List<UUID> getAllPermissionsOfRoleByRoleId(UUID roleId);
 
-    List<RolesPermissions> createRolePermissions(RolesPermissionsCreate dto);
+    List<RolesPermissions> createRolePermissions(UUID companyId, RolesPermissionsCreate dto);
 
     List<RolesPermissions> addPermissionsToRole(UUID roleId, RolesPermissionsUpdate dto);
 

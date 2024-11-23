@@ -8,7 +8,8 @@ import java.util.UUID;
 
 public record RolesPermissionsCreate(
     @NotNull
-    UUID roleId,
+    String roleName,
+
     @NotEmpty
     List<UUID> permissions
 ) {

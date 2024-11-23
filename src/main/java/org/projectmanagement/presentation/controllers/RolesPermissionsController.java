@@ -1,24 +1,43 @@
 package org.projectmanagement.presentation.controllers;
 
+import jakarta.validation.Valid;
+import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsCreate;
+import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsUpdate;
 import org.projectmanagement.domain.entities.RolesPermissions;
+import org.projectmanagement.domain.services.RolesPermissionsService;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/rolesPermissions")
+@RequestMapping("/{companyId}/rolesPermissions")
 public class RolesPermissionsController {
 
-    // should I return all permissions for all roles or only permissions by role?
-    @GetMapping
-    public ResponseEntity<GlobalResponse<List<RolesPermissions>>> getRolesPermissions(@PathVariable UUID id) {
-        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), null), HttpStatus.OK);
+    private final RolesPermissionsService rolesPermissionsService;
+
+    RolesPermissionsController(RolesPermissionsService rolesPermissionsService) {
+        this.rolesPermissionsService = rolesPermissionsService;
+    }
+
+
+
+    @PatchMapping("/{roleId}")
+    public ResponseEntity<GlobalResponse<List<RolesPermissions>>> addPermissionsToRoles(@PathVariable @Valid UUID roleId,@RequestBody @Valid  RolesPermissionsUpdate dto) {
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), rolesPermissionsService.addPermissionsToRole(roleId, dto)), HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<GlobalResponse<List<RolesPermissions>>> getRolesPermissions(@PathVariable @Valid UUID companyId, @RequestBody @Valid RolesPermissionsCreate dto) {
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), rolesPermissionsService.createRolePermissions(companyId, dto)), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{roleId}")
+    public ResponseEntity<GlobalResponse<String>> removePermissionsFromRole(@PathVariable @Valid UUID roleId, @RequestBody @Valid RolesPermissionsUpdate dto) {
+        rolesPermissionsService.removePermissionsFromRole(roleId, dto);
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), "Permissions Removed from role"), HttpStatus.OK);
     }
 }
