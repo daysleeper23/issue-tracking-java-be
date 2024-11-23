@@ -1,12 +1,12 @@
 package org.projectmanagement.presentation.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.projectmanagement.application.dto.company_managers.CreateCompanyManagers;
+import org.projectmanagement.application.dto.users.UsersLogin;
 import org.projectmanagement.domain.entities.Companies;
 import org.projectmanagement.domain.entities.CompanyManagers;
 import org.projectmanagement.domain.entities.Roles;
@@ -15,22 +15,17 @@ import org.projectmanagement.domain.repository.CompanyManagersJpaRepo;
 import org.projectmanagement.domain.repository.RolesRepoJpa;
 import org.projectmanagement.domain.repository.UsersRepoJpa;
 import org.projectmanagement.domain.repository.jpa.CompaniesJpaRepository;
-import org.projectmanagement.presentation.config.JwtHelper;
+import org.projectmanagement.domain.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-
-import java.util.Collections;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -61,6 +56,9 @@ public class CompanyManagersControllerIntegrationTest {
 
     @Autowired
     private RolesRepoJpa rolesRepoJpa;
+
+    @Autowired
+    private AuthService authService;
 
     UUID companyId;
     UUID roleAdminId;
@@ -135,8 +133,12 @@ public class CompanyManagersControllerIntegrationTest {
     class GetCompanyManagers {
         @Test
         void getAllCorrectly() throws Exception {
+            UsersLogin userLogin = new UsersLogin("email", "asdf");
 
-            mockMvc.perform(get("/"+ companyId + "/companyManagers"))
+            String token = authService.authenticate(userLogin);
+
+            mockMvc.perform(get("/"+ companyId + "/companyManagers")
+                            .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.data").isArray())
@@ -146,7 +148,12 @@ public class CompanyManagersControllerIntegrationTest {
 
         @Test
         void getOneById() throws Exception {
-            mockMvc.perform(get("/"+ companyId + "/companyManagers/" + companyManagerId))
+            UsersLogin userLogin = new UsersLogin("email", "asdf");
+
+            String token = authService.authenticate(userLogin);
+
+            mockMvc.perform(get("/"+ companyId + "/companyManagers/" + companyManagerId)
+                    .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.data").isMap())
@@ -160,10 +167,15 @@ public class CompanyManagersControllerIntegrationTest {
         @Test
         void shouldCreateCompanyManagerNormallyWithProperData() throws Exception{
             companyManagersJpaRepo.deleteAll();
+            UsersLogin userLogin = new UsersLogin("email", "asdf");
+
+            String token = authService.authenticate(userLogin);
+
             CreateCompanyManagers companyManagers = new CreateCompanyManagers(user1Id, companyId, roleAdminId);
             String roleJson = objectMapper.writeValueAsString(companyManagers);
 
             mockMvc.perform(post("/" + companyId + "/companyManagers")
+                            .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(roleJson))
                     .andExpect(status().isCreated())
@@ -179,7 +191,12 @@ public class CompanyManagersControllerIntegrationTest {
             CreateCompanyManagers companyManagers = new CreateCompanyManagers(nonExistingUserId, companyId, roleAdminId);
             String roleJson = objectMapper.writeValueAsString(companyManagers);
 
+            UsersLogin userLogin = new UsersLogin("email", "asdf");
+
+            String token = authService.authenticate(userLogin);
+
             mockMvc.perform(post("/" + companyId + "/companyManagers")
+                            .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(roleJson))
                     .andExpect(status().isNotFound())
@@ -196,7 +213,12 @@ public class CompanyManagersControllerIntegrationTest {
             CreateCompanyManagers companyManagers = new CreateCompanyManagers(user1Id, companyId, nonExistingRoleId);
             String roleJson = objectMapper.writeValueAsString(companyManagers);
 
+            UsersLogin userLogin = new UsersLogin("email", "asdf");
+
+            String token = authService.authenticate(userLogin);
+
             mockMvc.perform(post("/" + companyId + "/companyManagers")
+                            .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(roleJson))
                     .andExpect(status().isNotFound())
@@ -220,7 +242,12 @@ public class CompanyManagersControllerIntegrationTest {
             CreateCompanyManagers companyManagers = new CreateCompanyManagers(user1Id, companyId, role.getId());
             String roleJson = objectMapper.writeValueAsString(companyManagers);
 
+            UsersLogin userLogin = new UsersLogin("email", "asdf");
+
+            String token = authService.authenticate(userLogin);
+
             mockMvc.perform(post("/" + companyId + "/companyManagers")
+                            .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(roleJson))
                     .andExpect(status().isBadRequest())
