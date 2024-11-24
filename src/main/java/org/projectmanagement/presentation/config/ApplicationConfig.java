@@ -1,14 +1,18 @@
 package org.projectmanagement.presentation.config;
 
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.projectmanagement.presentation.config.decorator.LoggingTaskDecorator;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+@Configuration
 @EnableAsync
-@Configurable
 public class ApplicationConfig {
 
     @Bean
@@ -17,7 +21,29 @@ public class ApplicationConfig {
         executor.setCorePoolSize(5);
         executor.setMaxPoolSize(10);
         executor.setQueueCapacity(25);
+        executor.setThreadNamePrefix("task-executor-");
+        executor.setAllowCoreThreadTimeOut(true);
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setTaskDecorator(new LoggingTaskDecorator());
+        executor.initialize();
         return executor;
+    }
+
+    @Bean
+    public OpenAPI openAPI() {
+
+        SecurityScheme securityScheme = new  SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .bearerFormat("JWT")
+                .scheme("bearer");
+        return new OpenAPI().addSecurityItem(new SecurityRequirement().
+                        addList("Bearer Authentication"))
+                .components(new Components().addSecuritySchemes
+                        ("Bearer Authentication", securityScheme))
+                .info(new io.swagger.v3.oas.models.info.Info()
+                        .title("Project Management API")
+                        .description("API for managing projects and companies")
+                        .version("1.0.0"));
     }
 
 }

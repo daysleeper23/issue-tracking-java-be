@@ -203,9 +203,9 @@
                 <configuration>
                     <!-- Add the following configuration to enable debugging -->
                     <!-- Uncomment the following configuration to enable debugging -->
-<!--                    <jvmArguments>-->
-<!--                        -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:9091-->
-<!--                    </jvmArguments>-->
+                    <jvmArguments>
+                        -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:9091
+                    </jvmArguments>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

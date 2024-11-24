@@ -26,7 +26,7 @@ public class MailConfig implements ApplicationContextAware {
     @Bean
     public ResourceBundleMessageSource emailMessageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("templates/mail/MailMessages");
+        messageSource.setBasename("classpath:templates/mail/MailMessages");
         return messageSource;
     }
 
@@ -36,9 +36,9 @@ public class MailConfig implements ApplicationContextAware {
         // SpringResourceTemplateResolver automatically integrates with Spring's own
         // resource resolution infrastructure, which is highly recommended.
         final SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
-        templateResolver.setResolvablePatterns(Collections.singleton("html/*"));
+//        templateResolver.setResolvablePatterns(Collections.singleton("html/*"));
         templateResolver.setApplicationContext(this.applicationContext);
-        templateResolver.setPrefix("/templates/mail/");
+        templateResolver.setPrefix("classpath:/templates/mail/");
         templateResolver.setSuffix(".html");
         // HTML is the default value, added here for the sake of clarity.
         templateResolver.setTemplateMode(TemplateMode.HTML);

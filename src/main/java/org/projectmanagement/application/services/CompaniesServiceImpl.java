@@ -16,7 +16,6 @@ import org.projectmanagement.domain.services.CompanyManagersService;
 import org.projectmanagement.domain.services.RolesPermissionsService;
 import org.projectmanagement.domain.services.RolesService;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -4,9 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.UUID;
-import org.projectmanagement.application.dto.invitations.Invitations;
+import org.projectmanagement.application.dto.invitations.InvitationsCreate;
 import org.projectmanagement.application.dto.invitations.InvitationsInfo;
-import org.projectmanagement.domain.services.EmailsService;
+import org.projectmanagement.domain.entities.Invitations;
 import org.projectmanagement.domain.services.InvitationsService;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
@@ -21,17 +21,14 @@ import java.util.List;
 public class InvitationsController {
 
     private final InvitationsService invitationsService;
-    private final EmailsService emailsService;
 
     @PostMapping("/")
-    public ResponseEntity<GlobalResponse<Boolean>> sendInvitation(
-            HttpServletRequest request,
+    public ResponseEntity<GlobalResponse<Invitations>> sendInvitation(
             @PathVariable String companyId,
-            @RequestBody @Valid Invitations dto
+            @RequestBody @Valid InvitationsCreate dto
     ) {
-        String appUrl = request.getContextPath();
         String userId = java.util.UUID.randomUUID().toString();
-        return ResponseEntity.ok( new GlobalResponse<>(HttpStatus.OK.value(),invitationsService.sendInvitation(companyId,dto,userId)));
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.sendInvitation(companyId, dto, userId)));
     }
 
     @GetMapping("/")
@@ -49,12 +46,12 @@ public class InvitationsController {
     }
 
     @PutMapping("/{invitationId}")
-    public ResponseEntity<GlobalResponse<Boolean>> refreshInvitations(
+    public ResponseEntity<GlobalResponse<Invitations>> refreshInvitations(
             @PathVariable @UUID String companyId,
             @PathVariable @UUID String invitationId,
             @RequestParam(value = "extend", required = false, defaultValue = "1") int days
     ) {
-        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.refreshInvitation(companyId,invitationId,days)));
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.refreshInvitation(companyId, invitationId, days)));
     }
 
     @DeleteMapping("/{invitationId}")
@@ -62,16 +59,7 @@ public class InvitationsController {
             @PathVariable @UUID String companyId,
             @PathVariable @UUID String invitationId
     ) {
-        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.revokeInvitation(companyId,invitationId)));
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.revokeInvitation(companyId, invitationId)));
     }
 
-    @PostMapping("/test-send-mail")
-    public ResponseEntity<GlobalResponse<Boolean>> testSendMail(
-            @RequestBody @Valid EmailTest dto
-    ) {
-        emailsService.sendEmail(dto.to(), dto.subject(), dto.text());
-        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(),true));
-    }
-
-    public record EmailTest(String to, String text, String subject){}
 }

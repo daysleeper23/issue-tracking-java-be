@@ -21,8 +21,15 @@ public enum AppMessage {
     INVITATION_NOT_FOUND("Invitation not found"),
     INVITATION_ALREADY_SENT("Invitation already sent"),
     INVITATION_STILL_VALID("Invitation still valid"),
+    //Mail Service errors
+    MAIL_SEND_ERROR("Error sending mail"),
+    //Workspace errors
+    WORKSPACE_NOT_FOUND("Workspace not found"),
+    //Role errors
+    ROLE_NOT_FOUND("Role not found"),
     //User errors
     USER_NOT_FOUND("User not found"),
     USER_ALREADY_JOINED_COMPANY("User already joined a company"),;
+
     final String message;
 }
