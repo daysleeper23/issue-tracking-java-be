@@ -11,6 +11,7 @@ import org.projectmanagement.domain.repository.ProjectMembersRepository;
 import org.projectmanagement.domain.repository.ProjectsRepository;
 import org.projectmanagement.domain.repository.UsersRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -64,19 +65,17 @@ public class ProjectMembersServiceImpl {
         return projectMembers;
     }
 
-    public ProjectMembers createProjectMember(ProjectMemberCreate dto) {
+    public ProjectMembers createProjectMember(UUID projectId, ProjectMemberCreate dto) {
         return projectMembersRepository.save(
                 ProjectMembers.builder()
-                        .id(UUID.randomUUID())
                         .userId(dto.userId())
-                        .projectId(dto.projectId())
+                        .projectId(projectId)
                         .subscribed(dto.subscribed())
-                        .createdAt(Instant.now())
-                        .updatedAt(Instant.now())
                         .build()
         );
     }
 
+    @Transactional
     public ProjectMembers updateProjectMember(UUID id, ProjectMemberUpdate dto) {
 
         ProjectMembers projectMemberToUpdate = projectMembersRepository.findOneById(id).orElse(null);
@@ -90,7 +89,7 @@ public class ProjectMembersServiceImpl {
         return updatedProjectMember;
     }
 
-
+    @Transactional
     public void deleteProjectMemberById(UUID id) {
         ProjectMembers projectMemberFromDB = projectMembersRepository.findOneById(id).orElse(null);
 

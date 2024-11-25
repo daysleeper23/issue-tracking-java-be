@@ -13,7 +13,7 @@ public interface ProjectMembersService {
 
     List<ProjectMembers> getAllProjectsMemberIsPartOfByUserId(UUID userId);
 
-    Optional<ProjectMembers> createProjectMember(ProjectMemberCreate projectMember);
+    Optional<ProjectMembers> createProjectMember(UUID projectId, ProjectMemberCreate projectMember);
 
     Optional<ProjectMembers> updateProjectMember(ProjectMemberCreate projectMember);
 

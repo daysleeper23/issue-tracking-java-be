@@ -7,7 +7,6 @@ import java.util.UUID;
 
 public record ProjectMemberCreate(
         @NotNull UUID userId,
-        @NotNull UUID projectId,
         @NotNull Boolean subscribed
 ) {
 }
