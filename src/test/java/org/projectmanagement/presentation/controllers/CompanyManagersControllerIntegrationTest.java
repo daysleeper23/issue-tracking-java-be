@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.projectmanagement.application.dto.company_managers.CreateCompanyManagers;
+import org.projectmanagement.application.dto.company_managers.UpdateCompanyManagers;
 import org.projectmanagement.application.dto.users.UsersLogin;
 import org.projectmanagement.domain.entities.Companies;
 import org.projectmanagement.domain.entities.CompanyManagers;
@@ -24,12 +25,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.nullValue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -257,4 +257,114 @@ public class CompanyManagersControllerIntegrationTest {
                     .andDo(print());
         }
     }
+
+    @Nested
+    class PatchCompanyManagers {
+        @Test
+        void shouldUpdateCompanyManagerWithProperData() throws Exception {
+            UsersLogin userLogin = new UsersLogin("email", "asdf");
+            String token = authService.authenticate(userLogin);
+
+            UUID newRoleId = rolesRepoJpa.save(Roles.builder()
+                    .name("COMPANY_MANAGER")
+                    .companyId(companyId)
+                    .isDeleted(false)
+                    .isSystemRole(false)
+                    .build()).getId();
+
+            UpdateCompanyManagers updateDto = new UpdateCompanyManagers(newRoleId);
+            String updateJson = objectMapper.writeValueAsString(updateDto);
+
+            mockMvc.perform(patch("/" + companyId + "/companyManagers/" + companyManagerId)
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(updateJson))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value("success"))
+                    .andExpect(jsonPath("$.data.roleId").value(newRoleId.toString()))
+                    .andDo(print());
+        }
+
+        @Test
+        void shouldNotUpdateCompanyManagerWithNonManagerRole() throws Exception {
+            UsersLogin userLogin = new UsersLogin("email", "asdf");
+            String token = authService.authenticate(userLogin);
+
+            Roles developerRole = rolesRepoJpa.save(Roles.builder()
+                    .name("DEVELOPER")
+                    .companyId(companyId)
+                    .isDeleted(false)
+                    .isSystemRole(true)
+                    .build());
+
+            UpdateCompanyManagers updateDto = new UpdateCompanyManagers(developerRole.getId());
+            String updateJson = objectMapper.writeValueAsString(updateDto);
+
+            mockMvc.perform(patch("/" + companyId + "/companyManagers/" + companyManagerId)
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(updateJson))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value("error"))
+                    .andExpect(jsonPath("$.data").value(nullValue()))
+                    .andExpect(jsonPath("$.errors[0].message").value("Company Managers can only be assigned to ADMIN or COMPANY_MANAGER roles."))
+                    .andDo(print());
+        }
+
+        @Test
+        void shouldNotUpdateNonExistingCompanyManager() throws Exception {
+            UsersLogin userLogin = new UsersLogin("email", "asdf");
+            String token = authService.authenticate(userLogin);
+
+            UUID nonExistingManagerId = UUID.fromString("fed18c17-dc47-45f4-8b59-aafc04089a58");
+            UUID validRoleId = rolesRepoJpa.findById(roleAdminId).get().getId();
+
+            UpdateCompanyManagers updateDto = new UpdateCompanyManagers(validRoleId);
+            String updateJson = objectMapper.writeValueAsString(updateDto);
+
+            mockMvc.perform(patch("/" + companyId + "/companyManagers/" + nonExistingManagerId)
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(updateJson))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.status").value("error"))
+                    .andExpect(jsonPath("$.data").value(nullValue()))
+                    .andExpect(jsonPath("$.errors[0].message").value("Company Manager with id: " + nonExistingManagerId + "is not found"))
+                    .andDo(print());
+        }
+    }
+
+    @Nested
+    class DeleteCompanyManagers {
+        @Test
+        void shouldDeleteCompanyManagerSuccessfully() throws Exception {
+            UsersLogin userLogin = new UsersLogin("email", "asdf");
+            String token = authService.authenticate(userLogin);
+
+            mockMvc.perform(delete("/" + companyId + "/companyManagers/" + companyManagerId)
+                            .header("Authorization", "Bearer " + token))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value("success"))
+                    .andExpect(jsonPath("$.data").value("User deleted"))
+                    .andDo(print());
+        }
+
+        @Test
+        void shouldNotDeleteNonExistingCompanyManager() throws Exception {
+            UsersLogin userLogin = new UsersLogin("email", "asdf");
+            String token = authService.authenticate(userLogin);
+
+            UUID nonExistingManagerId = UUID.fromString("fed18c17-dc47-45f4-8b59-aafc04089a58");
+
+            mockMvc.perform(delete("/" + companyId + "/companyManagers/" + nonExistingManagerId)
+                            .header("Authorization", "Bearer " + token))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.status").value("error"))
+                    .andExpect(jsonPath("$.data").value(nullValue()))
+                    .andExpect(jsonPath("$.errors[0].message").value("Company Manager with id: " + nonExistingManagerId + " is not found"))
+                    .andDo(print());
+        }
+    }
+
+
 }
