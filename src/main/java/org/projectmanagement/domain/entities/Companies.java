@@ -38,8 +38,7 @@ public class Companies extends BaseEntity {
         this.ownerId = ownerId;
     }
 
-    public Companies(UUID id, String name, String description, UUID ownerId) {
-        this.id = id;
+    public Companies(String name, String description, UUID ownerId) {
         this.name = name;
         this.description = description;
         this.ownerId = ownerId;

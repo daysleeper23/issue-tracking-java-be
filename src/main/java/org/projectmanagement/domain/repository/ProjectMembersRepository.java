@@ -21,4 +21,5 @@ public interface ProjectMembersRepository {
 
     void deleteProjectMemberByProjectIdAndUserId(UUID projectId, UUID userId);
 
+    Optional<ProjectMembers> findByProjectIdAndUserId(UUID projectId, UUID userId);
 }

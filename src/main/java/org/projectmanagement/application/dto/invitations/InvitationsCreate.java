@@ -2,11 +2,12 @@ package org.projectmanagement.application.dto.invitations;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import net.bytebuddy.agent.Installer;
 import org.hibernate.validator.constraints.UUID;
 
 import java.time.Instant;
 
-public record Invitations(
+public record InvitationsCreate(
         @Email
         String userEmail,
         @UUID
@@ -14,6 +15,7 @@ public record Invitations(
         @UUID
         String roleId,
         @NotNull
-        Instant expiredAt
+        Instant expiredAt,
+        boolean isAdmin
 ) {
 }

@@ -16,6 +16,7 @@ import org.projectmanagement.domain.repository.UsersRepository;
 import org.projectmanagement.domain.services.CompanyManagersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -42,11 +43,13 @@ public class CompanyManagersServiceImpl implements CompanyManagersService {
         this.usersRepository = usersRepository;
     }
 
+    @Transactional
     @Override
     public CompanyManagers createCompanyManager(CreateCompanyManagers dto) {
         Roles role = rolesRepository.findById(dto.roleId()).orElseThrow(() -> new ResourceNotFoundException("Role with id: " + dto.roleId() + " is not found"));
 
-        if (!role.getName().equals("ADMIN") && !role.getName().equals("COMPANY_MANAGER")) {
+        if (!role.getName().equals(Roles.SystemRoles.ADMIN.getName()) &&
+                !role.getName().equals(Roles.SystemRoles.COMPANY_MANAGER.getName())) {
             throw new InvalidInputException("Company Managers can only be assigned to ADMIN or COMPANY_MANAGER roles.");
         }
 
