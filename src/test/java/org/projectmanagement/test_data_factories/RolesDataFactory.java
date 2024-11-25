@@ -28,12 +28,12 @@ public class RolesDataFactory {
         rolesPermissionsRepoJpa.deleteAll();
     }
 
-    public UUID createRoleWithAllPermissions(String roleName, UUID companyId) {
+    public UUID createRoleWithAllPermissions(String roleName, UUID companyId, Boolean isSystemRole) {
         Roles role = rolesRepoJpa.save(Roles.builder()
                 .name(roleName)
                 .companyId(companyId)
                 .isDeleted(false)
-                .isSystemRole(false)
+                .isSystemRole(isSystemRole)
                 .build());
         List<UUID> permissions = permissionsRepoJpa.findAllPermissionIds();
 
@@ -43,6 +43,17 @@ public class RolesDataFactory {
                     .roleId(role.getId())
                     .build());
         }
+
+        return role.getId();
+    }
+
+    public UUID createRoleWithoutPermissions(String roleName, UUID companyId) {
+        Roles role = rolesRepoJpa.save(Roles.builder()
+                .name(roleName)
+                .companyId(companyId)
+                .isDeleted(false)
+                .isSystemRole(false)
+                .build());
 
         return role.getId();
     }
