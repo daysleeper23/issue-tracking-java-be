@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ProjectsJpaRepo extends JpaRepository<Projects, UUID> {
+public interface ProjectsRepoJpa extends JpaRepository<Projects, UUID> {
 
     @Query(value = "SELECT * " +
             "FROM projects p " +

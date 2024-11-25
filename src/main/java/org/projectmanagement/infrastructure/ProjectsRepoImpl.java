@@ -1,7 +1,7 @@
 package org.projectmanagement.infrastructure;
 
 import org.projectmanagement.domain.entities.Projects;
-import org.projectmanagement.domain.repository.ProjectsJpaRepo;
+import org.projectmanagement.domain.repository.ProjectsRepoJpa;
 import org.projectmanagement.domain.repository.ProjectsRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,29 +12,31 @@ import java.util.UUID;
 @Repository
 public class ProjectsRepoImpl implements ProjectsRepository {
 
-    private final ProjectsJpaRepo projectsJpaRepo;
+    private final ProjectsRepoJpa projectsRepoJpa;
 
-    public ProjectsRepoImpl(ProjectsJpaRepo projectsJpaRepo) {
-        this.projectsJpaRepo = projectsJpaRepo;
+    public ProjectsRepoImpl(ProjectsRepoJpa projectsRepoJpa) {
+        this.projectsRepoJpa = projectsRepoJpa;
     }
 
     @Override
     public Projects save(Projects project) {
-        return projectsJpaRepo.save(project);
+        return projectsRepoJpa.save(project);
     }
 
     @Override
     public Projects deleteOneById(UUID id) {
-        return null;
+       Projects project = projectsRepoJpa.findById(id).orElse(null);
+       project.setIsDeleted(true);
+       return projectsRepoJpa.save(project);
     }
 
     @Override
     public Optional<Projects> findOneById(UUID id) {
-        return projectsJpaRepo.findById(id);
+        return projectsRepoJpa.findById(id);
     }
 
     @Override
     public List<Projects> findAllFromWorkspace(UUID workspaceId) {
-        return projectsJpaRepo.findByWorkspaceId(workspaceId);
+        return projectsRepoJpa.findByWorkspaceId(workspaceId);
     }
 }

@@ -12,7 +12,7 @@ import org.projectmanagement.domain.entities.Companies;
 import org.projectmanagement.domain.entities.CompanyManagers;
 import org.projectmanagement.domain.entities.Roles;
 import org.projectmanagement.domain.entities.Users;
-import org.projectmanagement.domain.repository.CompanyManagersJpaRepo;
+import org.projectmanagement.domain.repository.CompanyManagersRepoJpa;
 import org.projectmanagement.domain.repository.RolesRepoJpa;
 import org.projectmanagement.domain.repository.UsersRepoJpa;
 import org.projectmanagement.domain.repository.jpa.CompaniesJpaRepository;
@@ -46,7 +46,7 @@ public class CompanyManagersControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private CompanyManagersJpaRepo companyManagersJpaRepo;
+    private CompanyManagersRepoJpa companyManagersRepoJpa;
 
     @Autowired
     private CompaniesJpaRepository companiesJpaRepository;
@@ -65,11 +65,14 @@ public class CompanyManagersControllerIntegrationTest {
     UUID user1Id;
     UUID user2Id;
     UUID companyManagerId;
+    UUID roleCompanyManagerId;
+
+
 
 
     @BeforeEach
     void setUp() {
-        companyManagersJpaRepo.deleteAll();
+        companyManagersRepoJpa.deleteAll();
         usersRepoJpa.deleteAll();
         rolesRepoJpa.deleteAll();
         companiesJpaRepository.deleteAll();
@@ -82,13 +85,22 @@ public class CompanyManagersControllerIntegrationTest {
         companyId = company.getId();
 
         Roles role = rolesRepoJpa.save(Roles.builder()
-                .name("ADMIN")
+                .name("Super Admin")
                 .companyId(companyId)
                 .isDeleted(false)
                 .isSystemRole(true)
                 .build());
 
         roleAdminId = role.getId();
+
+        Roles role2 = rolesRepoJpa.save(Roles.builder()
+                .name("Company Manager")
+                .companyId(companyId)
+                .isDeleted(false)
+                .isSystemRole(true)
+                .build());
+
+        roleCompanyManagerId = role2.getId();
 
         Users user1 = usersRepoJpa.save(Users.builder()
                 .name("user1")
@@ -113,7 +125,7 @@ public class CompanyManagersControllerIntegrationTest {
 
         user2Id = user2.getId();
 
-        CompanyManagers companyManager = companyManagersJpaRepo.save(CompanyManagers.builder()
+        CompanyManagers companyManager = companyManagersRepoJpa.save(CompanyManagers.builder()
                 .userId(user1Id)
                 .roleId(roleAdminId)
                 .companyId(companyId)
@@ -122,7 +134,7 @@ public class CompanyManagersControllerIntegrationTest {
         companyManagerId = companyManager.getId();
 
 
-        companyManagersJpaRepo.save(CompanyManagers.builder()
+        companyManagersRepoJpa.save(CompanyManagers.builder()
                 .userId(user2Id)
                 .roleId(roleAdminId)
                 .companyId(companyId)
@@ -166,7 +178,7 @@ public class CompanyManagersControllerIntegrationTest {
     class PostRoles {
         @Test
         void shouldCreateCompanyManagerNormallyWithProperData() throws Exception{
-            companyManagersJpaRepo.deleteAll();
+            companyManagersRepoJpa.deleteAll();
             UsersLogin userLogin = new UsersLogin("email", "asdf");
 
             String token = authService.authenticate(userLogin);
@@ -186,7 +198,7 @@ public class CompanyManagersControllerIntegrationTest {
 
         @Test
         void shouldNotCreateCompanyManagerWithNonExistingUserId() throws Exception{
-            companyManagersJpaRepo.deleteAll();
+            companyManagersRepoJpa.deleteAll();
             UUID nonExistingUserId = UUID.fromString("fed18c17-dc47-45f4-8b59-aafc04089a58");
             CreateCompanyManagers companyManagers = new CreateCompanyManagers(nonExistingUserId, companyId, roleAdminId);
             String roleJson = objectMapper.writeValueAsString(companyManagers);
@@ -208,7 +220,7 @@ public class CompanyManagersControllerIntegrationTest {
 
         @Test
         void shouldNotCreateCompanyManagerWithNonExistingRoleIdWithId() throws Exception{
-            companyManagersJpaRepo.deleteAll();
+            companyManagersRepoJpa.deleteAll();
             UUID nonExistingRoleId = UUID.fromString("fed18c17-dc47-45f4-8b59-aafc04089a58");
             CreateCompanyManagers companyManagers = new CreateCompanyManagers(user1Id, companyId, nonExistingRoleId);
             String roleJson = objectMapper.writeValueAsString(companyManagers);
@@ -230,7 +242,7 @@ public class CompanyManagersControllerIntegrationTest {
 
         @Test
         void shouldNotCreateCompanyManagerWithNonManagerRole() throws Exception{
-            companyManagersJpaRepo.deleteAll();
+            companyManagersRepoJpa.deleteAll();
 
             Roles role = rolesRepoJpa.save(Roles.builder()
                     .name("DEVELOPER")
@@ -265,14 +277,7 @@ public class CompanyManagersControllerIntegrationTest {
             UsersLogin userLogin = new UsersLogin("email", "asdf");
             String token = authService.authenticate(userLogin);
 
-            UUID newRoleId = rolesRepoJpa.save(Roles.builder()
-                    .name("COMPANY_MANAGER")
-                    .companyId(companyId)
-                    .isDeleted(false)
-                    .isSystemRole(false)
-                    .build()).getId();
-
-            UpdateCompanyManagers updateDto = new UpdateCompanyManagers(newRoleId);
+            UpdateCompanyManagers updateDto = new UpdateCompanyManagers(roleCompanyManagerId);
             String updateJson = objectMapper.writeValueAsString(updateDto);
 
             mockMvc.perform(patch("/" + companyId + "/companyManagers/" + companyManagerId)
@@ -281,7 +286,7 @@ public class CompanyManagersControllerIntegrationTest {
                             .content(updateJson))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
-                    .andExpect(jsonPath("$.data.roleId").value(newRoleId.toString()))
+                    .andExpect(jsonPath("$.data.roleId").value(roleCompanyManagerId.toString()))
                     .andDo(print());
         }
 
@@ -317,9 +322,9 @@ public class CompanyManagersControllerIntegrationTest {
             String token = authService.authenticate(userLogin);
 
             UUID nonExistingManagerId = UUID.fromString("fed18c17-dc47-45f4-8b59-aafc04089a58");
-            UUID validRoleId = rolesRepoJpa.findById(roleAdminId).get().getId();
+            //UUID validRoleId = rolesRepoJpa.findById(roleAdminId).get().getId();
 
-            UpdateCompanyManagers updateDto = new UpdateCompanyManagers(validRoleId);
+            UpdateCompanyManagers updateDto = new UpdateCompanyManagers(roleCompanyManagerId);
             String updateJson = objectMapper.writeValueAsString(updateDto);
 
             mockMvc.perform(patch("/" + companyId + "/companyManagers/" + nonExistingManagerId)
@@ -365,6 +370,5 @@ public class CompanyManagersControllerIntegrationTest {
                     .andDo(print());
         }
     }
-
 
 }

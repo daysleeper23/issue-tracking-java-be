@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface CompanyManagersJpaRepo extends JpaRepository<CompanyManagers, UUID> {
+public interface CompanyManagersRepoJpa extends JpaRepository<CompanyManagers, UUID> {
     @Query(value = "SELECT * " +
             "FROM company_managers cm " +
             "WHERE cm.company_id = :companyId ",

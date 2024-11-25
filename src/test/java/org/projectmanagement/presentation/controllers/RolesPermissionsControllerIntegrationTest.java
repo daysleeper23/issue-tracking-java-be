@@ -1,7 +1,6 @@
 package org.projectmanagement.presentation.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -42,13 +41,13 @@ public class RolesPermissionsControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private RolesPermissionsJpaRepo rolesPermissionsJpaRepo;
+    private RolesPermissionsRepoJpa rolesPermissionsRepoJpa;
 
     @Autowired
     private CompaniesJpaRepository companiesJpaRepository;
 
     @Autowired
-    private PermissionsJpaRepo permissionsJpaRepo;
+    private PermissionsRepoJpa permissionsRepoJpa;
 
     @Autowired
     private UsersRepoJpa usersRepoJpa;
@@ -112,9 +111,9 @@ public class RolesPermissionsControllerIntegrationTest {
 
         user2Id = user2.getId();
 
-        companyReadPermission = permissionsJpaRepo.findByName("COMPANY_READ").orElse(null);
+        companyReadPermission = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
 
-        RolesPermissions rp = rolesPermissionsJpaRepo.save(RolesPermissions.builder()
+        RolesPermissions rp = rolesPermissionsRepoJpa.save(RolesPermissions.builder()
                         .permissionId(companyReadPermission.getId())
                         .roleId(roleAdminId)
                         .build());
@@ -146,12 +145,12 @@ public class RolesPermissionsControllerIntegrationTest {
     class PostRolesPermissions {
         @Test
         void shouldCreateRolesPermissionsNormallyWithProperData() throws Exception{
-            rolesPermissionsJpaRepo.deleteAll();
+            rolesPermissionsRepoJpa.deleteAll();
             UsersLogin userLogin = new UsersLogin("email", "asdf");
 
             String token = authService.authenticate(userLogin);
-            Permissions p1 = permissionsJpaRepo.findByName("COMPANY_READ").orElse(null);
-            Permissions p2 = permissionsJpaRepo.findByName("WORKSPACE_CREATE").orElse(null);
+            Permissions p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
+            Permissions p2 = permissionsRepoJpa.findByName("WORKSPACE_CREATE").orElse(null);
 
             List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId(), p2.getId()));
 
@@ -175,8 +174,8 @@ public class RolesPermissionsControllerIntegrationTest {
             UsersLogin userLogin = new UsersLogin("email", "asdf");
 
             String token = authService.authenticate(userLogin);
-            Permissions p1 = permissionsJpaRepo.findByName("COMPANY_READ").orElse(null);
-            Permissions p2 = permissionsJpaRepo.findByName("WORKSPACE_CREATE").orElse(null);
+            Permissions p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
+            Permissions p2 = permissionsRepoJpa.findByName("WORKSPACE_CREATE").orElse(null);
 
             List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId(), p2.getId()));
 
@@ -223,7 +222,7 @@ public class RolesPermissionsControllerIntegrationTest {
     class PatchRolesPermissions {
         @Test
         void shouldUpdateRolesPermissionsNormallyWithProperData() throws Exception{
-            rolesPermissionsJpaRepo.deleteAll();
+            rolesPermissionsRepoJpa.deleteAll();
             UsersLogin userLogin = new UsersLogin("email", "asdf");
 
             String token = authService.authenticate(userLogin);
@@ -235,8 +234,8 @@ public class RolesPermissionsControllerIntegrationTest {
                     .isSystemRole(false)
                     .build());
 
-            Permissions p1 = permissionsJpaRepo.findByName("COMPANY_READ").orElse(null);
-            Permissions p2 = permissionsJpaRepo.findByName("WORKSPACE_CREATE").orElse(null);
+            Permissions p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
+            Permissions p2 = permissionsRepoJpa.findByName("WORKSPACE_CREATE").orElse(null);
 
             List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId(), p2.getId()));
 
@@ -262,8 +261,8 @@ public class RolesPermissionsControllerIntegrationTest {
 
             String token = authService.authenticate(userLogin);
 
-            Permissions p1 = permissionsJpaRepo.findByName("COMPANY_READ").orElse(null);
-            Permissions p2 = permissionsJpaRepo.findByName("WORKSPACE_CREATE").orElse(null);
+            Permissions p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
+            Permissions p2 = permissionsRepoJpa.findByName("WORKSPACE_CREATE").orElse(null);
 
             List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId(), p2.getId()));
 
@@ -295,9 +294,9 @@ public class RolesPermissionsControllerIntegrationTest {
                     .isSystemRole(false)
                     .build());
 
-            Permissions p1 = permissionsJpaRepo.findByName("COMPANY_READ").orElse(null);
+            Permissions p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
 
-            RolesPermissions rpFromDb = rolesPermissionsJpaRepo.save(RolesPermissions.builder()
+            RolesPermissions rpFromDb = rolesPermissionsRepoJpa.save(RolesPermissions.builder()
                             .roleId(nonSystemRole.getId())
                             .permissionId(p1.getId())
                     .build());
@@ -324,7 +323,7 @@ public class RolesPermissionsControllerIntegrationTest {
             UsersLogin userLogin = new UsersLogin("email", "asdf");
             String token = authService.authenticate(userLogin);
 
-            Permissions p1 = permissionsJpaRepo.findByName("COMPANY_READ").orElse(null);
+            Permissions p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
             List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId()));
 
             RolesPermissionsUpdate rpDto = new RolesPermissionsUpdate(permissionIds);
@@ -345,7 +344,7 @@ public class RolesPermissionsControllerIntegrationTest {
         @Test
         void shouldNotRemoveRolesPermissionsWithNonExistingRoleId() throws Exception {
             UUID nonExistingRoleId = UUID.fromString("fed18c17-dc47-45f4-8b59-aafc04089a58");
-            Permissions p1 = permissionsJpaRepo.findByName("COMPANY_READ").orElse(null);
+            Permissions p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
             List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId()));
 
             RolesPermissionsUpdate rpDto = new RolesPermissionsUpdate(permissionIds);
