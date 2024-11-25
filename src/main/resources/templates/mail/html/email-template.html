@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <style th:inline="css">
+        p {
+            font-size: 16px;
+            color: #333;
+        }
+
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+        }
+    </style>
+    <head>
+        <title th:remove="all">Invitation Email</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    </head>
+    <body>
+        <p>
+            Dear,
+        </p>
+        <p>
+            You have been invited to Project management of<b th:text="${companyName}"></b> on
+            <span th:text="${#dates.format(create)}">28-12-2012</span>
+        </p>
+        <p>Please click on the button below to accept joining</p>
+        <button>
+            <a th:href="${verifyUrl}">Accept</a>
+        </button>
+    </body>
+</html>

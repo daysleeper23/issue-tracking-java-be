@@ -9,6 +9,7 @@ import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.projectmanagement.application.services.ProjectServiceImpl;
 
@@ -48,12 +49,14 @@ public class ProjectController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnWorkspaceOrProject(authentication, #id, {'PROJECT_UPDATE_ALL', 'PROJECT_UPDATE_ONE'})")
     public ResponseEntity<GlobalResponse<Projects>> updateProject(@PathVariable @Valid UUID id, @RequestBody @Valid ProjectsUpdate project) {
         Projects updatedProject = projectService.updateProject(id, project);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedProject), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnWorkspaceOrProject(authentication, #id, {'PROJECT_DELETE_ALL', 'PROJECT_DELETE_ONE'})")
     public ResponseEntity<GlobalResponse<String>> deleteProject(@PathVariable @Valid UUID id) {
         projectService.deleteProject(id);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), "Project Deleted"), HttpStatus.OK);

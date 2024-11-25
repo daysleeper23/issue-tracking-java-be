@@ -48,10 +48,4 @@ public class CompaniesController {
         );
     }
 
-//    @DeleteMapping("{id}")
-//    public ResponseEntity<GlobalResponse<Boolean>> archiveCompany(
-//            @PathVariable @Valid String id
-//    ){
-//        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), companiesService.archiveCompany(id)));
-//    }
 }

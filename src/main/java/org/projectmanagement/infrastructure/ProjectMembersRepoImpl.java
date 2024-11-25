@@ -46,4 +46,9 @@ public class ProjectMembersRepoImpl implements ProjectMembersRepository {
     public void deleteProjectMemberByProjectIdAndUserId(UUID projectId, UUID userId) {
         projectMembersJpaRepo.deleteByProjectIdAndUserId(projectId, userId);
     }
+
+    @Override
+    public Optional<ProjectMembers> findByProjectIdAndUserId(UUID projectId, UUID userId) {
+        return projectMembersJpaRepo.findByProjectIdAndUserId(projectId, userId);
+    }
 }

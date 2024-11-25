@@ -7,13 +7,13 @@ import java.util.UUID;
 
 public interface InvitationsRepository {
 
-    boolean save(Invitations invitations);
+    Invitations save(Invitations invitations);
 
-    List<Invitations> getInvitationsByCompanyId(UUID companyId);
+    List<Invitations> getAll(UUID companyId);
 
-    Invitations findOne(String invitationId);
+    Invitations findById(String invitationId);
 
-    boolean removeInvitation(Invitations invitations);
+    boolean removeInvitation(UUID invitationId);
 
-    boolean findOneByEmail(String email);
+    Invitations findByEmail(String email);
 }

@@ -1,5 +1,7 @@
 package org.projectmanagement.domain.entities;
 
+import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,36 +16,38 @@ import java.util.UUID;
 
 @Getter
 @SuperBuilder(toBuilder = true)
+@Entity
+@Table(name = "invitations")
 public class Invitations extends BaseEntity {
 
     @Setter(AccessLevel.NONE)
+    @Id
+    @GeneratedValue
     private UUID id;
 
-    private String url;
-
     @Email
+    @Column(name = "user_email")
     private String userEmail;
 
+    @Column(name = "company_id")
     private UUID companyId;
 
+    @Column(name = "workspace_id")
     private UUID workspaceId;
 
+    @Column(name = "role_id")
     private UUID roleId;
 
+    @Column(name = "invited_by")
     private UUID invitedBy;
 
+    @Column(name = "expired_at")
     private Instant expiredAt;
 
-//    public static class InvitationsBuilder{
-//
-//        public InvitationsBuilder refreshExpired(int day){
-//            if (day < 0) {
-//                throw new InvalidInputException("Refresh day cannot be negative");
-//            }
-//            this.expiredAt = Instant.now().plus(day, java.time.temporal.ChronoUnit.DAYS);
-//            return this;
-//        }
-//
-//    }
+    @Column(name = "is_admin")
+    private boolean isAdmin;
+
+    @Column(name = "is_del")
+    private boolean isDel;
 
 }

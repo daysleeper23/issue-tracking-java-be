@@ -3,6 +3,7 @@ package org.projectmanagement.infrastructure;
 import org.projectmanagement.domain.entities.RolesPermissions;
 import org.projectmanagement.domain.repository.RolesPermissionsJpaRepo;
 import org.projectmanagement.domain.repository.RolesPermissionsRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -32,6 +33,7 @@ public class RolesPermissionsRepoImpl implements RolesPermissionsRepository {
         rolesPermissionsJpaRepo.deleteById(id);
     }
 
+    @Cacheable(value = "rolesPermissions", key = "#roleId")
     @Override
     public List<UUID> findAllPermissionsOfRoleByRoleId(UUID roleId) {
         return rolesPermissionsJpaRepo.findAllPermissionsOfRoleByRoleId(roleId);

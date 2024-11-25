@@ -3,55 +3,41 @@ package org.projectmanagement.infrastructure;
 
 import lombok.RequiredArgsConstructor;
 import org.projectmanagement.domain.entities.Invitations;
-import org.projectmanagement.domain.entities.Tasks;
 import org.projectmanagement.domain.repository.InvitationsRepository;
+import org.projectmanagement.domain.repository.jpa.InvitationsJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 @Repository
 public class InvitationsRepositoryImpl implements InvitationsRepository {
 
-    private final InMemoryDatabase inMemoryDatabase;
+    private final InvitationsJpaRepository jpa;
 
     @Override
-    public List<Invitations> getInvitationsByCompanyId(UUID companyId) {
-        return inMemoryDatabase.getInvitations().stream().filter(i->i.getCompanyId().equals(companyId)).toList();
+    public List<Invitations> getAll(UUID companyId) {
+        return jpa.findByCompanyId(companyId);
     }
 
     @Override
-    public Invitations findOne(String invitationId) {
-        return inMemoryDatabase.getInvitations().stream().filter(i->i.getId().equals(UUID.fromString(invitationId))).findFirst().orElse(null);
+    public Invitations findById(String invitationId) {
+        return jpa.findById(UUID.fromString(invitationId)).orElse(null);
     }
 
     @Override
-    public boolean removeInvitation(Invitations invitations) {
-        return inMemoryDatabase.getInvitations().remove(invitations);
+    public boolean removeInvitation(UUID invitationId) {
+        return jpa.removeInvitation(invitationId);
     }
 
     @Override
-    public boolean findOneByEmail(String email) {
-        return inMemoryDatabase.getInvitations().stream().anyMatch(i->i.getUserEmail().equals(email));
+    public Invitations findByEmail(String email) {
+        return jpa.findByEmail(email).orElse(null);
     }
 
     @Override
-    public boolean save(Invitations invitations) {
-        Invitations save;
-        int index = IntStream.range(0, inMemoryDatabase.getInvitations().size())
-                .filter(i -> inMemoryDatabase.getInvitations().get(i).getId() != null &&
-                        inMemoryDatabase.getInvitations().get(i).getId().equals(invitations.getId())
-                )
-                .findFirst()
-                .orElse(-1);
-        if (index != -1) {
-            save = inMemoryDatabase.getInvitations().set(index, invitations);
-        } else {
-            save = invitations.toBuilder().id(UUID.randomUUID()).build();
-            inMemoryDatabase.getInvitations().add(save);
-        }
-        return true;
+    public Invitations save(Invitations invitations) {
+        return jpa.save(invitations);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -30,4 +31,11 @@ public interface ProjectMembersJpaRepo extends JpaRepository<ProjectMembers, UUI
             "AND pm.user_id = :userId",
             nativeQuery = true)
     void deleteByProjectIdAndUserId(@Param("projectId")UUID projectId, @Param("userId") UUID userId);
+
+    @Query(value = "SELECT * " +
+            "FROM project_members pm " +
+            "WHERE pm.project_id = :projectId " +
+            "AND pm.user_id = :userId",
+            nativeQuery = true)
+    Optional<ProjectMembers> findByProjectIdAndUserId(@Param("projectId")UUID projectId, @Param("userId")UUID userId);
 }
