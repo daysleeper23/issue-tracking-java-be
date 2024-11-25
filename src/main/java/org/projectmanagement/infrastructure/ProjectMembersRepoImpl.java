@@ -1,7 +1,7 @@
 package org.projectmanagement.infrastructure;
 
 import org.projectmanagement.domain.entities.ProjectMembers;
-import org.projectmanagement.domain.repository.ProjectMembersJpaRepo;
+import org.projectmanagement.domain.repository.ProjectMembersRepoJpa;
 import org.projectmanagement.domain.repository.ProjectMembersRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,44 +11,44 @@ import java.util.UUID;
 
 @Repository
 public class ProjectMembersRepoImpl implements ProjectMembersRepository {
-    private final ProjectMembersJpaRepo projectMembersJpaRepo;
+    private final ProjectMembersRepoJpa projectMembersRepoJpa;
 
-    ProjectMembersRepoImpl(ProjectMembersJpaRepo projectMembersJpaRepo) {
-        this.projectMembersJpaRepo = projectMembersJpaRepo;
+    ProjectMembersRepoImpl(ProjectMembersRepoJpa projectMembersRepoJpa) {
+        this.projectMembersRepoJpa = projectMembersRepoJpa;
     }
 
     @Override
     public ProjectMembers save(ProjectMembers projectMember) {
-        return projectMembersJpaRepo.save(projectMember);
+        return projectMembersRepoJpa.save(projectMember);
     }
 
     @Override
     public Optional<ProjectMembers> findOneById(UUID id) {
-        return projectMembersJpaRepo.findById(id);
+        return projectMembersRepoJpa.findById(id);
     }
 
     @Override
     public List<ProjectMembers> findAllProjectMembersByProjectId(UUID projectId) {
-        return projectMembersJpaRepo.findAllByProjectId(projectId);
+        return projectMembersRepoJpa.findAllByProjectId(projectId);
     }
 
     @Override
     public List<ProjectMembers> findAllProjectsMemberIsPartOfByUserId(UUID userId){
-        return projectMembersJpaRepo.findAllByUserId(userId);
+        return projectMembersRepoJpa.findAllByUserId(userId);
     }
 
     @Override
     public void deleteProjectMemberById(UUID id) {
-        projectMembersJpaRepo.deleteById(id);
+        projectMembersRepoJpa.deleteById(id);
     }
 
     @Override
     public void deleteProjectMemberByProjectIdAndUserId(UUID projectId, UUID userId) {
-        projectMembersJpaRepo.deleteByProjectIdAndUserId(projectId, userId);
+        projectMembersRepoJpa.deleteByProjectIdAndUserId(projectId, userId);
     }
 
     @Override
     public Optional<ProjectMembers> findByProjectIdAndUserId(UUID projectId, UUID userId) {
-        return projectMembersJpaRepo.findByProjectIdAndUserId(projectId, userId);
+        return projectMembersRepoJpa.findByProjectIdAndUserId(projectId, userId);
     }
 }

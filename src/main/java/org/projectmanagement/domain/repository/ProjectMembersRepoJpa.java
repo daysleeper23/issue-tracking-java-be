@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ProjectMembersJpaRepo extends JpaRepository<ProjectMembers, UUID> {
+public interface ProjectMembersRepoJpa extends JpaRepository<ProjectMembers, UUID> {
     @Query(value = "SELECT * " +
             "FROM project_members pm " +
             "WHERE pm.project_id = :projectId ",

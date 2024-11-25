@@ -28,23 +28,23 @@ public class ProjectMemberController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GlobalResponse<ProjectMembers>> getAllProjectsMemberIsPartOfByUserId(@Valid @PathVariable UUID id) {
+    public ResponseEntity<GlobalResponse<ProjectMembers>> getAllProjectsMemberIsPartOfByUserId(@Valid @PathVariable UUID projectId, @Valid @PathVariable UUID id) {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projectMembersService.getProjectMemberById(id)), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<GlobalResponse<ProjectMembers>> createProjectMember(@RequestBody @Valid ProjectMemberCreate dto) {
-        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), projectMembersService.createProjectMember(dto)), HttpStatus.CREATED);
+    public ResponseEntity<GlobalResponse<ProjectMembers>> createProjectMember(@Valid @PathVariable UUID projectId, @RequestBody @Valid ProjectMemberCreate dto) {
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), projectMembersService.createProjectMember(projectId, dto)), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<GlobalResponse<ProjectMembers>> updateProjectMember(@Valid @PathVariable UUID id, @Valid ProjectMemberUpdate dto) {
+    public ResponseEntity<GlobalResponse<ProjectMembers>> updateProjectMember(@Valid @PathVariable UUID projectId, @Valid @PathVariable UUID id, @Valid ProjectMemberUpdate dto) {
         ProjectMembers updatedProjectMember = projectMembersService.updateProjectMember(id, dto);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedProjectMember), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<GlobalResponse<Void>> deleteProjectMemberById(@Valid @PathVariable UUID id) {
+    public ResponseEntity<GlobalResponse<Void>> deleteProjectMemberById(@Valid @PathVariable UUID projectId, @Valid @PathVariable UUID id) {
         projectMembersService.deleteProjectMemberById(id);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), null), HttpStatus.OK);
     }
