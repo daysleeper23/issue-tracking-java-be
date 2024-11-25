@@ -20,18 +20,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final WorkspacesMembersRolesRepository wmrRepository;
     private final RolesPermissionsRepository rpRepository;
     private final PermissionsJpaRepo pjRepository;
+    private final ProjectMembersRepository pmRepository;
 
     public UserDetailsServiceImpl(
             UsersRepository ur
             , CompanyManagersRepository cmr
             , RolesPermissionsRepository rpr
             , PermissionsJpaRepo pjr
-            , WorkspacesMembersRolesRepository wmrr) {
+            , WorkspacesMembersRolesRepository wmrr
+            , ProjectMembersRepository pmr) {
         this.usersRepository = ur;
         this.cmRepository = cmr;
         this.rpRepository = rpr;
         this.pjRepository = pjr;
         this.wmrRepository = wmrr;
+        this.pmRepository = pmr;
     }
 
     @Override
@@ -53,7 +56,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 )
             );
 
-        //Check if user is member of a workspace
+        //Check if user is member of a workspace  - concat WORKSPACE_XXX_ONE with workspaceId
         wmrRepository.findByUserId(user.get().getId())
             //add permissions if user has roles in some workplaces
             .ifPresent(wmr ->
@@ -67,12 +70,32 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                         if (p.getName().contains("WORKSPACE_") && p.getName().contains("_ONE")) {
                             authorities.add(p.getName()::toString);
                             authorities.add((p.getName() + "_" + wmr.getWorkspaceId())::toString);
+                        } else {
+                            authorities.add(p.getName()::toString);
                         }
                     })
                 )
             );
 
-        authorities.forEach(a -> System.out.println("Final Authority: " + a.getAuthority()));
+        List<GrantedAuthority> projectAuth = new ArrayList<>();
+
+        //Check if user is member of a project - concat PROJECT_XXX_ONE with project Id
+        pmRepository.findAllProjectsMemberIsPartOfByUserId(user.get().getId())
+            //add project permissions if user has roles in some projects
+            .forEach(pm -> {
+                String projectId = pm.getProjectId().toString();
+                authorities.forEach(a -> {
+                    System.out.println("--- Project Authority: " + a.getAuthority());
+                    if (a.getAuthority().contains("PROJECT_") && a.getAuthority().contains("_ONE")) {
+                        projectAuth.add((a.getAuthority() + "_" + projectId)::toString);
+                    }
+                });
+            });
+        authorities.addAll(projectAuth);
+
+        System.out.println("- Final Authorities: ");
+        authorities.forEach(a -> System.out.println("--- " + a.getAuthority()));
+        System.out.println("- End Final Authorities: ");
 
         return user.map(users -> User.builder()
                 .username(users.getEmail())
