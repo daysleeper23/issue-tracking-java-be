@@ -1,5 +1,6 @@
 package org.projectmanagement.infrastructure;
 
+import jakarta.transaction.Transactional;
 import org.projectmanagement.domain.entities.WorkspacesMembersRoles;
 import org.projectmanagement.domain.repository.WorkspacesMembersRolesRepoJpa;
 import org.projectmanagement.domain.repository.WorkspacesMembersRolesRepository;

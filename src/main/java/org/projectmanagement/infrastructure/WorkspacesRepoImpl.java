@@ -30,7 +30,6 @@ public class WorkspacesRepoImpl implements WorkspacesRepository {
         return jpaRepo.findAllByCompanyId(companyId);
     }
 
-    @Transactional
     public Optional<Workspaces> findByIdAndUpdate(UUID id, Workspaces workspace) {
         if (jpaRepo.updateById(id, workspace) == 1) {
             return Optional.of(workspace);
@@ -38,7 +37,6 @@ public class WorkspacesRepoImpl implements WorkspacesRepository {
         return Optional.empty();
     }
 
-    @Transactional
     public void deleteById(UUID id) {
         jpaRepo.deleteById(id);
     }
