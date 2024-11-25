@@ -55,7 +55,7 @@ public class WorkspacesController {
     }
     
     @PatchMapping("/{id}")
-    @PreAuthorize("@permissionEvaluator.hasPermissionOnWorkspace(authentication, #id, 'WORKSPACE_UPDATE_ONE')")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnWorkspaceOrProject(authentication, #id, {'WORKSPACE_UPDATE_ALL', 'WORKSPACE_UPDATE_ONE'})")
     public ResponseEntity<GlobalResponse<WorkspacesRead>> updateWorkspace(@PathVariable UUID id, @RequestBody @Valid WorkspacesUpdate workspace) {
         Optional<WorkspacesRead> updatedWorkspace = workspacesService.updateWorkspace(id, workspace);
         return updatedWorkspace
@@ -70,6 +70,7 @@ public class WorkspacesController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnWorkspaceOrProject(authentication, #id, {'WORKSPACE_DELETE_ALL', 'WORKSPACE_DELETE_ONE'})")
     public ResponseEntity<GlobalResponse<Void>> deleteWorkspace(@PathVariable UUID id) {
         workspacesService.deleteWorkspace(id);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NO_CONTENT.value(), null), HttpStatus.NO_CONTENT);

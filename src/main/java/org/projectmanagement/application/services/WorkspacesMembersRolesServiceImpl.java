@@ -33,7 +33,7 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
 
     //create a role for a user in a workspace == add a user to a workspace
     public WorkspacesMembersRolesRead createMembersRolesForWorkspace(
-            @NotNull UUID workspaceId,
+            UUID workspaceId,
             WorkspacesMembersRolesCreate wmrc) {
         //MISSING: check if the user id and workspace id and role id are valid
         if (rolesService.findById(wmrc.getRoleId()).isEmpty()) {
@@ -77,8 +77,8 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
     //update role for a user in a workspace
     @Transactional
     public WorkspacesMembersRolesRead updateWorkspacesMembersRoles(
-            @NotNull UUID id,
-            @NotNull UUID workspaceId,
+            UUID id,
+            UUID workspaceId,
             WorkspacesMembersRolesCreate newRole)
     {
         //check if the role exists already, if not return null
