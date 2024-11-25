@@ -29,7 +29,7 @@ public class WorkspacesMembersRolesController {
 
     //get the roles for all members in a workspace
     @GetMapping
-    @PreAuthorize("@permissionEvaluator.hasPermissionOnWorkspaceOrProject(authentication, #workspaceId, {'WORKSPACE_READ_ALL', 'WORKSPACE_READ_ONE'})")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #workspaceId, {'WORKSPACE_READ_ALL', 'WORKSPACE_READ_ONE'})")
     public ResponseEntity<GlobalResponse<List<WorkspacesMembersRolesRead>>> getWorkspacesMembersRoles(
             @PathVariable UUID workspaceId
     ) {
@@ -44,7 +44,7 @@ public class WorkspacesMembersRolesController {
 
     //create a role for a user in a workspace == add a user to a workspace
     @PostMapping
-    @PreAuthorize("@permissionEvaluator.hasPermissionOnWorkspaceOrProject(authentication, #workspaceId, {'WORKSPACE_UPDATE_ALL', 'WORKSPACE_UPDATE_ONE'})")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #workspaceId, {'WORKSPACE_UPDATE_ALL', 'WORKSPACE_UPDATE_ONE'})")
     public ResponseEntity<GlobalResponse<WorkspacesMembersRolesRead>> createWorkspacesMembersRoles(
             @PathVariable UUID workspaceId,
             @RequestBody @Valid WorkspacesMembersRolesCreate wmrCreate
@@ -57,7 +57,7 @@ public class WorkspacesMembersRolesController {
 
     //update role for a user in a workspace using its own id
     @PutMapping("/{id}")
-    @PreAuthorize("@permissionEvaluator.hasPermissionOnWorkspaceOrProject(authentication, #workspaceId, {'WORKSPACE_UPDATE_ALL', 'WORKSPACE_UPDATE_ONE'})")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #workspaceId, {'WORKSPACE_UPDATE_ALL', 'WORKSPACE_UPDATE_ONE'})")
     public ResponseEntity<GlobalResponse<WorkspacesMembersRolesRead>> updateWorkspacesMembersRoles(
             @PathVariable UUID id,
             @PathVariable UUID workspaceId,
@@ -71,9 +71,10 @@ public class WorkspacesMembersRolesController {
 
     //delete role for a user in a workspace using its own id
     @DeleteMapping("/{id}")
-    @PreAuthorize("@permissionEvaluator.hasPermissionOnWorkspaceOrProject(authentication, #workspaceId, {'WORKSPACE_DELETE_ALL', 'WORKSPACE_DELETE_ONE'})")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #workspaceId, {'WORKSPACE_DELETE_ALL', 'WORKSPACE_DELETE_ONE'})")
     public ResponseEntity<GlobalResponse<Void>> deleteWorkspacesMembersRoles(
-            @PathVariable UUID id
+            @PathVariable UUID id,
+            @PathVariable UUID workspaceId
     ) {
         wmrs.deleteWorkspacesMembersRoles(id);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NO_CONTENT.value(), null), HttpStatus.NO_CONTENT);
