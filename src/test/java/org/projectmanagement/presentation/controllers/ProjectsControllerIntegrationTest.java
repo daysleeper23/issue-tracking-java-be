@@ -9,10 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.projectmanagement.application.dto.projects.ProjectsCreate;
 import org.projectmanagement.application.dto.projects.ProjectsUpdate;
 import org.projectmanagement.application.dto.users.UsersLogin;
-import org.projectmanagement.domain.entities.*;
 import org.projectmanagement.domain.enums.DefaultStatus;
-import org.projectmanagement.domain.repository.*;
-import org.projectmanagement.domain.repository.jpa.CompaniesJpaRepository;
 import org.projectmanagement.domain.services.AuthService;
 import org.projectmanagement.test_data_factories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,18 +41,6 @@ public class ProjectsControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private CompaniesJpaRepository companiesRepoJpa;
-
-    @Autowired
-    private WorkspacesRepoJpa workspacesRepoJpa;
-
-    @Autowired
-    private UsersRepoJpa usersRepoJpa;
-
-    @Autowired
-    private ProjectsRepoJpa projectsRepoJpa;
-
-    @Autowired
     private AuthService authService;
 
     @Autowired
@@ -81,6 +66,8 @@ public class ProjectsControllerIntegrationTest {
     UUID userId;
     UUID projectId;
     UUID roleId;
+    String token;
+
 
     @BeforeEach
     void setUp() {
@@ -89,13 +76,16 @@ public class ProjectsControllerIntegrationTest {
 
         workspaceId = workspacesDataFactory.createWorkspace(companyId);
 
-        userId = usersDataFactory.createOwnerUser(companyId);
+        userId = usersDataFactory.createOwnerUser(companyId, "testuser@example.com", "hashedpassword");
 
         projectId = projectsDataFactory.createProject("Project Name", workspaceId, userId);
 
         roleId = rolesDataFactory.createRoleWithAllPermissions("custom name", companyId);
 
         workspaceMemberRolesDataFactory.createWorkspacesMembersRole(userId, roleId, workspaceId);
+
+        UsersLogin userLogin = new UsersLogin("testuser@example.com", "hashedpassword");
+        token = authService.authenticate(userLogin);
 
     }
 
@@ -113,8 +103,6 @@ public class ProjectsControllerIntegrationTest {
     class GetProjects {
         @Test
         void shouldReturnAllProjectsByWorkspaceId() throws Exception {
-            UsersLogin userLogin = new UsersLogin("testuser@example.com", "hashedpassword");
-            String token = authService.authenticate(userLogin);
 
             mockMvc.perform(get("/" + companyId + "/" + workspaceId + "/projects")
                     .header("Authorization", "Bearer " + token))
@@ -142,9 +130,6 @@ public class ProjectsControllerIntegrationTest {
             );
             String createJson = objectMapper.writeValueAsString(createDto);
 
-            UsersLogin userLogin = new UsersLogin("testuser@example.com", "hashedpassword");
-            String token = authService.authenticate(userLogin);
-
             mockMvc.perform(post("/" + companyId + "/" + workspaceId + "/projects")
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -170,9 +155,6 @@ public class ProjectsControllerIntegrationTest {
             );
             String updateJson = objectMapper.writeValueAsString(updateDto);
 
-            UsersLogin userLogin = new UsersLogin("testuser@example.com", "hashedpassword");
-            String token = authService.authenticate(userLogin);
-
             mockMvc.perform(patch("/" + companyId + "/" + workspaceId + "/projects/" + projectId)
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -188,8 +170,6 @@ public class ProjectsControllerIntegrationTest {
     class DeleteProject {
         @Test
         void shouldDeleteProjectSuccessfully() throws Exception {
-            UsersLogin userLogin = new UsersLogin("testuser@example.com", "hashedpassword");
-            String token = authService.authenticate(userLogin);
 
             mockMvc.perform(delete("/" + companyId + "/" + workspaceId + "/projects/" + projectId)
                             .header("Authorization", "Bearer " + token))
@@ -202,9 +182,6 @@ public class ProjectsControllerIntegrationTest {
         @Test
         void shouldNotDeleteNonExistingProject() throws Exception {
             UUID nonExistingProjectId = UUID.randomUUID();
-
-            UsersLogin userLogin = new UsersLogin("testuser@example.com", "hashedpassword");
-            String token = authService.authenticate(userLogin);
 
             mockMvc.perform(delete("/" + companyId + "/" + workspaceId + "/projects/" + nonExistingProjectId)
                             .header("Authorization", "Bearer " + token))
