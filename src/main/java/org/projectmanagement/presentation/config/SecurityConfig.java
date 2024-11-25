@@ -157,7 +157,6 @@ public class SecurityConfig {
                     //Allow GET requests on /roles
                     .requestMatchers(HttpMethod.GET,"/{companyId}/roles").hasAuthority("ROLE_READ_ALL")
 
-                        //TODO: Roles should be created with permissions, not just name?
                     //Allow POST requests on /roles
                     .requestMatchers(HttpMethod.POST,"/{companyId}/roles").hasAuthority("ROLE_CREATE")
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -47,17 +48,40 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         //retrieve user roles and permissions
         List<GrantedAuthority> authorities = new ArrayList<>();
 
+        //add permissions if user is company managers or admin
+        populateCompanyPermissions(authorities, user.get().getId());
+
+        //add permissions if user is member of a workspace
+        populateWorkspacePermissions(authorities, user.get().getId());
+
+        //add permissions if user is member of a project
+        populateProjectPermissions(authorities, user.get().getId());
+
+        System.out.println("- Final Authorities: ");
+        authorities.forEach(a -> System.out.println("--- " + a.getAuthority()));
+        System.out.println("- End Final Authorities: ");
+
+        return user.map(users -> User.builder()
+                .username(users.getEmail())
+                .password(users.getPasswordHash())
+                .authorities(authorities)
+                .build()).orElse(null);
+    }
+
+    private void populateCompanyPermissions(List<GrantedAuthority> authorities, UUID userId) {
         //Check if user is company manager or admin
-        cmRepository.findByUserId(user.get().getId())
+        cmRepository.findByUserId(userId)
             //add permissions if user is company managers or admin
             .ifPresent(cm ->
                 rpRepository.findAllPermissionsOfRoleByRoleId(cm.getRoleId()).forEach(rp ->
                     pjRepository.findById(rp).ifPresent(p -> authorities.add(p::getName))
                 )
             );
+    }
 
+    private void populateWorkspacePermissions(List<GrantedAuthority> authorities, UUID userId) {
         //Check if user is member of a workspace  - concat WORKSPACE_XXX_ONE with workspaceId
-        wmrRepository.findByUserId(user.get().getId())
+        wmrRepository.findByUserId(userId)
             //add permissions if user has roles in some workplaces
             .ifPresent(wmr ->
                 rpRepository.findAllPermissionsOfRoleByRoleId(wmr.getRoleId()).forEach(rp ->
@@ -76,65 +100,23 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     })
                 )
             );
+    }
 
+    private void populateProjectPermissions(List<GrantedAuthority> authorities, UUID userId) {
         List<GrantedAuthority> projectAuth = new ArrayList<>();
 
         //Check if user is member of a project - concat PROJECT_XXX_ONE with project Id
-        pmRepository.findAllProjectsMemberIsPartOfByUserId(user.get().getId())
+        pmRepository.findAllProjectsMemberIsPartOfByUserId(userId)
             //add project permissions if user has roles in some projects
             .forEach(pm -> {
                 String projectId = pm.getProjectId().toString();
                 authorities.forEach(a -> {
-                    System.out.println("--- Project Authority: " + a.getAuthority());
                     if (a.getAuthority().contains("PROJECT_") && a.getAuthority().contains("_ONE")) {
                         projectAuth.add((a.getAuthority() + "_" + projectId)::toString);
                     }
                 });
             });
+
         authorities.addAll(projectAuth);
-
-        System.out.println("- Final Authorities: ");
-        authorities.forEach(a -> System.out.println("--- " + a.getAuthority()));
-        System.out.println("- End Final Authorities: ");
-
-        return user.map(users -> User.builder()
-                .username(users.getEmail())
-                .password(users.getPasswordHash())
-                .authorities(authorities)
-                .build()).orElse(null);
     }
-
-//    public UserDetails loadUserAndAuthByUsername(String username, UUID workspaceId) throws UsernameNotFoundException {
-//        Optional<User> user = authRepo.findOneByUsername(username);
-//        if (user.isEmpty()) {
-//            // TODO: check security config for exceptions
-//            throw new UsernameNotFoundException("User not found");
-//        }
-//
-//        List<GrantedAuthority> authorities = new ArrayList<>();
-//
-//        authRepo.findWorkspaceUser().stream()
-//                .filter(workspaceUser -> workspaceUser.getUserId().equals(user.get().getId()) && workspaceUser.getWorkspaceId().equals(workspaceId))
-//                .forEach(workspaceUser -> {
-//                    authRepo.findRolePermissions().stream()
-//                            .filter(rolePermission -> rolePermission.getRole().getId().equals(workspaceUser.getRoleId()))
-//                            .forEach(rolePermission -> {
-//                                authRepo.findPermissions().stream()
-//                                        .filter(permission -> permission.getId().equals(rolePermission.getPermission().getId()))
-//                                        .forEach(permission -> {
-//                                            authorities.add(permission::getName);
-//                                        });
-//                            });
-//                });
-//
-//        user.get().setAuthorities(authorities);
-//
-//
-//        return org.springframework.security.core.userDetails.User
-//                .builder()
-//                .username(user.get().getUsername())
-//                .password(user.get().getPassword())
-//                .authorities(authorities)
-//                .build();
-//    }
 }

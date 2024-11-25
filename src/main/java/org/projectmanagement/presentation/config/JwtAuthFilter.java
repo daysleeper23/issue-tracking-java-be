@@ -43,9 +43,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 return;
             }
 
-//            String workspaceId = request.getHeader("workspace_id");
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-//                UserDetails userDetails = userDetailsService.loadUserAndAuthByUsername(username, UUID.fromString(workspaceId));
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 if (jwtHelper.isTokenValid(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authenticationToken =
@@ -63,10 +61,4 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             throw new RuntimeException(e);
         }
     }
-
-//    @Override
-//    protected boolean shouldNotFilter(HttpServletRequest request) {
-//        String path = request.getRequestURI();
-//        return path.equals("/auth/signup") || path.equals("/auth/login");
-//    }
 }
