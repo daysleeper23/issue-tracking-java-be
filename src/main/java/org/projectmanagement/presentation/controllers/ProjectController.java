@@ -26,10 +26,15 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
+    /*
+    Deciding if this end point need to be exposed
+
     @GetMapping("/{id}")
     public ResponseEntity<GlobalResponse<Optional<Projects>>> getProject(@PathVariable @Valid UUID id) {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projectService.getProjectById(id)), HttpStatus.OK);
     }
+
+    */
 
     @GetMapping
     public ResponseEntity<GlobalResponse<List<Projects>>> getProjectsByWorkspaceId(@PathVariable @Valid UUID workspaceId) {
