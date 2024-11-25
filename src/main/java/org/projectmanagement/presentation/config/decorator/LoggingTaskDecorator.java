@@ -13,8 +13,11 @@ public class LoggingTaskDecorator implements TaskDecorator {
     public Runnable decorate(@NonNull Runnable runnable) {
         return ()->{
             log.info("Starting a new task");
-            runnable.run();
-            log.info("Task finished");
+            try {
+                runnable.run();
+            } finally {
+                log.info("Task finished");
+            }
         };
     }
 }

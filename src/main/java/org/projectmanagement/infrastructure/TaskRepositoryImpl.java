@@ -6,10 +6,8 @@ import org.projectmanagement.domain.repository.TasksRepository;
 import org.projectmanagement.domain.repository.jpa.TasksJpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 @Repository
@@ -30,19 +28,12 @@ public class TaskRepositoryImpl implements TasksRepository {
 
     @Override
     public Tasks findById(UUID id) {
-        return null;
+        return jpaRepository.findById(id).orElse(null);
     }
 
     @Override
-    public List<Tasks> getAllTasks() {
-        return jpaRepository.findAll();
+    public List<Tasks> findAllTasksUserAssociated(UUID userId) {
+        return jpaRepository.findAllTasksUserAssociated(userId);
     }
 
-    public List<Tasks> getTasksByProjectId(UUID projectId) {
-        return jpaRepository.findByProjectId(projectId);
-    }
-
-    public Tasks getTask(UUID taskId) {
-        return null;
-    }
 }

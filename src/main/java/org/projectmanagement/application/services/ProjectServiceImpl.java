@@ -78,5 +78,4 @@ public class ProjectServiceImpl implements ProjectService {
         projectToDelete.setIsDeleted(true);
         projectsRepository.save(projectToDelete);
     }
-
 }

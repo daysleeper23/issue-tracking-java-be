@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import org.projectmanagement.application.dto.users.*;
 import org.projectmanagement.domain.services.AuthService;
 import org.projectmanagement.domain.services.UsersService;
-import org.projectmanagement.presentation.config.JwtHelper;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

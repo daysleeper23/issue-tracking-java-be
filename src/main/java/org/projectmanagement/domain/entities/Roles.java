@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -47,5 +45,15 @@ public class Roles extends BaseEntity {
         this.companyId = companyId;
         this.isDeleted = isDeleted;
         this.isSystemRole = isSystemRole;
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    public enum SystemRoles {
+        ADMIN("Super Admin"),
+        COMPANY_MANAGER("Company Manager");
+
+        private final String name;
+
     }
 }

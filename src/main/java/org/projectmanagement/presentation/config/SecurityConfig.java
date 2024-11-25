@@ -58,7 +58,7 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET,"/companies/{id}").hasAuthority("COMPANY_READ")
 
                     //Allow POST requests on /companies
-                    .requestMatchers(HttpMethod.POST,"/companies").hasAuthority("COMPANY_UPDATE")
+                    .requestMatchers(HttpMethod.POST,"/companies").authenticated()
 
                     //Allow PUT requests on /companies
                     .requestMatchers(HttpMethod.PUT,"/companies/{id}").hasAuthority("COMPANY_UPDATE")
@@ -170,8 +170,12 @@ public class SecurityConfig {
                         //TODO: Missing endpoints for updating permissions for a custom roles?
                     //Allow GET requests on /rolesPermissions
                     .requestMatchers(HttpMethod.GET,"/rolesPermissions").hasAuthority("ROLE_READ_ALL")
+                        //TODO: add authority for when tasks permissions are added
+                        .requestMatchers("/{companyId}/task/**").authenticated()
+                        .requestMatchers("/{companyId}/invitation/**").hasAuthority("COMPANY_UPDATE")
 //                    .requestMatchers("/**").permitAll()
                     .anyRequest().authenticated()
+
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .authenticationManager(authenticationManager(http));

@@ -17,5 +17,5 @@ public interface TasksRepository {
 
     Tasks findById(UUID id);
 
-    List<Tasks> getAllTasks();
+    List<Tasks> findAllTasksUserAssociated(UUID userId);
 }

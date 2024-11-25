@@ -13,12 +13,13 @@ import org.projectmanagement.domain.repository.InvitationsRepository;
 import org.projectmanagement.domain.services.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriBuilder;
 
-import java.security.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 @Service
@@ -37,15 +38,15 @@ public class InvitationsServiceImpl implements InvitationsService {
 
     @Override
     @Transactional
-    public Invitations sendInvitation(String companyId, InvitationsCreate dto, String loginId) {
+    public Invitations sendInvitation(String companyId, InvitationsCreate dto, String loginId, UriBuilder uriBuilder) {
         /*
           Todo: Implement the following checks
            + Check if the company & role & workspace exists
            + Check if the user is authorized to send the invitation
            + Check if the user is already existed and is not in any company
          */
-        String workspaceName = null;
-        String roleName = null;
+        String workspaceName;
+        String roleName;
         Companies company = companiesService.getCompany(companyId);
         if (invitationsRepository.findByEmail(dto.userEmail()) != null) {
             throw new ApplicationException(AppMessage.INVITATION_ALREADY_SENT);
@@ -57,15 +58,24 @@ public class InvitationsServiceImpl implements InvitationsService {
                     .orElseThrow(()->new ApplicationException(AppMessage.ROLE_NOT_FOUND));
             workspaceName = workspace.getName();
             roleName = rp.getName();
+        } else {
+            roleName = null;
+            workspaceName = null;
         }
         Invitations newInvitations = invitationsRepository.save(InvitationsMapper.mapper.dtoToEntity(dto));
-        emailsService.sendInvitationEmail(dto.userEmail(),
+        CompletableFuture<Void> sendEmail = CompletableFuture.runAsync(() ->
+        emailsService.sendInvitationEmail(dto.userEmail(), uriBuilder,
                 new InvitationMailBody(company.getName(),
                         newInvitations.getId().toString() ,
                         workspaceName, roleName,
                         dto.isAdmin(),
                         newInvitations.getCreatedAt().toEpochMilli()
-                        ));
+                        )));
+        try {
+            sendEmail.get();
+        } catch (Exception e) {
+            throw new ApplicationException(e.getMessage());
+        }
         return newInvitations;
     }
 
@@ -76,8 +86,11 @@ public class InvitationsServiceImpl implements InvitationsService {
     }
 
     @Override
-    public boolean acceptInvitation(String token) {
-        //Implement the logic to accept the invitation smtp email service
+    public boolean acceptInvitation(String token, Long timestamp) {
+        //Todo: Implement the following checks
+        // + Check if the invitation is still valid
+        // + Check if the user is already in a company
+//        return invitationsRepository.acceptInvitation(token, timestamp);
         return false;
     }
 

@@ -12,4 +12,11 @@ public interface TasksJpaRepository extends JpaRepository<Tasks, UUID> {
             nativeQuery = true
     )
     List<Tasks> findByProjectId(UUID projectId);
+
+    @Query(value ="SELECT t FROM tasks t " +
+            "LEFT JOIN tasks_subscribers ts ON ts.task_id = t.id" +
+            "WHERE t.assigned_id = :userId OR ts.user_id = :userId",
+            nativeQuery = true
+    )
+    List<Tasks> findAllTasksUserAssociated(UUID userId);
 }

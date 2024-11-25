@@ -12,6 +12,8 @@ import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriBuilder;
 
 import java.util.List;
 
@@ -28,7 +30,8 @@ public class InvitationsController {
             @RequestBody @Valid InvitationsCreate dto
     ) {
         String userId = java.util.UUID.randomUUID().toString();
-        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.sendInvitation(companyId, dto, userId)));
+        UriBuilder uriBuilder = ServletUriComponentsBuilder.fromCurrentRequest();
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.sendInvitation(companyId, dto, userId, uriBuilder )));
     }
 
     @GetMapping("/")
@@ -38,11 +41,12 @@ public class InvitationsController {
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.getInvitations(companyId)));
     }
 
-    @GetMapping("/verify")
+    @PutMapping("/verify")
     public ResponseEntity<GlobalResponse<Boolean>> acceptInvitation(
-            @RequestParam("token") String token
+            @RequestParam("token") String token,
+            @RequestParam("timestamp") Long timestamp
     ) {
-        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.acceptInvitation(token)));
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.acceptInvitation(token,timestamp)));
     }
 
     @PutMapping("/{invitationId}")

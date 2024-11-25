@@ -9,7 +9,11 @@ import org.projectmanagement.application.exceptions.AppMessage;
 import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.domain.services.EmailsService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.MultiValueMapAdapter;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriBuilder;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,9 +22,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class EmailsServiceImpl implements EmailsService {
 
     @Override
     @Async("taskExecutor")
-    public void sendInvitationEmail(String recipientName, InvitationMailBody mailBody) {
+    public void sendInvitationEmail(String recipientName, UriBuilder uriBuilder, InvitationMailBody mailBody) {
         // Send email
         log.info("Sending email to: {}", recipientName);
         try {
@@ -50,11 +51,11 @@ public class EmailsServiceImpl implements EmailsService {
             ctx.setVariable("companyName", mailBody.companyName());
             ctx.setVariable("workspaceName", mailBody.workspaceName());
             ctx.setVariable("roleId",  mailBody.workspaceName() );
-            Map<String, Object> variables = new HashMap<>();
-            variables.put("token",mailBody.token());
-            variables.put("timestamp",mailBody.timestamp());
-            URI path = ServletUriComponentsBuilder.fromCurrentRequest()
-                    .path(VERIFY_URL).buildAndExpand(variables).toUri();
+
+            URI path = uriBuilder.path(VERIFY_URL)
+                    .queryParam("token",mailBody.token())
+                    .queryParam("timestamp",mailBody.timestamp())
+                    .build();
             // Prepare message using a Spring helper
             ctx.setVariable("verifyUrl", path.toString());
             MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -72,7 +73,6 @@ public class EmailsServiceImpl implements EmailsService {
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
             log.error("Error while sending email", e);
-            throw new ApplicationException(AppMessage.MAIL_SEND_ERROR);
         }
     }
 }
