@@ -8,6 +8,7 @@ import org.projectmanagement.domain.entities.ProjectMembers;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,12 +39,14 @@ public class ProjectMemberController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #projectId, {'PROJECT_UPDATE_ALL', 'PROJECT_UPDATE_ONE'})")
     public ResponseEntity<GlobalResponse<ProjectMembers>> updateProjectMember(@Valid @PathVariable UUID projectId, @Valid @PathVariable UUID id, @Valid ProjectMemberUpdate dto) {
         ProjectMembers updatedProjectMember = projectMembersService.updateProjectMember(id, dto);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedProjectMember), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #projectId, {'PROJECT_UPDATE_ALL', 'PROJECT_UPDATE_ONE'})")
     public ResponseEntity<GlobalResponse<Void>> deleteProjectMemberById(@Valid @PathVariable UUID projectId, @Valid @PathVariable UUID id) {
         projectMembersService.deleteProjectMemberById(id);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), null), HttpStatus.OK);

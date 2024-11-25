@@ -49,14 +49,14 @@ public class ProjectController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("@permissionEvaluator.hasPermissionOnWorkspaceOrProject(authentication, #id, {'PROJECT_UPDATE_ALL', 'PROJECT_UPDATE_ONE'})")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #id, {'PROJECT_UPDATE_ALL', 'PROJECT_UPDATE_ONE'})")
     public ResponseEntity<GlobalResponse<Projects>> updateProject(@PathVariable @Valid UUID id, @RequestBody @Valid ProjectsUpdate project) {
         Projects updatedProject = projectService.updateProject(id, project);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedProject), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("@permissionEvaluator.hasPermissionOnWorkspaceOrProject(authentication, #id, {'PROJECT_DELETE_ALL', 'PROJECT_DELETE_ONE'})")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #id, {'PROJECT_DELETE_ALL', 'PROJECT_DELETE_ONE'})")
     public ResponseEntity<GlobalResponse<String>> deleteProject(@PathVariable @Valid UUID id) {
         projectService.deleteProject(id);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), "Project Deleted"), HttpStatus.OK);
