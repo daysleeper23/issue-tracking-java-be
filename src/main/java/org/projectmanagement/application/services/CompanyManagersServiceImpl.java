@@ -47,7 +47,6 @@ public class CompanyManagersServiceImpl implements CompanyManagersService {
     @Override
     public CompanyManagers createCompanyManager(CreateCompanyManagers dto) {
         Roles role = rolesRepository.findById(dto.roleId()).orElseThrow(() -> new ResourceNotFoundException("Role with id: " + dto.roleId() + " is not found"));
-
         if (!role.getName().equals(Roles.SystemRoles.ADMIN.getName()) &&
                 !role.getName().equals(Roles.SystemRoles.COMPANY_MANAGER.getName())) {
             throw new InvalidInputException("Company Managers can only be assigned to ADMIN or COMPANY_MANAGER roles.");
@@ -67,11 +66,13 @@ public class CompanyManagersServiceImpl implements CompanyManagersService {
         );
     }
 
+    @Transactional
     @Override
     public CompanyManagers updateCompanyManager(UUID id, UpdateCompanyManagers dto) {
         Roles role = rolesRepository.findById(dto.roleId()).orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " is not found"));
 
-        if (!role.getName().equals("ADMIN") && !role.getName().equals("COMPANY_MANAGER")) {
+        if (!role.getName().equals(Roles.SystemRoles.ADMIN.getName()) &&
+                !role.getName().equals(Roles.SystemRoles.COMPANY_MANAGER.getName())) {
             throw new InvalidInputException("Company Managers can only be assigned to ADMIN or COMPANY_MANAGER roles.");
         }
 
@@ -106,6 +107,7 @@ public class CompanyManagersServiceImpl implements CompanyManagersService {
         return companyManagersRepository.findAllFromCompany(companyId);
     }
 
+    @Transactional
     @Override
     public void deleteById(UUID id) {
         companyManagersRepository.findById(id)

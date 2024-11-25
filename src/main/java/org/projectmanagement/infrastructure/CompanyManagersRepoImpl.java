@@ -1,7 +1,7 @@
 package org.projectmanagement.infrastructure;
 
 import lombok.RequiredArgsConstructor;
-import org.projectmanagement.domain.repository.CompanyManagersJpaRepo;
+import org.projectmanagement.domain.repository.CompanyManagersRepoJpa;
 import org.projectmanagement.domain.entities.CompanyManagers;
 import org.projectmanagement.domain.repository.CompanyManagersRepository;
 import org.springframework.stereotype.Repository;
@@ -14,30 +14,30 @@ import java.util.UUID;
 @Repository
 public class CompanyManagersRepoImpl implements CompanyManagersRepository {
 
-    private final CompanyManagersJpaRepo companyManagersJpaRepo;
+    private final CompanyManagersRepoJpa companyManagersRepoJpa;
 
     @Override
     public CompanyManagers save(CompanyManagers companyManager) {
-        return companyManagersJpaRepo.save(companyManager);
+        return companyManagersRepoJpa.save(companyManager);
     }
 
     @Override
     public void deleteById(UUID id) {
-        companyManagersJpaRepo.deleteById(id);
+        companyManagersRepoJpa.deleteById(id);
     }
 
     @Override
     public List<CompanyManagers> findAllFromCompany(UUID companyId) {
-        return companyManagersJpaRepo.findAllByCompanyId(companyId);
+        return companyManagersRepoJpa.findAllByCompanyId(companyId);
     }
 
     @Override
     public Optional<CompanyManagers> findById(UUID id) {
-        return companyManagersJpaRepo.findById(id);
+        return companyManagersRepoJpa.findById(id);
     }
 
     @Override
     public Optional<CompanyManagers> findByUserId(UUID userId) {
-        return companyManagersJpaRepo.findByUserId(userId);
+        return companyManagersRepoJpa.findByUserId(userId);
     }
 }

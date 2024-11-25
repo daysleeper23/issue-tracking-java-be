@@ -10,6 +10,7 @@ import org.projectmanagement.domain.repository.ProjectsRepository;
 import org.projectmanagement.domain.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +42,6 @@ public class ProjectServiceImpl implements ProjectService {
     public Projects createProject(ProjectsCreate dto){
         Projects project = projectsRepository.save(
             Projects.builder()
-                    //.id(UUID.randomUUID())
                     .name(dto.name())
                     .description(dto.description())
                     .endDate(dto.endDate())
@@ -50,13 +50,13 @@ public class ProjectServiceImpl implements ProjectService {
                     .status(dto.status())
                     .leaderId(dto.leaderId())
                     .workspaceId(dto.workspaceId())
-                    //.createdAt(Instant.now())
-                    //.updatedAt(Instant.now())
+                    .isDeleted(false)
                     .build()
         );
         return projectsRepository.save(project);
     }
 
+    @Transactional
     public Projects updateProject(UUID id, ProjectsUpdate dto) {
         Projects projectToUpdate = projectsRepository.findOneById(id).orElse(null);
 
@@ -68,6 +68,7 @@ public class ProjectServiceImpl implements ProjectService {
         return projectsRepository.save(projectToUpdate);
     }
 
+    @Transactional
     public void deleteProject(UUID id) {
         Projects projectToDelete = projectsRepository.findOneById(id).orElse(null);
 

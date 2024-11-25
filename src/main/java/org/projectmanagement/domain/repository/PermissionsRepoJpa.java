@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface PermissionsJpaRepo extends JpaRepository<Permissions, UUID> {
+public interface PermissionsRepoJpa extends JpaRepository<Permissions, UUID> {
     Optional<Permissions> findByName(String name);
 
     @Query(value = "SELECT id " +

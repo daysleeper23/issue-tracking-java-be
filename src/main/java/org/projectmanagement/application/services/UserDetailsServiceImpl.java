@@ -19,14 +19,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final CompanyManagersRepository cmRepository;
     private final WorkspacesMembersRolesRepository wmrRepository;
     private final RolesPermissionsRepository rpRepository;
-    private final PermissionsJpaRepo pjRepository;
+    private final PermissionsRepoJpa pjRepository;
     private final ProjectMembersRepository pmRepository;
 
     public UserDetailsServiceImpl(
             UsersRepository ur
             , CompanyManagersRepository cmr
             , RolesPermissionsRepository rpr
-            , PermissionsJpaRepo pjr
+            , PermissionsRepoJpa pjr
             , WorkspacesMembersRolesRepository wmrr
             , ProjectMembersRepository pmr) {
         this.usersRepository = ur;

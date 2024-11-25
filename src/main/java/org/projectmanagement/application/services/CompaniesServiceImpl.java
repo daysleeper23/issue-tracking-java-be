@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.projectmanagement.application.dto.companies.Company;
 import org.projectmanagement.application.dto.company_managers.CreateCompanyManagers;
-import org.projectmanagement.application.dto.roles.RolesCreate;
 import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsCreate;
 import org.projectmanagement.application.exceptions.AppMessage;
 import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.domain.entities.*;
-import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
 import org.projectmanagement.domain.repository.CompaniesRepository;
-import org.projectmanagement.domain.repository.PermissionsJpaRepo;
+import org.projectmanagement.domain.repository.PermissionsRepoJpa;
 import org.projectmanagement.domain.repository.UsersRepository;
 import org.projectmanagement.domain.services.CompaniesService;
 import org.projectmanagement.domain.services.CompanyManagersService;
@@ -19,13 +17,11 @@ import org.projectmanagement.domain.services.RolesPermissionsService;
 import org.projectmanagement.domain.services.RolesService;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -39,7 +35,7 @@ public class CompaniesServiceImpl implements CompaniesService {
     private final CompanyManagersService companyManagersService;
     private final RolesService rolesService;
     private final RolesPermissionsService rolesPermissionsService;
-    private final PermissionsJpaRepo permissionsJpaRepo;
+    private final PermissionsRepoJpa permissionsRepoJpa;
     private final TaskExecutor taskExecutor;
 
 
@@ -110,7 +106,7 @@ public class CompaniesServiceImpl implements CompaniesService {
     }
 
     private void addSuperAdminRole(UUID companyId, UUID userId){
-        List<Permissions> permissions = permissionsJpaRepo.findAll();
+        List<Permissions> permissions = permissionsRepoJpa.findAll();
         List<RolesPermissions> adminRole = rolesPermissionsService.createRolePermissions(companyId,
                 new RolesPermissionsCreate(Roles.SystemRoles.ADMIN.getName(),
                         permissions.stream().map(Permissions::getId).toList())

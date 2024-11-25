@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface RolesPermissionsJpaRepo extends JpaRepository<RolesPermissions, UUID> {
+public interface RolesPermissionsRepoJpa extends JpaRepository<RolesPermissions, UUID> {
     @Query(value = "SELECT permission_id " +
             "FROM roles_permissions rm " +
             "WHERE rm.role_id = :roleId ",

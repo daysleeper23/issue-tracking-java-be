@@ -1,7 +1,6 @@
 package org.projectmanagement.infrastructure;
 
-import org.projectmanagement.domain.entities.Permissions;
-import org.projectmanagement.domain.repository.PermissionsJpaRepo;
+import org.projectmanagement.domain.repository.PermissionsRepoJpa;
 import org.projectmanagement.domain.repository.PermissionsRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,14 +9,14 @@ import java.util.UUID;
 
 @Repository
 public class PermissionsRepoImpl implements PermissionsRepository {
-    private final PermissionsJpaRepo permissionsJpaRepo;
+    private final PermissionsRepoJpa permissionsRepoJpa;
 
-    public PermissionsRepoImpl(PermissionsJpaRepo permissionsJpaRepo) {
-        this.permissionsJpaRepo = permissionsJpaRepo;
+    public PermissionsRepoImpl(PermissionsRepoJpa permissionsRepoJpa) {
+        this.permissionsRepoJpa = permissionsRepoJpa;
     }
 
     @Override
     public List<UUID> findAllPermissionIds() {
-        return permissionsJpaRepo.findAllPermissionIds();
+        return permissionsRepoJpa.findAllPermissionIds();
     }
 }

@@ -2,10 +2,9 @@ package org.projectmanagement.presentation.config;
 
 import lombok.extern.log4j.Log4j2;
 import org.projectmanagement.domain.entities.Permissions;
-import org.projectmanagement.domain.repository.PermissionsJpaRepo;
+import org.projectmanagement.domain.repository.PermissionsRepoJpa;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
@@ -16,7 +15,7 @@ import java.util.List;
 public class DataInitializer {
 
     @Bean
-    CommandLineRunner initializePermissions(PermissionsJpaRepo permissionsRepository) {
+    CommandLineRunner initializePermissions(PermissionsRepoJpa permissionsRepository) {
         return args -> {
             // Define the list of permissions
             List<String> permissions = Arrays.asList(

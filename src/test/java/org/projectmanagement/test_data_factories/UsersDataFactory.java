@@ -21,11 +21,11 @@ public class UsersDataFactory {
     }
 
 
-    public UUID createOwnerUser(UUID companyId) {
+    public UUID createOwnerUser(UUID companyId, String email, String password) {
         Users user = usersRepoJpa.save(Users.builder()
                 .name("Test User")
-                .email("testuser@example.com")
-                .passwordHash("hashedpassword")
+                .email(email)
+                .passwordHash(password)
                 .companyId(companyId)
                 .isActive(true)
                 .isOwner(true)

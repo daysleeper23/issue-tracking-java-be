@@ -64,7 +64,7 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.PUT,"/companies/{id}").hasAuthority("COMPANY_UPDATE")
 
                     //Allow GET requests on /{companyId}/companyManagers
-                    /*.requestMatchers(HttpMethod.GET,"/{companyId}/companyManagers")
+                    .requestMatchers(HttpMethod.GET,"/{companyId}/companyManagers")
                         .hasAuthority("COMPANY_READ")
 
                     //Allow POST/PATCH/DELETE requests on /{companyId}/companyManagers
@@ -75,7 +75,7 @@ public class SecurityConfig {
                         .hasAuthority("COMPANY_UPDATE")
 
                     .requestMatchers(HttpMethod.DELETE,"/{companyId}/companyManagers/{id}")
-                        .hasAuthority("COMPANY_UPDATE")*/
+                        .hasAuthority("COMPANY_UPDATE")
 
                     /*
                         WORKSPACE PERMISSIONS
