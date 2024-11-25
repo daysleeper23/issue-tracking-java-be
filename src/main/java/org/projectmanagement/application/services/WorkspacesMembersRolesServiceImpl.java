@@ -99,6 +99,7 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
     }
 
     //delete a role for a user in a workspace == remove the user from the workspace
+    @Transactional
     public void deleteWorkspacesMembersRoles(UUID id) {
 
         wmrRepository.deleteById(id);
