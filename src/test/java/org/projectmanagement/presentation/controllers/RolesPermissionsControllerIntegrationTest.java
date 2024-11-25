@@ -1,6 +1,7 @@
 package org.projectmanagement.presentation.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,8 +11,11 @@ import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsU
 import org.projectmanagement.application.dto.users.UsersLogin;
 import org.projectmanagement.domain.entities.*;
 import org.projectmanagement.domain.repository.*;
-import org.projectmanagement.domain.repository.jpa.CompaniesJpaRepository;
 import org.projectmanagement.domain.services.AuthService;
+import org.projectmanagement.test_data_factories.CompaniesDataFactory;
+import org.projectmanagement.test_data_factories.RolesDataFactory;
+import org.projectmanagement.test_data_factories.RolesPermissionsDataFactory;
+import org.projectmanagement.test_data_factories.UsersDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,101 +45,68 @@ public class RolesPermissionsControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private RolesPermissionsRepoJpa rolesPermissionsRepoJpa;
-
-    @Autowired
-    private CompaniesJpaRepository companiesJpaRepository;
-
-    @Autowired
     private PermissionsRepoJpa permissionsRepoJpa;
-
-    @Autowired
-    private UsersRepoJpa usersRepoJpa;
-
-    @Autowired
-    private RolesRepoJpa rolesRepoJpa;
 
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private CompaniesDataFactory companiesDataFactory;
+
+    @Autowired
+    private UsersDataFactory usersDataFactory;
+
+    @Autowired
+    private RolesDataFactory rolesDataFactory;
+
+    @Autowired
+    private RolesPermissionsDataFactory rolesPermissionsDataFactory;
+
     UUID companyId;
-    UUID roleAdminId;
+    UUID superAdminRoleId;
     UUID user1Id;
     UUID user2Id;
-    UUID rolePermissionsId;
-    Permissions companyReadPermission;
-
+    String token;
+    Permissions p1;
+    Permissions p2;
 
     @BeforeEach
     void setUp() {
-        usersRepoJpa.deleteAll();
-        rolesRepoJpa.deleteAll();
-        companiesJpaRepository.deleteAll();
 
-        Companies company = companiesJpaRepository.save(Companies.builder()
-                .id(companyId)
-                .name("Test Company")
-                .build());
+        companyId = companiesDataFactory.createCompany();
 
-        companyId = company.getId();
+        superAdminRoleId = rolesDataFactory.createRoleWithAllPermissions("Super Admin", companyId, true);
 
-        Roles role = rolesRepoJpa.save(Roles.builder()
-                .name("ADMIN")
-                .companyId(companyId)
-                .isDeleted(false)
-                .isSystemRole(true)
-                .build());
+        user1Id = usersDataFactory.createOwnerUser(companyId, "testuser@example.com", "hashedpassword");
 
-        roleAdminId = role.getId();
+        user2Id = usersDataFactory.createOwnerUser(companyId, "testuser2@example.com", "hashedpassword");
 
-        Users user1 = usersRepoJpa.save(Users.builder()
-                .name("user1")
-                .email("email")
-                .passwordHash("asdf")
-                .isActive(true)
-                .isDeleted(false)
-                .isOwner(true)
-                .companyId(companyId)
-                .build());
-        user1Id = user1.getId();
+        p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
+        p2 = permissionsRepoJpa.findByName("WORKSPACE_CREATE").orElse(null);
 
-        Users user2 = usersRepoJpa.save(Users.builder()
-                .name("user2")
-                .email("email2")
-                .passwordHash("asdf")
-                .isActive(true)
-                .isDeleted(false)
-                .isOwner(true)
-                .companyId(companyId)
-                .build());
+        UsersLogin userLogin = new UsersLogin("testuser@example.com", "hashedpassword");
+        token = authService.authenticate(userLogin);
 
-        user2Id = user2.getId();
+    }
 
-        companyReadPermission = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
-
-        RolesPermissions rp = rolesPermissionsRepoJpa.save(RolesPermissions.builder()
-                        .permissionId(companyReadPermission.getId())
-                        .roleId(roleAdminId)
-                        .build());
-
-        rolePermissionsId = rp.getRoleId();
-
+    @AfterEach
+    void cleanUp() {
+        companiesDataFactory.deleteAll();
+        usersDataFactory.deleteAll();
+        rolesDataFactory.deleteAll();
     }
 
     @Nested
     class GetRolesPermissions {
         @Test
         void getAllByCompanyIdCorrectly() throws Exception {
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-
-            String token = authService.authenticate(userLogin);
 
             mockMvc.perform(get("/"+ companyId + "/rolesPermissions")
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.data").isArray())
-                    .andExpect(jsonPath("$.data", hasSize(1)))
+                    .andExpect(jsonPath("$.data", hasSize(21))) //default size of permissions is 21
                     .andDo(print());
         }
     }
@@ -145,15 +116,11 @@ public class RolesPermissionsControllerIntegrationTest {
     class PostRolesPermissions {
         @Test
         void shouldCreateRolesPermissionsNormallyWithProperData() throws Exception{
-            rolesPermissionsRepoJpa.deleteAll();
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
 
-            String token = authService.authenticate(userLogin);
             Permissions p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
             Permissions p2 = permissionsRepoJpa.findByName("WORKSPACE_CREATE").orElse(null);
 
             List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId(), p2.getId()));
-
 
             RolesPermissionsCreate rpDto = new RolesPermissionsCreate("Test Role", permissionIds);
             String roleJson = objectMapper.writeValueAsString(rpDto);
@@ -171,16 +138,14 @@ public class RolesPermissionsControllerIntegrationTest {
 
         @Test
         void shouldNotCreateRolesPermissionsWithDuplicateRoleName() throws Exception{
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
 
-            String token = authService.authenticate(userLogin);
             Permissions p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
             Permissions p2 = permissionsRepoJpa.findByName("WORKSPACE_CREATE").orElse(null);
 
             List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId(), p2.getId()));
 
 
-            RolesPermissionsCreate rpDto = new RolesPermissionsCreate("ADMIN", permissionIds);
+            RolesPermissionsCreate rpDto = new RolesPermissionsCreate("Super Admin", permissionIds);
             String roleJson = objectMapper.writeValueAsString(rpDto);
 
             mockMvc.perform(post("/" + companyId + "/rolesPermissions")
@@ -202,10 +167,6 @@ public class RolesPermissionsControllerIntegrationTest {
             RolesPermissionsCreate rpDto = new RolesPermissionsCreate("Test Role", permissionIds );
             String roleJson = objectMapper.writeValueAsString(rpDto);
 
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-
-            String token = authService.authenticate(userLogin);
-
             mockMvc.perform(post("/" + companyId + "/rolesPermissions")
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -222,17 +183,8 @@ public class RolesPermissionsControllerIntegrationTest {
     class PatchRolesPermissions {
         @Test
         void shouldUpdateRolesPermissionsNormallyWithProperData() throws Exception{
-            rolesPermissionsRepoJpa.deleteAll();
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
 
-            String token = authService.authenticate(userLogin);
-
-            Roles nonSystemRole = rolesRepoJpa.save(Roles.builder()
-                    .name("CUSTOM ROLE")
-                    .companyId(companyId)
-                    .isDeleted(false)
-                    .isSystemRole(false)
-                    .build());
+            UUID nonSystemRoleWithoutPermissionsId = rolesDataFactory.createRoleWithoutPermissions("Custom Role", companyId);
 
             Permissions p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
             Permissions p2 = permissionsRepoJpa.findByName("WORKSPACE_CREATE").orElse(null);
@@ -240,10 +192,10 @@ public class RolesPermissionsControllerIntegrationTest {
             List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId(), p2.getId()));
 
 
-            RolesPermissionsCreate rpDto = new RolesPermissionsCreate("Test Role", permissionIds);
+            RolesPermissionsCreate rpDto = new RolesPermissionsCreate("Custom Role", permissionIds);
             String roleJson = objectMapper.writeValueAsString(rpDto);
 
-            mockMvc.perform(patch("/" + companyId + "/rolesPermissions/" + nonSystemRole.getId())
+            mockMvc.perform(patch("/" + companyId + "/rolesPermissions/" + nonSystemRoleWithoutPermissionsId)
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(roleJson))
@@ -257,26 +209,20 @@ public class RolesPermissionsControllerIntegrationTest {
 
         @Test
         void shouldNotUpdateRolesPermissionsForSystemRole() throws Exception{
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-
-            String token = authService.authenticate(userLogin);
-
-            Permissions p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
-            Permissions p2 = permissionsRepoJpa.findByName("WORKSPACE_CREATE").orElse(null);
 
             List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId(), p2.getId()));
 
-            RolesPermissionsCreate rpDto = new RolesPermissionsCreate("Test Role", permissionIds);
+            RolesPermissionsUpdate rpDto = new RolesPermissionsUpdate(permissionIds);
             String roleJson = objectMapper.writeValueAsString(rpDto);
 
-            mockMvc.perform(patch("/" + companyId + "/rolesPermissions/" + rolePermissionsId)
+            mockMvc.perform(patch("/" + companyId + "/rolesPermissions/" + superAdminRoleId)
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(roleJson))
                     .andExpect(status().isForbidden())
                     .andExpect(jsonPath("$.status").value("error"))
                     .andExpect(jsonPath("$.code").value(403))
-                    .andExpect(jsonPath("$.errors[0].message").value("System Roles can not be updated. The role: ADMIN is a system role."))
+                    .andExpect(jsonPath("$.errors[0].message").value("System Roles can not be updated. The role: Super Admin is a system role."))
                     .andDo(print());
         }
     }
@@ -285,30 +231,17 @@ public class RolesPermissionsControllerIntegrationTest {
     class RemoveRolesPermissions {
         @Test
         void shouldRemoveRolesPermissionsWithValidData() throws Exception {
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-            String token = authService.authenticate(userLogin);
-            Roles nonSystemRole = rolesRepoJpa.save(Roles.builder()
-                    .name("CUSTOM ROLE")
-                    .companyId(companyId)
-                    .isDeleted(false)
-                    .isSystemRole(false)
-                    .build());
 
-            Permissions p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
+            UUID nonSystemRoleWithoutPermissionsId = rolesDataFactory.createRoleWithoutPermissions("Custom Role", companyId);
 
-            RolesPermissions rpFromDb = rolesPermissionsRepoJpa.save(RolesPermissions.builder()
-                            .roleId(nonSystemRole.getId())
-                            .permissionId(p1.getId())
-                    .build());
-
+            UUID rolePermissionId = rolesPermissionsDataFactory.addPermissionToRole(nonSystemRoleWithoutPermissionsId, p1.getId());
 
             List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId()));
 
-
-            RolesPermissionsCreate rpDto = new RolesPermissionsCreate("Test Role", permissionIds);
+            RolesPermissionsUpdate rpDto = new RolesPermissionsUpdate(permissionIds);
             String roleJson = objectMapper.writeValueAsString(rpDto);
 
-            mockMvc.perform(delete("/" + companyId + "/rolesPermissions/" + rpFromDb.getRoleId())
+            mockMvc.perform(delete("/" + companyId + "/rolesPermissions/" + nonSystemRoleWithoutPermissionsId)
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(roleJson))
@@ -320,23 +253,20 @@ public class RolesPermissionsControllerIntegrationTest {
 
         @Test
         void shouldNotRemoveRolesPermissionsForSystemRole() throws Exception {
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-            String token = authService.authenticate(userLogin);
 
-            Permissions p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
             List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId()));
 
             RolesPermissionsUpdate rpDto = new RolesPermissionsUpdate(permissionIds);
             String roleJson = objectMapper.writeValueAsString(rpDto);
 
-            mockMvc.perform(delete("/" + companyId + "/rolesPermissions/" + rolePermissionsId)
+            mockMvc.perform(delete("/" + companyId + "/rolesPermissions/" + superAdminRoleId)
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(roleJson))
                     .andExpect(status().isForbidden())
                     .andExpect(jsonPath("$.status").value("error"))
                     .andExpect(jsonPath("$.code").value(403))
-                    .andExpect(jsonPath("$.errors[0].message").value("System Roles can not be updated. The role: ADMIN is a system role."))
+                    .andExpect(jsonPath("$.errors[0].message").value("System Roles can not be updated. The role: Super Admin is a system role."))
                     .andDo(print());
         }
 
@@ -344,14 +274,11 @@ public class RolesPermissionsControllerIntegrationTest {
         @Test
         void shouldNotRemoveRolesPermissionsWithNonExistingRoleId() throws Exception {
             UUID nonExistingRoleId = UUID.fromString("fed18c17-dc47-45f4-8b59-aafc04089a58");
-            Permissions p1 = permissionsRepoJpa.findByName("COMPANY_READ").orElse(null);
+
             List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId()));
 
             RolesPermissionsUpdate rpDto = new RolesPermissionsUpdate(permissionIds);
             String roleJson = objectMapper.writeValueAsString(rpDto);
-
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-            String token = authService.authenticate(userLogin);
 
             mockMvc.perform(delete("/" + companyId + "/rolesPermissions/" + nonExistingRoleId)
                             .header("Authorization", "Bearer " + token)

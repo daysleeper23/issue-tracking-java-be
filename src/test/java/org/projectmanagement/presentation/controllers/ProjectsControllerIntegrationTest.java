@@ -80,7 +80,7 @@ public class ProjectsControllerIntegrationTest {
 
         projectId = projectsDataFactory.createProject("Project Name", workspaceId, userId);
 
-        roleId = rolesDataFactory.createRoleWithAllPermissions("custom name", companyId);
+        roleId = rolesDataFactory.createRoleWithAllPermissions("custom name", companyId, false);
 
         workspaceMemberRolesDataFactory.createWorkspacesMembersRole(userId, roleId, workspaceId);
 

@@ -1,6 +1,7 @@
 package org.projectmanagement.presentation.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -8,15 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.projectmanagement.application.dto.company_managers.CreateCompanyManagers;
 import org.projectmanagement.application.dto.company_managers.UpdateCompanyManagers;
 import org.projectmanagement.application.dto.users.UsersLogin;
-import org.projectmanagement.domain.entities.Companies;
-import org.projectmanagement.domain.entities.CompanyManagers;
-import org.projectmanagement.domain.entities.Roles;
-import org.projectmanagement.domain.entities.Users;
-import org.projectmanagement.domain.repository.CompanyManagersRepoJpa;
-import org.projectmanagement.domain.repository.RolesRepoJpa;
-import org.projectmanagement.domain.repository.UsersRepoJpa;
-import org.projectmanagement.domain.repository.jpa.CompaniesJpaRepository;
+
 import org.projectmanagement.domain.services.AuthService;
+import org.projectmanagement.test_data_factories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,108 +41,65 @@ public class CompanyManagersControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private CompanyManagersRepoJpa companyManagersRepoJpa;
-
-    @Autowired
-    private CompaniesJpaRepository companiesJpaRepository;
-
-    @Autowired
-    private UsersRepoJpa usersRepoJpa;
-
-    @Autowired
-    private RolesRepoJpa rolesRepoJpa;
-
-    @Autowired
     private AuthService authService;
 
+    @Autowired
+    private CompaniesDataFactory companiesDataFactory;
+
+    @Autowired
+    private UsersDataFactory usersDataFactory;
+
+    @Autowired
+    private RolesDataFactory rolesDataFactory;
+
+    @Autowired
+    private CompanyManagersDataFactory companyManagersDataFactory;
+
     UUID companyId;
-    UUID roleAdminId;
+    UUID superAdminRoleId;
     UUID user1Id;
     UUID user2Id;
-    UUID companyManagerId;
-    UUID roleCompanyManagerId;
+    UUID companyManager1Id;
+    UUID companyManager2Id;
+    UUID companyManagerRoleId;
+    String token;
 
 
 
 
     @BeforeEach
     void setUp() {
-        companyManagersRepoJpa.deleteAll();
-        usersRepoJpa.deleteAll();
-        rolesRepoJpa.deleteAll();
-        companiesJpaRepository.deleteAll();
+        companyId = companiesDataFactory.createCompany();
 
-        Companies company = companiesJpaRepository.save(Companies.builder()
-                .id(companyId)
-                .name("Test Company")
-                .build());
+        superAdminRoleId = rolesDataFactory.createRoleWithAllPermissions("Super Admin", companyId, false);
 
-        companyId = company.getId();
+        companyManagerRoleId = rolesDataFactory.createRoleWithAllPermissions("Company Manager", companyId, false);
 
-        Roles role = rolesRepoJpa.save(Roles.builder()
-                .name("Super Admin")
-                .companyId(companyId)
-                .isDeleted(false)
-                .isSystemRole(true)
-                .build());
+        user1Id = usersDataFactory.createOwnerUser(companyId, "testuser@example.com", "hashedpassword");
 
-        roleAdminId = role.getId();
-
-        Roles role2 = rolesRepoJpa.save(Roles.builder()
-                .name("Company Manager")
-                .companyId(companyId)
-                .isDeleted(false)
-                .isSystemRole(true)
-                .build());
-
-        roleCompanyManagerId = role2.getId();
-
-        Users user1 = usersRepoJpa.save(Users.builder()
-                .name("user1")
-                .email("email")
-                .passwordHash("asdf")
-                .isActive(true)
-                .isDeleted(false)
-                .isOwner(true)
-                .companyId(companyId)
-                .build());
-        user1Id = user1.getId();
-
-        Users user2 = usersRepoJpa.save(Users.builder()
-                .name("user2")
-                .email("email2")
-                .passwordHash("asdf")
-                .isActive(true)
-                .isDeleted(false)
-                .isOwner(true)
-                .companyId(companyId)
-                .build());
-
-        user2Id = user2.getId();
-
-        CompanyManagers companyManager = companyManagersRepoJpa.save(CompanyManagers.builder()
-                .userId(user1Id)
-                .roleId(roleAdminId)
-                .companyId(companyId)
-                .build());
-
-        companyManagerId = companyManager.getId();
+        user2Id = usersDataFactory.createOwnerUser(companyId, "testuser2@example.com", "hashedpassword");
 
 
-        companyManagersRepoJpa.save(CompanyManagers.builder()
-                .userId(user2Id)
-                .roleId(roleAdminId)
-                .companyId(companyId)
-                .build());
+        companyManager1Id = companyManagersDataFactory.createCompanyManager(user1Id, superAdminRoleId, companyId);
+        companyManager2Id = companyManagersDataFactory.createCompanyManager(user2Id, companyManagerRoleId, companyId);
+
+        UsersLogin userLogin = new UsersLogin("testuser@example.com", "hashedpassword");
+        token = authService.authenticate(userLogin);
+
+    }
+
+    @AfterEach
+    void cleanUp() {
+        companiesDataFactory.deleteAll();
+        usersDataFactory.deleteAll();
+        rolesDataFactory.deleteAll();
+        companyManagersDataFactory.deleteAll();;
     }
 
     @Nested
     class GetCompanyManagers {
         @Test
         void getAllCorrectly() throws Exception {
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-
-            String token = authService.authenticate(userLogin);
 
             mockMvc.perform(get("/"+ companyId + "/companyManagers")
                             .header("Authorization", "Bearer " + token))
@@ -160,16 +112,13 @@ public class CompanyManagersControllerIntegrationTest {
 
         @Test
         void getOneById() throws Exception {
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
 
-            String token = authService.authenticate(userLogin);
-
-            mockMvc.perform(get("/"+ companyId + "/companyManagers/" + companyManagerId)
+            mockMvc.perform(get("/"+ companyId + "/companyManagers/" + companyManager1Id)
                     .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.data").isMap())
-                    .andExpect(jsonPath("$.data.id").value(companyManagerId.toString()))
+                    .andExpect(jsonPath("$.data.id").value(companyManager1Id.toString()))
                     .andDo(print());
         }
     }
@@ -178,12 +127,9 @@ public class CompanyManagersControllerIntegrationTest {
     class PostRoles {
         @Test
         void shouldCreateCompanyManagerNormallyWithProperData() throws Exception{
-            companyManagersRepoJpa.deleteAll();
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
+            UUID user3Id = usersDataFactory.createNonOwnerUser(companyId);
 
-            String token = authService.authenticate(userLogin);
-
-            CreateCompanyManagers companyManagers = new CreateCompanyManagers(user1Id, companyId, roleAdminId);
+            CreateCompanyManagers companyManagers = new CreateCompanyManagers(user3Id, companyId, superAdminRoleId);
             String roleJson = objectMapper.writeValueAsString(companyManagers);
 
             mockMvc.perform(post("/" + companyId + "/companyManagers")
@@ -192,20 +138,16 @@ public class CompanyManagersControllerIntegrationTest {
                             .content(roleJson))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.status").value("success"))
-                    .andExpect(jsonPath("$.data.roleId").value(roleAdminId.toString()))
+                    .andExpect(jsonPath("$.data.roleId").value(superAdminRoleId.toString()))
                     .andDo(print());
         }
 
         @Test
         void shouldNotCreateCompanyManagerWithNonExistingUserId() throws Exception{
-            companyManagersRepoJpa.deleteAll();
             UUID nonExistingUserId = UUID.fromString("fed18c17-dc47-45f4-8b59-aafc04089a58");
-            CreateCompanyManagers companyManagers = new CreateCompanyManagers(nonExistingUserId, companyId, roleAdminId);
+
+            CreateCompanyManagers companyManagers = new CreateCompanyManagers(nonExistingUserId, companyId, superAdminRoleId);
             String roleJson = objectMapper.writeValueAsString(companyManagers);
-
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-
-            String token = authService.authenticate(userLogin);
 
             mockMvc.perform(post("/" + companyId + "/companyManagers")
                             .header("Authorization", "Bearer " + token)
@@ -219,15 +161,14 @@ public class CompanyManagersControllerIntegrationTest {
         }
 
         @Test
-        void shouldNotCreateCompanyManagerWithNonExistingRoleIdWithId() throws Exception{
-            companyManagersRepoJpa.deleteAll();
-            UUID nonExistingRoleId = UUID.fromString("fed18c17-dc47-45f4-8b59-aafc04089a58");
-            CreateCompanyManagers companyManagers = new CreateCompanyManagers(user1Id, companyId, nonExistingRoleId);
+        void shouldNotCreateCompanyManagerWithNonExistingSuperAdminRoleIdWithId() throws Exception{
+            UUID user3Id = usersDataFactory.createNonOwnerUser(companyId);
+
+            UUID nonExistingSuperAdminRoleId = UUID.fromString("fed18c17-dc47-45f4-8b59-aafc04089a58");
+
+            CreateCompanyManagers companyManagers = new CreateCompanyManagers(user3Id, companyId, nonExistingSuperAdminRoleId);
+
             String roleJson = objectMapper.writeValueAsString(companyManagers);
-
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-
-            String token = authService.authenticate(userLogin);
 
             mockMvc.perform(post("/" + companyId + "/companyManagers")
                             .header("Authorization", "Bearer " + token)
@@ -236,27 +177,18 @@ public class CompanyManagersControllerIntegrationTest {
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.status").value("error"))
                     .andExpect(jsonPath("$.data").value(nullValue()))
-                    .andExpect(jsonPath("$.errors[0].message").value("Role with id: " + nonExistingRoleId + " is not found"))
+                    .andExpect(jsonPath("$.errors[0].message").value("Role with id: " + nonExistingSuperAdminRoleId + " is not found"))
                     .andDo(print());
         }
 
         @Test
         void shouldNotCreateCompanyManagerWithNonManagerRole() throws Exception{
-            companyManagersRepoJpa.deleteAll();
+            UUID user3Id = usersDataFactory.createNonOwnerUser(companyId);
 
-            Roles role = rolesRepoJpa.save(Roles.builder()
-                    .name("DEVELOPER")
-                    .companyId(companyId)
-                    .isDeleted(false)
-                    .isSystemRole(true)
-                    .build());
+            UUID nonManagerId = rolesDataFactory.createRoleWithoutPermissions("some role", companyId);
 
-            CreateCompanyManagers companyManagers = new CreateCompanyManagers(user1Id, companyId, role.getId());
+            CreateCompanyManagers companyManagers = new CreateCompanyManagers(user2Id, companyId, nonManagerId);
             String roleJson = objectMapper.writeValueAsString(companyManagers);
-
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-
-            String token = authService.authenticate(userLogin);
 
             mockMvc.perform(post("/" + companyId + "/companyManagers")
                             .header("Authorization", "Bearer " + token)
@@ -274,38 +206,29 @@ public class CompanyManagersControllerIntegrationTest {
     class PatchCompanyManagers {
         @Test
         void shouldUpdateCompanyManagerWithProperData() throws Exception {
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-            String token = authService.authenticate(userLogin);
 
-            UpdateCompanyManagers updateDto = new UpdateCompanyManagers(roleCompanyManagerId);
+            UpdateCompanyManagers updateDto = new UpdateCompanyManagers(companyManagerRoleId);
             String updateJson = objectMapper.writeValueAsString(updateDto);
 
-            mockMvc.perform(patch("/" + companyId + "/companyManagers/" + companyManagerId)
+            mockMvc.perform(patch("/" + companyId + "/companyManagers/" + companyManager1Id)
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(updateJson))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
-                    .andExpect(jsonPath("$.data.roleId").value(roleCompanyManagerId.toString()))
+                    .andExpect(jsonPath("$.data.roleId").value(companyManagerRoleId.toString()))
                     .andDo(print());
         }
 
         @Test
         void shouldNotUpdateCompanyManagerWithNonManagerRole() throws Exception {
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-            String token = authService.authenticate(userLogin);
 
-            Roles developerRole = rolesRepoJpa.save(Roles.builder()
-                    .name("DEVELOPER")
-                    .companyId(companyId)
-                    .isDeleted(false)
-                    .isSystemRole(true)
-                    .build());
+            UUID roleWithoutPermissionsId = rolesDataFactory.createRoleWithoutPermissions("some role", companyId);
 
-            UpdateCompanyManagers updateDto = new UpdateCompanyManagers(developerRole.getId());
+            UpdateCompanyManagers updateDto = new UpdateCompanyManagers(roleWithoutPermissionsId);
             String updateJson = objectMapper.writeValueAsString(updateDto);
 
-            mockMvc.perform(patch("/" + companyId + "/companyManagers/" + companyManagerId)
+            mockMvc.perform(patch("/" + companyId + "/companyManagers/" + companyManager1Id)
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(updateJson))
@@ -318,13 +241,10 @@ public class CompanyManagersControllerIntegrationTest {
 
         @Test
         void shouldNotUpdateNonExistingCompanyManager() throws Exception {
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-            String token = authService.authenticate(userLogin);
 
             UUID nonExistingManagerId = UUID.fromString("fed18c17-dc47-45f4-8b59-aafc04089a58");
-            //UUID validRoleId = rolesRepoJpa.findById(roleAdminId).get().getId();
 
-            UpdateCompanyManagers updateDto = new UpdateCompanyManagers(roleCompanyManagerId);
+            UpdateCompanyManagers updateDto = new UpdateCompanyManagers(companyManagerRoleId);
             String updateJson = objectMapper.writeValueAsString(updateDto);
 
             mockMvc.perform(patch("/" + companyId + "/companyManagers/" + nonExistingManagerId)
@@ -343,10 +263,8 @@ public class CompanyManagersControllerIntegrationTest {
     class DeleteCompanyManagers {
         @Test
         void shouldDeleteCompanyManagerSuccessfully() throws Exception {
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-            String token = authService.authenticate(userLogin);
 
-            mockMvc.perform(delete("/" + companyId + "/companyManagers/" + companyManagerId)
+            mockMvc.perform(delete("/" + companyId + "/companyManagers/" + companyManager1Id)
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
@@ -356,8 +274,6 @@ public class CompanyManagersControllerIntegrationTest {
 
         @Test
         void shouldNotDeleteNonExistingCompanyManager() throws Exception {
-            UsersLogin userLogin = new UsersLogin("email", "asdf");
-            String token = authService.authenticate(userLogin);
 
             UUID nonExistingManagerId = UUID.fromString("fed18c17-dc47-45f4-8b59-aafc04089a58");
 
