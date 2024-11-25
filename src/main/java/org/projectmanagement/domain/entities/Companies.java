@@ -2,6 +2,7 @@ package org.projectmanagement.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.apache.catalina.User;
 
 import java.time.Instant;
@@ -11,6 +12,8 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "companies")
+@SuperBuilder
+@ToString
 @NoArgsConstructor
 public class Companies extends BaseEntity {
 
@@ -35,8 +38,7 @@ public class Companies extends BaseEntity {
         this.ownerId = ownerId;
     }
 
-    public Companies(UUID id, String name, String description, UUID ownerId) {
-        this.id = id;
+    public Companies(String name, String description, UUID ownerId) {
         this.name = name;
         this.description = description;
         this.ownerId = ownerId;

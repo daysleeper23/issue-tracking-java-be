@@ -4,13 +4,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.UUID;
-import org.projectmanagement.application.dto.invitations.Invitations;
+import org.projectmanagement.application.dto.invitations.InvitationsCreate;
 import org.projectmanagement.application.dto.invitations.InvitationsInfo;
+import org.projectmanagement.domain.entities.Invitations;
 import org.projectmanagement.domain.services.InvitationsService;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriBuilder;
 
 import java.util.List;
 
@@ -22,14 +25,13 @@ public class InvitationsController {
     private final InvitationsService invitationsService;
 
     @PostMapping("/")
-    public ResponseEntity<GlobalResponse<Boolean>> sendInvitation(
-            HttpServletRequest request,
+    public ResponseEntity<GlobalResponse<Invitations>> sendInvitation(
             @PathVariable String companyId,
-            @RequestBody @Valid Invitations dto
+            @RequestBody @Valid InvitationsCreate dto
     ) {
-        String appUrl = request.getContextPath();
         String userId = java.util.UUID.randomUUID().toString();
-        return ResponseEntity.ok( new GlobalResponse<>(HttpStatus.OK.value(),invitationsService.sendInvitation(companyId,dto,userId)));
+        UriBuilder uriBuilder = ServletUriComponentsBuilder.fromCurrentRequest();
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.sendInvitation(companyId, dto, userId, uriBuilder )));
     }
 
     @GetMapping("/")
@@ -39,20 +41,21 @@ public class InvitationsController {
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.getInvitations(companyId)));
     }
 
-    @GetMapping("/verify")
+    @PutMapping("/verify")
     public ResponseEntity<GlobalResponse<Boolean>> acceptInvitation(
-            @RequestParam("token") String token
+            @RequestParam("token") String token,
+            @RequestParam("timestamp") Long timestamp
     ) {
-        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.acceptInvitation(token)));
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.acceptInvitation(token,timestamp)));
     }
 
     @PutMapping("/{invitationId}")
-    public ResponseEntity<GlobalResponse<Boolean>> refreshInvitations(
+    public ResponseEntity<GlobalResponse<Invitations>> refreshInvitations(
             @PathVariable @UUID String companyId,
             @PathVariable @UUID String invitationId,
             @RequestParam(value = "extend", required = false, defaultValue = "1") int days
     ) {
-        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.refreshInvitation(companyId,invitationId,days)));
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.refreshInvitation(companyId, invitationId, days)));
     }
 
     @DeleteMapping("/{invitationId}")
@@ -60,6 +63,7 @@ public class InvitationsController {
             @PathVariable @UUID String companyId,
             @PathVariable @UUID String invitationId
     ) {
-        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.revokeInvitation(companyId,invitationId)));
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.revokeInvitation(companyId, invitationId)));
     }
+
 }
