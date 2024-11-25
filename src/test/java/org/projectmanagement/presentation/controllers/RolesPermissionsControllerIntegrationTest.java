@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsCreate;
+import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsUpdate;
 import org.projectmanagement.application.dto.users.UsersLogin;
 import org.projectmanagement.domain.entities.*;
 import org.projectmanagement.domain.repository.*;
@@ -21,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -281,5 +281,90 @@ public class RolesPermissionsControllerIntegrationTest {
                     .andDo(print());
         }
     }
+
+    @Nested
+    class RemoveRolesPermissions {
+        @Test
+        void shouldRemoveRolesPermissionsWithValidData() throws Exception {
+            UsersLogin userLogin = new UsersLogin("email", "asdf");
+            String token = authService.authenticate(userLogin);
+            Roles nonSystemRole = rolesRepoJpa.save(Roles.builder()
+                    .name("CUSTOM ROLE")
+                    .companyId(companyId)
+                    .isDeleted(false)
+                    .isSystemRole(false)
+                    .build());
+
+            Permissions p1 = permissionsJpaRepo.findByName("COMPANY_READ").orElse(null);
+
+            RolesPermissions rpFromDb = rolesPermissionsJpaRepo.save(RolesPermissions.builder()
+                            .roleId(nonSystemRole.getId())
+                            .permissionId(p1.getId())
+                    .build());
+
+
+            List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId()));
+
+
+            RolesPermissionsCreate rpDto = new RolesPermissionsCreate("Test Role", permissionIds);
+            String roleJson = objectMapper.writeValueAsString(rpDto);
+
+            mockMvc.perform(delete("/" + companyId + "/rolesPermissions/" + rpFromDb.getRoleId())
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(roleJson))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value("success"))
+                    .andExpect(jsonPath("$.data").value("Permissions Removed from role"))
+                    .andDo(print());
+        }
+
+        @Test
+        void shouldNotRemoveRolesPermissionsForSystemRole() throws Exception {
+            UsersLogin userLogin = new UsersLogin("email", "asdf");
+            String token = authService.authenticate(userLogin);
+
+            Permissions p1 = permissionsJpaRepo.findByName("COMPANY_READ").orElse(null);
+            List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId()));
+
+            RolesPermissionsUpdate rpDto = new RolesPermissionsUpdate(permissionIds);
+            String roleJson = objectMapper.writeValueAsString(rpDto);
+
+            mockMvc.perform(delete("/" + companyId + "/rolesPermissions/" + rolePermissionsId)
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(roleJson))
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("$.status").value("error"))
+                    .andExpect(jsonPath("$.code").value(403))
+                    .andExpect(jsonPath("$.errors[0].message").value("System Roles can not be updated. The role: ADMIN is a system role."))
+                    .andDo(print());
+        }
+
+
+        @Test
+        void shouldNotRemoveRolesPermissionsWithNonExistingRoleId() throws Exception {
+            UUID nonExistingRoleId = UUID.fromString("fed18c17-dc47-45f4-8b59-aafc04089a58");
+            Permissions p1 = permissionsJpaRepo.findByName("COMPANY_READ").orElse(null);
+            List<UUID> permissionIds = new ArrayList<>(List.of(p1.getId()));
+
+            RolesPermissionsUpdate rpDto = new RolesPermissionsUpdate(permissionIds);
+            String roleJson = objectMapper.writeValueAsString(rpDto);
+
+            UsersLogin userLogin = new UsersLogin("email", "asdf");
+            String token = authService.authenticate(userLogin);
+
+            mockMvc.perform(delete("/" + companyId + "/rolesPermissions/" + nonExistingRoleId)
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(roleJson))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.status").value("error"))
+                    .andExpect(jsonPath("$.data").value(nullValue()))
+                    .andExpect(jsonPath("$.errors[0].message").value("Role with id:" + nonExistingRoleId + " was not found."))
+                    .andDo(print());
+        }
+    }
+
 
 }
