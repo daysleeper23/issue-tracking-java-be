@@ -189,8 +189,6 @@ public class ProjectMembersControllerTest {
                     .andExpect(jsonPath("$.status").value("error"))
                     .andExpect(jsonPath("$.errors[0].message").value("Project with id: " + nonExistingProjectId + " was not found."))
                     .andDo(print());
-
-
         }
 
         @Test
@@ -204,6 +202,23 @@ public class ProjectMembersControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(createJson))
                     .andExpect(status().isConflict());
+        }
+
+        @Test
+        void shouldNotCreateProjectMemberIfUserIsNotMemberOfWorkspace() throws Exception {
+            UUID userId = usersDataFactory.createNonOwnerUser(companyId);
+
+            ProjectMemberCreate createDto = new ProjectMemberCreate(userId, false);
+            String createJson = objectMapper.writeValueAsString(createDto);
+
+            mockMvc.perform(post("/" + projectId + "/projectMembers")
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(createJson))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.status").value("error"))
+                    .andExpect(jsonPath("$.errors[0].message").value("Given user is not a member of the workspace and can not be added to given the project."))
+                    .andDo(print());
         }
 
     }

@@ -6,10 +6,12 @@ import org.projectmanagement.application.dto.project_members.ProjectMemberUpdate
 import org.projectmanagement.domain.entities.ProjectMembers;
 import org.projectmanagement.domain.entities.Projects;
 import org.projectmanagement.domain.entities.Users;
+import org.projectmanagement.domain.entities.WorkspacesMembersRoles;
 import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
 import org.projectmanagement.domain.repository.ProjectMembersRepository;
 import org.projectmanagement.domain.repository.ProjectsRepository;
 import org.projectmanagement.domain.repository.UsersRepository;
+import org.projectmanagement.domain.repository.WorkspacesMembersRolesRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +24,18 @@ public class ProjectMembersServiceImpl {
     private final ProjectMembersRepository projectMembersRepository;
     private final ProjectsRepository projectRepository;
     private final UsersRepository usersRepository;
+    private final WorkspacesMembersRolesRepository workspacesMembersRolesRepository;
 
     ProjectMembersServiceImpl(ProjectMembersRepository projectMembersRepository,
                               ProjectsRepository projectRepository,
-                              UsersRepository usersRepository
+                              UsersRepository usersRepository,
+                              WorkspacesMembersRolesRepository workspacesMembersRolesRepository
     ) {
 
         this.projectMembersRepository = projectMembersRepository;
         this.projectRepository = projectRepository;
         this.usersRepository = usersRepository;
+        this.workspacesMembersRolesRepository = workspacesMembersRolesRepository;
     }
 
     public ProjectMembers getProjectMemberById(UUID id){
@@ -70,6 +75,12 @@ public class ProjectMembersServiceImpl {
 
         if (projectFromDB == null) {
             throw new ResourceNotFoundException("Project with id: " + projectId + " was not found.");
+        }
+
+        WorkspacesMembersRoles workspacesMembersRoleFromDb = workspacesMembersRolesRepository.findByUserId(dto.userId()).orElse(null);
+
+        if (workspacesMembersRoleFromDb == null) {
+            throw new ResourceNotFoundException("Given user is not a member of the workspace and can not be added to given the project.");
         }
 
         return projectMembersRepository.save(
