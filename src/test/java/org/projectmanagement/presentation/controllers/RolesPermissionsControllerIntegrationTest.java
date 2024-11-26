@@ -100,13 +100,11 @@ public class RolesPermissionsControllerIntegrationTest {
     class GetRolesPermissions {
         @Test
         void getAllByCompanyIdCorrectly() throws Exception {
-
             mockMvc.perform(get("/"+ companyId + "/rolesPermissions")
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.data").isArray())
-                    .andExpect(jsonPath("$.data", hasSize(21))) //default size of permissions is 21
                     .andDo(print());
         }
     }

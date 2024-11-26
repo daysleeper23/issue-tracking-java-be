@@ -17,7 +17,9 @@ import java.util.UUID;
 @Getter
 @SuperBuilder(toBuilder = true)
 @Entity
-@Table(name = "invitations")
+@Table(name = "invitations", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_email"})
+})
 public class Invitations extends BaseEntity {
 
     @Setter(AccessLevel.NONE)

@@ -44,7 +44,7 @@ public class UsersDataFactory {
     public UUID createNonOwnerUser(UUID companyId) {
         Users user = usersRepoJpa.save(Users.builder()
                 .name("Test User2")
-                .email("testuser2@example.com")
+                .email("testuser2" + UUID.randomUUID().toString() + "@example.com")
                 .passwordHash("hashedpassword")
                 .companyId(companyId)
                 .isActive(true)

@@ -77,7 +77,7 @@ public class CompanyManagersControllerIntegrationTest {
 
         user1Id = usersDataFactory.createOwnerUser(companyId, "testuser@example.com", "hashedpassword");
 
-        user2Id = usersDataFactory.createOwnerUser(companyId, "testuser2@example.com", "hashedpassword");
+        user2Id = usersDataFactory.createNonOwnerUser(companyId);
 
 
         companyManager1Id = companyManagersDataFactory.createCompanyManager(user1Id, superAdminRoleId, companyId);
@@ -187,7 +187,7 @@ public class CompanyManagersControllerIntegrationTest {
 
             UUID nonManagerId = rolesDataFactory.createRoleWithoutPermissions("some role", companyId);
 
-            CreateCompanyManagers companyManagers = new CreateCompanyManagers(user2Id, companyId, nonManagerId);
+            CreateCompanyManagers companyManagers = new CreateCompanyManagers(user3Id, companyId, nonManagerId);
             String roleJson = objectMapper.writeValueAsString(companyManagers);
 
             mockMvc.perform(post("/" + companyId + "/companyManagers")
