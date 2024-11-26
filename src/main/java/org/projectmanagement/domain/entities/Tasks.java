@@ -16,7 +16,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Entity
-@Table(name = "tasks")
+@Table(name = "tasks", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name", "project_id"})
+})
 public class Tasks extends BaseEntity {
 
     //Todo: Uncomment the line below after implementing jpa

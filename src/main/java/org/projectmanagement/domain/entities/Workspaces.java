@@ -15,7 +15,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @SuperBuilder
 @Entity
-@Table(name = "workspaces")
+@Table(name = "workspaces", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name", "company_id"})
+})
 public class Workspaces extends BaseEntity {
     @Id
     @GeneratedValue(generator = "UUID")

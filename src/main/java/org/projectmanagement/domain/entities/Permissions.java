@@ -6,7 +6,9 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "permissions")
+@Table(name = "permissions", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name"})
+})
 @Getter
 @Setter
 @NoArgsConstructor

@@ -6,7 +6,10 @@ import lombok.*;
 import java.util.UUID;
 
 @Getter
-@Entity(name = "task_subscribers")
+@Entity
+@Table(name = "task_subscribers", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"taskId", "userId"})
+})
 public class TaskSubscribers {
 
     @Setter(AccessLevel.NONE)

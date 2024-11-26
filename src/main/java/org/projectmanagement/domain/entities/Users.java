@@ -12,7 +12,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"email"})
+})
 public class Users extends BaseEntity{
 
     @Id
