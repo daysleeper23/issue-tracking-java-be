@@ -3,6 +3,9 @@ server:
 spring:
   application:
     name: "project-management-service"
+  spring:
+    config:
+      import: "optional:file:.env"
   profiles:
     active: "dev"
   web:

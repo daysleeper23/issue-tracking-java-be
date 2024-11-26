@@ -38,8 +38,14 @@ public class WorkspacesMembersRolesRepoImpl implements WorkspacesMembersRolesRep
         return jpaRepo.findAllByWorkspaceId(workspaceId);
     }
 
-    public WorkspacesMembersRoles updateWorkspacesMembersRoles(UUID id, UUID newRoleId) {
-        return jpaRepo.updateWorkspacesMembersRoles(id, newRoleId);
+    public Optional<WorkspacesMembersRoles> updateWorkspacesMembersRoles(UUID id, UUID newRoleId) {
+        int result = jpaRepo.updateWorkspacesMembersRoles(id, newRoleId);
+        if (result == 1) {
+            Optional<WorkspacesMembersRoles> newWMR = jpaRepo.findById(id);
+            newWMR.get().setRoleId(newRoleId);
+            return newWMR;
+        }
+        return Optional.empty();
     }
 
     public void deleteById(UUID id) {
