@@ -16,7 +16,7 @@ import java.util.UUID;
 @SuperBuilder(toBuilder = true)
 @Entity
 @Table(name = "invitations", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_email"})
+        @UniqueConstraint(name = "uc_invitations_email",columnNames = {"user_email"})
 })
 public class Invitations extends BaseEntity {
 

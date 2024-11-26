@@ -5,16 +5,17 @@ import lombok.*;
 
 import java.util.UUID;
 
+@NoArgsConstructor
 @Getter
 @Entity
 @Table(name = "task_subscribers", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"taskId", "userId"})
+        @UniqueConstraint(name = "uc_tasks_subscribers",columnNames = {"taskId", "userId"})
 })
 public class TaskSubscribers {
 
     @Setter(AccessLevel.NONE)
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     @Column(name = "id",unique = true)
     private UUID id;
 

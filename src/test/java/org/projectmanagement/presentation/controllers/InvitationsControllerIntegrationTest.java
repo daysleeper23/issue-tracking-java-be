@@ -85,6 +85,7 @@ public class InvitationsControllerIntegrationTest {
         adminRoleId = rolesDataFactory.createRoleWithAllPermissions(Roles.SystemRoles.ADMIN.getName(), companyId, false);
         companyManagersDataFactory.createCompanyManager(userId, adminRoleId, companyId);
 
+
     }
 
     @AfterEach

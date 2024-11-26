@@ -14,7 +14,7 @@ import java.util.UUID;
 @SuperBuilder
 @Entity
 @Table(name = "roles", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"name", "company_id"})
+        @UniqueConstraint(name="uc_role_name",columnNames = {"name", "company_id"})
 })
 public class Roles extends BaseEntity {
     @Id

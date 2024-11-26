@@ -8,14 +8,25 @@ import java.util.List;
 import java.util.UUID;
 
 public interface TasksJpaRepository extends JpaRepository<Tasks, UUID> {
-    @Query(value ="SELECT t FROM tasks t WHERE t.project_id = :projectId",
+    @Query(value ="SELECT * FROM tasks t WHERE t.project_id = :projectId",
             nativeQuery = true
     )
     List<Tasks> findByProjectId(UUID projectId);
 
-    @Query(value ="SELECT t FROM tasks t " +
-            "LEFT JOIN tasks_subscribers ts ON ts.task_id = t.id" +
-            "WHERE t.assigned_id = :userId OR ts.user_id = :userId",
+    @Query(value ="SELECT t.id, " +
+            "t.name," +
+            "t.description," +
+            "t.priority," +
+            "t.status," +
+            "t.started_at," +
+            "t.ended_at," +
+            "t.assignee_id," +
+            "t.project_id," +
+            "t.created_at," +
+            "t.updated_at " +
+            "FROM tasks t " +
+            "LEFT JOIN task_subscribers ts ON ts.task_id = t.id " +
+            "WHERE t.assignee_id = :userId OR ts.user_id = :userId",
             nativeQuery = true
     )
     List<Tasks> findAllTasksUserAssociated(UUID userId);

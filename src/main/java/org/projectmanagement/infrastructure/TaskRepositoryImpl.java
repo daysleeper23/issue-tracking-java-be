@@ -14,7 +14,7 @@ import java.util.UUID;
 public class TaskRepositoryImpl implements TasksRepository {
 
     //Replace with actual implementation for jpa
-    private TasksJpaRepository jpaRepository;
+    private final TasksJpaRepository jpaRepository;
 
     @Override
     public List<Tasks> findByProjectId(UUID projectId) {
