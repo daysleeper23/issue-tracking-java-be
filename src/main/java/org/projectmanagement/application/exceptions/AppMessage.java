@@ -26,6 +26,15 @@ public enum AppMessage {
     MAIL_SEND_ERROR("Error sending mail"),
     //Workspace errors
     WORKSPACE_NOT_FOUND("Workspace not found"),
+
+    //Workspace Member Role errors
+    WMR_ROLE_NOT_FOUND("Role not found for user in workspace"),
+    WRM_USER_ALREADY_IN_WORKSPACE("User already in workspace"),
+    WMR_INVALID_WORKSPACE("Invalid workspace for workspace members"),
+    WMR_INVALID_USER("Invalid user for workspace members"),
+    WMR_INVALID_ROLE("Invalid role for workspace members (should be Member or Workspace Manager)"),
+    WMR_UPDATE_ERROR("Error updating role for member in workspace"),
+
     //Project errors
     USER_NOT_IN_PROJECT("User not in project"),
     PROJECT_NOT_FOUND("Project not found"),

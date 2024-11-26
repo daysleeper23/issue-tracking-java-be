@@ -5,6 +5,7 @@ import org.projectmanagement.application.dto.workspacesmembersroles.WorkspacesMe
 import org.projectmanagement.domain.entities.WorkspacesMembersRoles;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface WorkspacesMembersRolesService {

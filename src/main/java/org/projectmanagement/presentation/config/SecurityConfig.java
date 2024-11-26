@@ -102,15 +102,15 @@ public class SecurityConfig {
 
                     //Allow POST requests on /{companyId}/{workspaceId}/members/roles
                     .requestMatchers(HttpMethod.POST,"/{companyId}/{workspaceId}/members/roles")
-                        .hasAnyAuthority("PROJECT_UPDATE_ALL", "PROJECT_UPDATE_ONE")
+                        .hasAnyAuthority("WORKSPACE_UPDATE_ALL", "WORKSPACE_UPDATE_ONE")
+
+                    //Allow PUT requests on /{companyId}/{workspaceId}/members/roles/{id}
+                    .requestMatchers(HttpMethod.PUT,"/{companyId}/{workspaceId}/members/roles/{id}")
+                        .hasAnyAuthority("WORKSPACE_UPDATE_ALL", "WORKSPACE_UPDATE_ONE")
 
                     //Allow DELETE requests on /{companyId}/{workspaceId}/members/roles/{id}
                     .requestMatchers(HttpMethod.DELETE,"/{companyId}/{workspaceId}/members/roles/{id}")
-                        .hasAnyAuthority("PROJECT_UPDATE_ALL", "PROJECT_UPDATE_ONE")
-
-                    //Allow PATCH requests on /{companyId}/{workspaceId}/members/roles/{id}
-                    .requestMatchers(HttpMethod.PATCH,"/{companyId}/{workspaceId}/members/roles/{id}")
-                        .hasAnyAuthority("PROJECT_UPDATE_ALL", "PROJECT_UPDATE_ONE")
+                        .hasAnyAuthority("WORKSPACE_UPDATE_ALL", "WORKSPACE_UPDATE_ONE")
 
                     /*
                         PROJECT PERMISSIONS

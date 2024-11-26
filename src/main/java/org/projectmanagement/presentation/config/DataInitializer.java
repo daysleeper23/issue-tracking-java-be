@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -13,6 +14,7 @@ import java.util.UUID;
 
 @Log4j2
 @Configuration
+@Component
 public class DataInitializer {
     private final JdbcTemplate jdbcTemplate;
 
@@ -33,6 +35,12 @@ public class DataInitializer {
 
     private final UUID workspace1Id = UUID.fromString("caa47ad6-6a0c-4733-82cc-af51b5412d94");
     private final UUID workspace2Id = UUID.fromString("de7968b1-762a-4ea6-b6ec-cab609005012");
+    private final UUID wmr_wm_1Id = UUID.fromString("259c7860-9652-4e60-94db-ec497788d2b5");
+    private final UUID wmr_m1_1Id = UUID.fromString("6993455f-8ef8-4f3e-bef8-9db3bcb99ba4");
+    private final UUID wmr_m2_1Id = UUID.fromString("20af44ce-0a3b-40ce-842e-12b5a53bf059");
+    private final UUID wmr_wm_2Id = UUID.fromString("698c4a40-de56-4951-9d97-f92082a6744e");
+    private final UUID wmr_m1_2Id = UUID.fromString("65c30158-e11c-42d2-a9b9-0834cb37b673");
+    private final UUID wmr_m2_2Id = UUID.fromString("5b066a05-fee4-447f-b85e-6d7625eee310");
 
     private final UUID project1Id = UUID.fromString("d9b2efea-9447-49a2-b904-f3be8261f8d2");
     private final UUID project2Id = UUID.fromString("4863b61b-f2ac-488d-b80f-68748cd0978b");
@@ -204,7 +212,7 @@ public class DataInitializer {
         sql = "INSERT INTO workspaces (id, created_at, updated_at, company_id, name, description, is_deleted)" +
             " VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        // Create workspaces
+        // Create 2 workspaces: workspace1Id, workspace2Id
         jdbcTemplate.update(sql, workspace1Id, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), companyId, "Workspace 1", "Workspace 1 Description", false);
         jdbcTemplate.update(sql, workspace2Id, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), companyId, "Workspace 2", "Workspace 2 Description", false);
 
@@ -213,13 +221,16 @@ public class DataInitializer {
 
         // Workspaces Members Roles
         sql = "INSERT INTO workspaces_members_roles (id, workspace_id, user_id, role_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, UUID.randomUUID(), workspace1Id, workspaceManager1Id, workspaceManagerRoleId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
-        jdbcTemplate.update(sql, UUID.randomUUID(), workspace1Id, member1Id, memberRoleId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
-        jdbcTemplate.update(sql, UUID.randomUUID(), workspace1Id, member2Id, memberRoleId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
 
-        jdbcTemplate.update(sql, UUID.randomUUID(), workspace2Id, workspaceManager2Id, workspaceManagerRoleId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
-        jdbcTemplate.update(sql, UUID.randomUUID(), workspace2Id, member3Id, memberRoleId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
-        jdbcTemplate.update(sql, UUID.randomUUID(), workspace2Id, member4Id, memberRoleId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
+        //member1Id, member2Id, workspaceManager1Id belong to workspace1Id
+        jdbcTemplate.update(sql, wmr_wm_1Id, workspace1Id, workspaceManager1Id, workspaceManagerRoleId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
+        jdbcTemplate.update(sql, wmr_m1_1Id, workspace1Id, member1Id, memberRoleId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
+        jdbcTemplate.update(sql, wmr_m2_1Id, workspace1Id, member2Id, memberRoleId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
+
+        //member3Id, member4Id, workspaceManager2Id belong to workspace2Id
+        jdbcTemplate.update(sql, wmr_wm_2Id, workspace2Id, workspaceManager2Id, workspaceManagerRoleId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
+        jdbcTemplate.update(sql, wmr_m1_2Id, workspace2Id, member3Id, memberRoleId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
+        jdbcTemplate.update(sql, wmr_m2_2Id, workspace2Id, member4Id, memberRoleId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
     }
 
     public void initializeProjectsAndMembers() {
@@ -236,10 +247,12 @@ public class DataInitializer {
 
         sql = "INSERT INTO project_members (id, created_at, updated_at, project_id, subscribed, user_id)" +
             " VALUES (?, ?, ?, ?, ?, ?)";
+        //member1Id, member2Id, workspaceManager1Id belong to project1Id
         jdbcTemplate.update(sql, UUID.randomUUID(), Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), project1Id, true, member1Id);
         jdbcTemplate.update(sql, UUID.randomUUID(), Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), project1Id, true, member2Id);
         jdbcTemplate.update(sql, UUID.randomUUID(), Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), project1Id, true, workspaceManager1Id);
 
+        //member3Id, member4Id, workspaceManager2Id belong to project2Id
         jdbcTemplate.update(sql, UUID.randomUUID(), Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), project2Id, true, member3Id);
         jdbcTemplate.update(sql, UUID.randomUUID(), Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), project2Id, true, member4Id);
         jdbcTemplate.update(sql, UUID.randomUUID(), Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), project2Id, true, workspaceManager2Id);

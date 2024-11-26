@@ -4,12 +4,18 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.projectmanagement.application.dto.projects.ProjectsCreate;
 import org.projectmanagement.application.dto.users.UsersLogin;
+import org.projectmanagement.application.dto.workspaces.WorkspacesCreate;
+import org.projectmanagement.application.dto.workspaces.WorkspacesUpdate;
+import org.projectmanagement.presentation.config.DataInitializer;
 import org.projectmanagement.presentation.config.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -18,6 +24,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.UUID;
 
 @SpringBootTest
@@ -25,6 +33,12 @@ import java.util.UUID;
 public class AuthorizationIntegrationTest {
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    private DataInitializer dataInitializer;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Value("${JWT_SECRET}")
     private String jwtSecret;
@@ -54,10 +68,21 @@ public class AuthorizationIntegrationTest {
 
     private static String ownerEmail = "owner@fs19java.com";
 
+    private UUID newWorkspace1Id;
+
     @Autowired
     private JwtHelper jwtHelper;
 
     private static String adminToken;
+
+    @BeforeEach
+    public void setUp() {
+        dataInitializer.initializeCompanies();
+        dataInitializer.initializeUsers();
+        dataInitializer.initializeRolesPermissions();
+        dataInitializer.initializeWorkspacesAndMemberRoles();
+        dataInitializer.initializeProjectsAndMembers();
+    }
 
     @Nested
     class AdminAuthorization {
@@ -75,12 +100,194 @@ public class AuthorizationIntegrationTest {
                 .andDo(print());
         }
 
-        @Test
-        public void shouldBeAbleToGetAllWorkspaces() throws Exception {
-            mockMvc.perform(get("/" + companyId + "/workspaces")
+        @Nested
+        class Workspaces {
+            @Test
+            public void shouldBeAbleToGetAllWorkspaces() throws Exception {
+                mockMvc.perform(get("/" + companyId + "/workspaces")
                     .header("Authorization", "Bearer " + adminToken))
-                .andExpect(status().isOk())
-                .andDo(print());
+                    .andExpect(status().isOk())
+                    .andDo(print());
+            }
+
+            @Test
+            public void shouldBeAbleToCreateWorkspace() throws Exception {
+                WorkspacesCreate workspace = new WorkspacesCreate("Workspace Test Authorization", "Description 1");
+                String wsJson = objectMapper.writeValueAsString(workspace);
+
+                mockMvc.perform(post("/" + companyId + "/workspaces")
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(wsJson))
+                    .andExpect(status().isCreated())
+                    .andDo(print());
+
+                mockMvc.perform(get("/" + companyId + "/workspaces")
+                        .header("Authorization", "Bearer " + adminToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data", hasSize(1)))
+                    .andDo(print());
+            }
+
+            @Test
+            public void shouldBeAbleToUpdateWorkspaceById() throws Exception {
+                WorkspacesUpdate workspace = WorkspacesUpdate.withName("Workspace Test Authorization");
+                String wsJson = objectMapper.writeValueAsString(workspace);
+
+                mockMvc.perform(patch("/" + companyId + "/workspaces/" + workspace1Id)
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(wsJson))
+                    .andExpect(status().isOk())
+                    .andDo(print());
+
+                WorkspacesUpdate workspace2 = WorkspacesUpdate.withName("Workspace Test Authorization 2");
+                String wsJson2 = objectMapper.writeValueAsString(workspace2);
+                mockMvc.perform(patch("/" + companyId + "/workspaces/" + workspace2Id)
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(wsJson2))
+                    .andExpect(status().isOk())
+                    .andDo(print());
+            }
+
+            @Test
+            public void shouldBeAbleToDeleteWorkspaceById() throws Exception {
+                mockMvc.perform(delete("/" + companyId + "/workspaces/" + workspace2Id)
+                    .header("Authorization", "Bearer " + adminToken))
+                    .andExpect(status().isNoContent())
+                    .andDo(print());
+
+                mockMvc.perform(get("/" + companyId + "/workspaces")
+                    .header("Authorization", "Bearer " + adminToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data", hasSize(1)))
+                    .andDo(print());
+
+                mockMvc.perform(delete("/" + companyId + "/workspaces/" + workspace1Id)
+                        .header("Authorization", "Bearer " + adminToken))
+                    .andExpect(status().isNoContent())
+                    .andDo(print());
+
+                mockMvc.perform(get("/" + companyId + "/workspaces")
+                        .header("Authorization", "Bearer " + adminToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data", hasSize(0)))
+                    .andDo(print());
+            }
+
+            @Test
+            public void shouldBeAbleToAddMemberToWorkspace() {
+
+            }
+        }
+
+        @Nested
+        class Projects {
+            @Test
+            public void shouldBeAbleToGetAllProjects() throws Exception {
+                mockMvc.perform(get("/" + companyId + "/" + workspace1Id + "/projects")
+                    .header("Authorization", "Bearer " + adminToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data", hasSize(1)))
+                    .andDo(print());
+
+                mockMvc.perform(get("/" + companyId + "/" + workspace2Id + "/projects")
+                        .header("Authorization", "Bearer " + adminToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data", hasSize(1)))
+                    .andDo(print());
+            }
+
+            @Test
+            public void shouldBeAbleToCreateProject() throws Exception {
+
+                //TODO: Should status & priority have default values if the client do not send?
+                mockMvc.perform(post("/" + companyId + "/" + workspace1Id + "/projects")
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("" +
+                        "{\"name\": \"Project Test Authorization\"" +
+                        ", \"description\": \"Description 1\" " +
+                        ", \"leaderId\": \"" + member1Id + "\"" +
+                        ", \"workspaceId\": \"" + workspace1Id + "\" }"))
+                    .andExpect(status().isCreated())
+                    .andDo(print());
+
+                mockMvc.perform(get("/" + companyId + "/" + workspace1Id + "/projects")
+                    .header("Authorization", "Bearer " + adminToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data", hasSize(2)))
+                    .andDo(print());
+
+                mockMvc.perform(post("/" + companyId + "/" + workspace2Id + "/projects")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("" +
+                            "{\"name\": \"Project Test Authorization 2\"" +
+                            ", \"description\": \"Description 2\" " +
+                            ", \"leaderId\": \"" + member2Id + "\"" +
+                            ", \"workspaceId\": \"" + workspace2Id + "\" }"))
+                    .andExpect(status().isCreated())
+                    .andDo(print());
+
+                mockMvc.perform(get("/" + companyId + "/" + workspace2Id + "/projects")
+                        .header("Authorization", "Bearer " + adminToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data", hasSize(2)))
+                    .andDo(print());
+            }
+
+            @Test
+            public void shouldBeAbleToUpdateProjectById() throws Exception {
+                mockMvc.perform(patch("/" + companyId + "/" + workspace1Id + "/projects/" + project1Id)
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("" +
+                        "{\"name\": \"Project Test Authorization Updated\"" +
+                        ", \"description\": \"Description 1 Updated\" " +
+                        ", \"leaderId\": \"" + member1Id + "\"" +
+                        ", \"workspaceId\": \"" + workspace1Id + "\" }"))
+                    .andExpect(status().isOk())
+                    .andDo(print());
+
+                mockMvc.perform(patch("/" + companyId + "/" + workspace2Id + "/projects/" + project2Id)
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("" +
+                            "{\"name\": \"Project Test Authorization 2 Updated\"" +
+                            ", \"description\": \"Description 2 Updated\" " +
+                            ", \"leaderId\": \"" + member2Id + "\"" +
+                            ", \"workspaceId\": \"" + workspace2Id + "\" }"))
+                    .andExpect(status().isOk())
+                    .andDo(print());
+            }
+
+            @Test
+            public void shouldBeAbleToDeleteProjectById() throws Exception {
+                //TODO: Should we return NoContent or Ok?
+                mockMvc.perform(delete("/" + companyId + "/" + workspace1Id + "/projects/" + project1Id)
+                    .header("Authorization", "Bearer " + adminToken))
+                    .andExpect(status().isNoContent())
+                    .andDo(print());
+
+                mockMvc.perform(get("/" + companyId + "/" + workspace1Id + "/projects")
+                    .header("Authorization", "Bearer " + adminToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data", hasSize(0)))
+                    .andDo(print());
+
+                mockMvc.perform(delete("/" + companyId + "/" + workspace2Id + "/projects/" + project2Id)
+                        .header("Authorization", "Bearer " + adminToken))
+                    .andExpect(status().isNoContent())
+                    .andDo(print());
+
+                mockMvc.perform(get("/" + companyId + "/" + workspace2Id + "/projects")
+                        .header("Authorization", "Bearer " + adminToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data", hasSize(0)))
+                    .andDo(print());
+            }
         }
     }
 }

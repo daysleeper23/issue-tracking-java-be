@@ -8,4 +8,7 @@ public record WorkspacesUpdate(
     String name,
     String description
 ) {
+    public static WorkspacesUpdate withName(String name) {
+        return new WorkspacesUpdate(name, null);
+    }
 }
