@@ -3,15 +3,9 @@ package org.projectmanagement.application.services;
 import org.projectmanagement.application.dto.project_members.ProjectMemberCreate;
 import org.projectmanagement.application.dto.project_members.ProjectMemberMapper;
 import org.projectmanagement.application.dto.project_members.ProjectMemberUpdate;
-import org.projectmanagement.domain.entities.ProjectMembers;
-import org.projectmanagement.domain.entities.Projects;
-import org.projectmanagement.domain.entities.Users;
-import org.projectmanagement.domain.entities.WorkspacesMembersRoles;
+import org.projectmanagement.domain.entities.*;
 import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
-import org.projectmanagement.domain.repository.ProjectMembersRepository;
-import org.projectmanagement.domain.repository.ProjectsRepository;
-import org.projectmanagement.domain.repository.UsersRepository;
-import org.projectmanagement.domain.repository.WorkspacesMembersRolesRepository;
+import org.projectmanagement.domain.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,17 +19,20 @@ public class ProjectMembersServiceImpl {
     private final ProjectsRepository projectRepository;
     private final UsersRepository usersRepository;
     private final WorkspacesMembersRolesRepository workspacesMembersRolesRepository;
+    private final CompanyManagersRepository companyManagersRepository;
 
     ProjectMembersServiceImpl(ProjectMembersRepository projectMembersRepository,
                               ProjectsRepository projectRepository,
                               UsersRepository usersRepository,
-                              WorkspacesMembersRolesRepository workspacesMembersRolesRepository
+                              WorkspacesMembersRolesRepository workspacesMembersRolesRepository,
+                              CompanyManagersRepository companyManagersRepository
     ) {
 
         this.projectMembersRepository = projectMembersRepository;
         this.projectRepository = projectRepository;
         this.usersRepository = usersRepository;
         this.workspacesMembersRolesRepository = workspacesMembersRolesRepository;
+        this.companyManagersRepository = companyManagersRepository;
     }
 
     public ProjectMembers getProjectMemberById(UUID id){
@@ -78,8 +75,9 @@ public class ProjectMembersServiceImpl {
         }
 
         WorkspacesMembersRoles workspacesMembersRoleFromDb = workspacesMembersRolesRepository.findByUserId(dto.userId()).orElse(null);
+        CompanyManagers companyManagersFromDb = companyManagersRepository.findByUserId(dto.userId()).orElse(null);
 
-        if (workspacesMembersRoleFromDb == null) {
+        if (workspacesMembersRoleFromDb == null && companyManagersFromDb == null) {
             throw new ResourceNotFoundException("Given user is not a member of the workspace and can not be added to given the project.");
         }
 

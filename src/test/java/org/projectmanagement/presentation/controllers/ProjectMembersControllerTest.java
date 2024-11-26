@@ -60,6 +60,9 @@ public class ProjectMembersControllerTest {
     @Autowired
     private ProjectMembersDataFactory projectMembersDataFactory;
 
+    @Autowired
+    private CompanyManagersDataFactory companyManagersDataFactory;
+
     UUID companyId;
     UUID workspaceId;
     UUID userId;
@@ -70,6 +73,7 @@ public class ProjectMembersControllerTest {
     UUID projectMemberId;
     UUID project2MemberId;
     UUID workspaceMemberRoleId;
+    UUID companyManagerId;
     String token;
 
     @BeforeEach
@@ -93,6 +97,8 @@ public class ProjectMembersControllerTest {
         projectMemberId = projectMembersDataFactory.addMemberToProject(projectId, userId);
         project2MemberId = projectMembersDataFactory.addMemberToProject(project2Id, userId);
 
+        companyManagerId = companyManagersDataFactory.createCompanyManager(user2Id, roleId, companyId);
+
         UsersLogin userLogin = new UsersLogin("testuser@example.com", "hashedpassword");
         token = authService.authenticate(userLogin);
 
@@ -107,6 +113,7 @@ public class ProjectMembersControllerTest {
         projectsDataFactory.deleteAll();
         rolesDataFactory.deleteAll();
         projectMembersDataFactory.deleteAll();
+        companyManagersDataFactory.deleteAll();
     }
 
     @Nested
@@ -220,6 +227,8 @@ public class ProjectMembersControllerTest {
                     .andExpect(jsonPath("$.errors[0].message").value("Given user is not a member of the workspace and can not be added to given the project."))
                     .andDo(print());
         }
+
+
 
     }
 
