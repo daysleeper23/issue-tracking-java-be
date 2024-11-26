@@ -187,6 +187,14 @@ public class DataInitializer {
         //Members
         jdbcTemplate.update(sql, UUID.randomUUID(), memberRoleId, UUID.fromString("6c7b8378-a952-47a4-b9c5-fb7c2a090541"));
         jdbcTemplate.update(sql, UUID.randomUUID(), memberRoleId, UUID.fromString("1e72d950-3e30-4a79-b705-a04d1157862a"));
+
+        //company managers
+        sql = "DELETE FROM company_managers WHERE company_id = ?";
+        jdbcTemplate.update(sql, companyId);
+
+        sql = "INSERT INTO company_managers (id, user_id, role_id, company_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, UUID.randomUUID(), companyManagerId, companyManagerRoleId, companyId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
+        jdbcTemplate.update(sql, UUID.randomUUID(), ownerId, adminRoleId, companyId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
     }
 
     public void initializeWorkspacesAndMemberRoles() {
