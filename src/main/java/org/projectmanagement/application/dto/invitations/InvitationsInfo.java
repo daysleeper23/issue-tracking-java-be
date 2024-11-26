@@ -9,5 +9,9 @@ public record InvitationsInfo(String id,
                               String companyId,
                               String roleId,
                               String invitedBy,
-                              Instant expiredAt) {
+                              Instant expiredAt,
+                              Boolean isAdmin,
+                              Instant createdAt,
+                              Instant updatedAt
+) {
 }

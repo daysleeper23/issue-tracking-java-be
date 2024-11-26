@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface InvitationsService {
 
-    Invitations sendInvitation(String companyId, InvitationsCreate invitationsCreate, String loginId, UriBuilder uriBuilder);
+    InvitationsInfo sendInvitation(String companyId, InvitationsCreate invitationsCreate, String loginId, UriBuilder uriBuilder);
 
     List<InvitationsInfo> getInvitations(String companyId);
 

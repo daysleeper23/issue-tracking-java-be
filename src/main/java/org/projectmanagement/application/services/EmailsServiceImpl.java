@@ -35,7 +35,7 @@ public class EmailsServiceImpl implements EmailsService {
 
     private static final String EMAIL_HTML_TEMPLATE_NAME = "html/email-template.html";
 
-    private static final String VERIFY_URL = "/invitation/verify";
+    private static final String VERIFY_URL = "/verify";
 
     private final JavaMailSender mailSender;
 

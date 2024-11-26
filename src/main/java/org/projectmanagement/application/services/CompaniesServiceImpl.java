@@ -16,6 +16,7 @@ import org.projectmanagement.domain.services.CompanyManagersService;
 import org.projectmanagement.domain.services.RolesPermissionsService;
 import org.projectmanagement.domain.services.RolesService;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,9 +67,10 @@ public class CompaniesServiceImpl implements CompaniesService {
 
     @Override
     public Companies getCompany(String id) {
+
         Companies company = companiesRepository.findById(UUID.fromString(id));
         if (company == null){
-            throw new ApplicationException(AppMessage.COMPANY_NOT_FOUND);
+            throw new ApplicationException(HttpStatus.NOT_FOUND,AppMessage.COMPANY_NOT_FOUND);
         }
         //Check if user's companyId matches with provided companyId
         return company;
@@ -79,7 +81,7 @@ public class CompaniesServiceImpl implements CompaniesService {
         //Check if company is existed
         Companies existed = companiesRepository.findById(UUID.fromString(id));
         if (existed == null){
-            throw new ApplicationException(AppMessage.COMPANY_NOT_FOUND);
+            throw new ApplicationException(HttpStatus.NOT_FOUND,AppMessage.COMPANY_NOT_FOUND);
         }
         if (isNotChange(dto,existed)){
             throw new ApplicationException(AppMessage.NO_CHANGE);

@@ -38,17 +38,11 @@ public class InvitationsServiceImpl implements InvitationsService {
 
     @Override
     @Transactional
-    public Invitations sendInvitation(String companyId, InvitationsCreate dto, String loginId, UriBuilder uriBuilder) {
-        /*
-          Todo: Implement the following checks
-           + Check if the company & role & workspace exists
-           + Check if the user is authorized to send the invitation
-           + Check if the user is already existed and is not in any company
-         */
+    public InvitationsInfo sendInvitation(String companyId, InvitationsCreate dto, String loginId, UriBuilder uriBuilder) {
         String workspaceName;
         String roleName;
         Companies company = companiesService.getCompany(companyId);
-        if (invitationsRepository.findByEmail(dto.userEmail()) != null) {
+        if (invitationsRepository.findByEmailAndCompanyId(dto.userEmail(), company.getId()) != null) {
             throw new ApplicationException(AppMessage.INVITATION_ALREADY_SENT);
         }
         if (!dto.isAdmin()) {
@@ -62,7 +56,8 @@ public class InvitationsServiceImpl implements InvitationsService {
             roleName = null;
             workspaceName = null;
         }
-        Invitations newInvitations = invitationsRepository.save(InvitationsMapper.mapper.dtoToEntity(dto));
+        Invitations newInvitations = invitationsRepository.save(InvitationsMapper.mapper.dtoToEntity(dto).toBuilder()
+                        .companyId(company.getId()).build());
         CompletableFuture<Void> sendEmail = CompletableFuture.runAsync(() ->
         emailsService.sendInvitationEmail(dto.userEmail(), uriBuilder,
                 new InvitationMailBody(company.getName(),
@@ -76,7 +71,7 @@ public class InvitationsServiceImpl implements InvitationsService {
         } catch (Exception e) {
             throw new ApplicationException(e.getMessage());
         }
-        return newInvitations;
+        return InvitationsMapper.mapper.entityToInvitationInfo(newInvitations);
     }
 
     @Override
@@ -96,7 +91,7 @@ public class InvitationsServiceImpl implements InvitationsService {
 
     @Override
     public Invitations refreshInvitation(String companyId, String invitationId, int days) {
-        Invitations invitations = invitationsRepository.findById(invitationId);
+        Invitations invitations = invitationsRepository.findByIdAndCompanyId(invitationId,companyId);
         if (invitations == null || !invitations.getCompanyId().toString().equals(companyId)) {
             throw new ApplicationException(AppMessage.INVITATION_NOT_FOUND);
         }
@@ -106,9 +101,10 @@ public class InvitationsServiceImpl implements InvitationsService {
         return invitationsRepository.save(invitations.toBuilder().expiredAt(Instant.now().plus(days, ChronoUnit.DAYS)).build());
     }
 
+    @Transactional
     @Override
     public boolean revokeInvitation(String companyId, String invitationId) {
-        Invitations invitations = invitationsRepository.findById(invitationId);
+        Invitations invitations = invitationsRepository.findByIdAndCompanyId(invitationId,companyId);
         if ( invitations == null|| !invitations.getCompanyId().toString().equals(companyId)) {
             throw new ApplicationException(AppMessage.INVITATION_NOT_FOUND);
         }
