@@ -32,8 +32,8 @@ public interface RolesRepoJpa extends JpaRepository<Roles, UUID> {
 
     @Modifying
     @Query(value = "UPDATE Roles w " +
-            "SET is_deleted = true" +
-            "WHERE w.id = :id" +
+            "SET is_deleted = true " +
+            "WHERE w.id = :id " +
             "AND w.is_system_role = false"
             , nativeQuery = true
     )
