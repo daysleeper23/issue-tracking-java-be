@@ -29,7 +29,7 @@ public class ProjectMemberController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GlobalResponse<ProjectMembers>> getAllProjectsMemberIsPartOfByUserId(@Valid @PathVariable UUID projectId, @Valid @PathVariable UUID id) {
+    public ResponseEntity<GlobalResponse<ProjectMembers>> getProjectMemberById(@Valid @PathVariable UUID projectId, @Valid @PathVariable UUID id) {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projectMembersService.getProjectMemberById(id)), HttpStatus.OK);
     }
 
@@ -40,16 +40,16 @@ public class ProjectMemberController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #projectId, {'PROJECT_UPDATE_ALL', 'PROJECT_UPDATE_ONE'})")
-    public ResponseEntity<GlobalResponse<ProjectMembers>> updateProjectMember(@Valid @PathVariable UUID projectId, @Valid @PathVariable UUID id, @Valid ProjectMemberUpdate dto) {
+    public ResponseEntity<GlobalResponse<ProjectMembers>> updateProjectMember(@Valid @PathVariable UUID projectId, @Valid @PathVariable UUID id, @RequestBody @Valid ProjectMemberUpdate dto) {
         ProjectMembers updatedProjectMember = projectMembersService.updateProjectMember(id, dto);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedProjectMember), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #projectId, {'PROJECT_UPDATE_ALL', 'PROJECT_UPDATE_ONE'})")
-    public ResponseEntity<GlobalResponse<Void>> deleteProjectMemberById(@Valid @PathVariable UUID projectId, @Valid @PathVariable UUID id) {
+    public ResponseEntity<GlobalResponse<String>> deleteProjectMemberById(@Valid @PathVariable UUID projectId, @Valid @PathVariable UUID id) {
         projectMembersService.deleteProjectMemberById(id);
-        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), null), HttpStatus.OK);
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), "Project Member Deleted"), HttpStatus.OK);
     }
 
 }
