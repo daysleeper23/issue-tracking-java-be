@@ -1,5 +1,7 @@
 package org.projectmanagement.presentation.errors;
 
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.projectmanagement.domain.exceptions.*;
 import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.presentation.response.GlobalResponse;
@@ -12,8 +14,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.sql.SQLException;
 import java.util.List;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalPresentationError {
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -72,7 +76,8 @@ public class GlobalPresentationError {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<GlobalResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        List<GlobalResponse.ErrorItem> errors = List.of(new GlobalResponse.ErrorItem("Duplicate resource: " + ex.getMostSpecificCause().getMessage()));
+        String message = CustomDataIntegrityViolationMessage.getMessage(ex.getCause());
+        List<GlobalResponse.ErrorItem> errors = List.of(new GlobalResponse.ErrorItem("Duplicate resource: " + message));
         return new ResponseEntity<>(new GlobalResponse(409, errors), null, HttpStatus.CONFLICT);
     }
 

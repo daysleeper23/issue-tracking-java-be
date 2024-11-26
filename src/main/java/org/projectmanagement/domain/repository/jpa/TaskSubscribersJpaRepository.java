@@ -16,7 +16,7 @@ public interface TaskSubscribersJpaRepository extends JpaRepository<TaskSubscrib
     TaskSubscribers findByTaskIdAndUserId(UUID taskId, UUID userId);
 
     @Modifying
-    @Query(value = "Update task_subscribers ts SET ts.is_del = 1 WHERE ts.task_id =:taskId and ts.user_id =:userId",
+    @Query(value = "Update task_subscribers SET is_del = 1 WHERE task_id =:taskId and user_id =:userId",
             nativeQuery = true)
     boolean deleteByTaskIdAndUserId(UUID taskId, UUID userId);
 }

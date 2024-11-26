@@ -49,7 +49,7 @@ public class SecurityConfig {
                             "/auth/login",
                             "/swagger-ui/**",
                             "/api-docs/**",
-                            "/{companyId}/invitations").permitAll()
+                            "/{companyId}/invitations/verify/**").permitAll()
 
                     /*
                         COMPANY PERMISSIONS
@@ -169,9 +169,14 @@ public class SecurityConfig {
                         //TODO: Missing endpoints for updating permissions for a custom roles?
                     //Allow GET requests on /rolesPermissions
                     .requestMatchers(HttpMethod.GET,"/rolesPermissions").hasAuthority("ROLE_READ_ALL")
+                    /* Allow Invitations endpoints /{companyId}/invitations/**  */
+                    .requestMatchers(HttpMethod.POST,"/{companyId}/invitations/").hasAuthority("COMPANY_UPDATE")
+                    .requestMatchers(HttpMethod.GET,"/{companyId}/invitations/").hasAuthority("COMPANY_UPDATE")
+                    .requestMatchers(HttpMethod.PUT,"/{companyId}/invitations/{invitationId}").hasAuthority("COMPANY_UPDATE")
+                    .requestMatchers(HttpMethod.DELETE,"/{companyId}/invitations/{invitationId}").hasAuthority("COMPANY_UPDATE")
                         //TODO: add authority for when tasks permissions are added
-                        .requestMatchers("/{companyId}/task/**").authenticated()
-                        .requestMatchers("/{companyId}/invitation/**").hasAuthority("COMPANY_UPDATE")
+                    .requestMatchers("/{companyId}/task/**").authenticated()
+
 //                    .requestMatchers("/**").permitAll()
                     .anyRequest().authenticated()
 

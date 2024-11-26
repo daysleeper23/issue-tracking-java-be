@@ -3,10 +3,7 @@ package org.projectmanagement.domain.entities;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.constraints.Email;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.projectmanagement.domain.exceptions.InvalidInputException;
 
@@ -14,15 +11,15 @@ import org.projectmanagement.domain.exceptions.InvalidInputException;
 import java.time.Instant;
 import java.util.UUID;
 
+@NoArgsConstructor
 @Getter
 @SuperBuilder(toBuilder = true)
 @Entity
 @Table(name = "invitations", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_email"})
+        @UniqueConstraint(name = "uc_invitations_email",columnNames = {"user_email"})
 })
 public class Invitations extends BaseEntity {
 
-    @Setter(AccessLevel.NONE)
     @Id
     @GeneratedValue
     private UUID id;
@@ -46,10 +43,10 @@ public class Invitations extends BaseEntity {
     @Column(name = "expired_at")
     private Instant expiredAt;
 
-    @Column(name = "is_admin")
+    @Column(nullable = false,name = "is_admin",columnDefinition = "boolean default false")
     private boolean isAdmin;
 
-    @Column(name = "is_del")
-    private boolean isDel;
+    @Column(nullable = false,name = "is_del", columnDefinition = "boolean default false")
+    private boolean isDel = false;
 
 }

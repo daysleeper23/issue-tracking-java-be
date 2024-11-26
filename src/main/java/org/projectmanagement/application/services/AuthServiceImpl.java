@@ -39,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
         return Optional.ofNullable(UsersAuth.builder()
                 .id(existingUser.get().getId())
                 .email(existingUser.get().getEmail())
+                .companyId(existingUser.get().getCompanyId())
                 .token(token)
                 .build());
     }

@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Entity
 @Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"email"})
+        @UniqueConstraint(name = "uc_user_email",columnNames = {"email"})
 })
 public class Users extends BaseEntity{
 

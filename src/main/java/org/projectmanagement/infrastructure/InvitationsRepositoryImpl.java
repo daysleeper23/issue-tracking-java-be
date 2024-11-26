@@ -27,13 +27,18 @@ public class InvitationsRepositoryImpl implements InvitationsRepository {
     }
 
     @Override
-    public boolean removeInvitation(UUID invitationId) {
-        return jpa.removeInvitation(invitationId);
+    public Invitations findByIdAndCompanyId(String invitationId, String companyId) {
+        return jpa.findByIdAndCompanyId(UUID.fromString(invitationId), UUID.fromString(companyId)).orElse(null);
     }
 
     @Override
-    public Invitations findByEmail(String email) {
-        return jpa.findByEmail(email).orElse(null);
+    public boolean removeInvitation(UUID invitationId) {
+        return jpa.removeInvitation(invitationId) > 0;
+    }
+
+    @Override
+    public Invitations findByEmailAndCompanyId(String email, UUID companyId) {
+        return jpa.findByEmailAndCompanyId(email,companyId).orElse(null);
     }
 
     @Override

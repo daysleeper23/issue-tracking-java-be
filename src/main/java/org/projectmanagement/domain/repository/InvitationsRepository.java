@@ -13,7 +13,9 @@ public interface InvitationsRepository {
 
     Invitations findById(String invitationId);
 
+    Invitations findByIdAndCompanyId(String invitationId, String companyId);
+
     boolean removeInvitation(UUID invitationId);
 
-    Invitations findByEmail(String email);
+    Invitations findByEmailAndCompanyId(String email, UUID companyId);
 }
