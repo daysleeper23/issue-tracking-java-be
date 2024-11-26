@@ -29,6 +29,8 @@ public class UsersAuth implements UserDetails {
     @NotBlank(message = "cannot be blank")
     private String token;
 
+    private UUID companyId;
+
 //    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList();

@@ -12,7 +12,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "companies", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"name"})
+        @UniqueConstraint(name = "uc_companies_name",columnNames = {"name"})
 })
 @SuperBuilder
 @ToString

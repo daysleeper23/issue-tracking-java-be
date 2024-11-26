@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "roles_permissions",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"role_id", "permission_id"})
+        uniqueConstraints = @UniqueConstraint(name="uc_rp_permission",columnNames = {"role_id", "permission_id"})
 )
 @Getter
 @Setter

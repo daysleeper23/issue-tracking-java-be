@@ -2,6 +2,7 @@ package org.projectmanagement.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.experimental.SuperBuilder;
+import org.projectmanagement.application.exceptions.AppMessage;
 import org.projectmanagement.domain.enums.DefaultStatus;
 import org.projectmanagement.domain.exceptions.InvalidInputException;
 import lombok.*;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @SuperBuilder(toBuilder = true)
 @Entity
 @Table(name = "tasks", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"name", "project_id"})
+        @UniqueConstraint(name = "uc_tasks_name",columnNames = {"name", "project_id"})
 })
 public class Tasks extends BaseEntity {
 
@@ -53,32 +54,25 @@ public class Tasks extends BaseEntity {
     @Column(name = "ended_at")
     private Instant endedAt;
 
-//    public static class TasksBuilder{
-//
-//        public TasksBuilder priority(short priority){
-//            if (priority < 0 || priority > 4){
-//                throw new InvalidInputException("Illegal priority value");
-//            }
-//            this.priority = priority;
-//            return this;
-//        }
-//
-//        public TasksBuilder startedAt(Instant startedAt) {
-//            if (startedAt != null && this.endedAt != null && startedAt.isAfter(this.endedAt)) {
-//                throw new InvalidInputException("Started at cannot be after ended at");
-//            }
-//            this.startedAt = startedAt;
-//            return this;
-//        }
-//
-//        public TasksBuilder endedAt(Instant endedAt) {
-//            if (endedAt != null && this.startedAt != null && endedAt.isBefore(this.startedAt)) {
-//                throw new InvalidInputException("Ended at cannot be before started at");
-//            }
-//            this.endedAt = endedAt;
-//            return this;
-//        }
-//
-//    }
+    public abstract static class TasksBuilder<C extends Tasks, B extends Tasks.TasksBuilder<C, B>>
+            extends BaseEntity.BaseEntityBuilder<C, B> {
+
+        public TasksBuilder startedAt(Instant startedAt) {
+            if (startedAt != null && this.endedAt != null && startedAt.isAfter(this.endedAt)) {
+                throw new InvalidInputException("Started at cannot be after ended at");
+            }
+            this.startedAt = startedAt;
+            return this;
+        }
+
+        public TasksBuilder endedAt(Instant endedAt) {
+            if (endedAt != null && this.startedAt != null && endedAt.isBefore(this.startedAt)) {
+                throw new InvalidInputException("Ended at cannot be before started at");
+            }
+            this.endedAt = endedAt;
+            return this;
+        }
+
+    }
 
 }

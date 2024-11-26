@@ -40,7 +40,7 @@ public class TasksServiceImpl implements TasksService {
     public TasksInfo addTask(TasksCreate newTask) {
         //Todo: check if user is in project, should retrieve userId from context holder rather than has to query db
         UserDetails user = SecurityUtils.getCurrentUser();
-        Users  users =usersRepository.findOneByEmail(user.getUsername())
+        Users users = usersRepository.findOneByEmail(user.getUsername())
                 .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, AppMessage.USER_NOT_FOUND));
         if (projectMembersRepository
                 .findByProjectIdAndUserId(UUID.fromString(newTask.projectId()),

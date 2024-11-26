@@ -22,4 +22,5 @@ public interface TasksMapper {
     TasksInfo entityToInfoDto(Tasks task, List<TaskSubscribers> subscribers);
 
     List<TasksCompact> entitiesToCompactDtoList(List<Tasks> tasks);
+
 }

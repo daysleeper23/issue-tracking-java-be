@@ -16,7 +16,7 @@ import java.util.UUID;
 @SuperBuilder
 @Entity
 @Table(name = "workspaces", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"name", "company_id"})
+        @UniqueConstraint(name = "uc_workspace_name",columnNames = {"name", "company_id"})
 })
 public class Workspaces extends BaseEntity {
     @Id

@@ -25,20 +25,20 @@ public class InvitationsController {
     private final InvitationsService invitationsService;
 
     @PostMapping("/")
-    public ResponseEntity<GlobalResponse<Invitations>> sendInvitation(
+    public ResponseEntity<GlobalResponse<InvitationsInfo>> sendInvitation(
             @PathVariable String companyId,
             @RequestBody @Valid InvitationsCreate dto
     ) {
         String userId = java.util.UUID.randomUUID().toString();
         UriBuilder uriBuilder = ServletUriComponentsBuilder.fromCurrentRequest();
-        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.sendInvitation(companyId, dto, userId, uriBuilder )));
+        return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), invitationsService.sendInvitation(companyId, dto, userId, uriBuilder )),HttpStatus.CREATED);
     }
 
     @GetMapping("/")
     public ResponseEntity<GlobalResponse<List<InvitationsInfo>>> getInvitations(
             @PathVariable String companyId
     ) {
-        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.getInvitations(companyId)));
+    return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.getInvitations(companyId)));
     }
 
     @PutMapping("/verify")
