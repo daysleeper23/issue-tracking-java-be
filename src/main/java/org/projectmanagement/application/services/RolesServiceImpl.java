@@ -1,8 +1,11 @@
 package org.projectmanagement.application.services;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.Null;
 import org.projectmanagement.application.dto.roles.RolesCreate;
 import org.projectmanagement.domain.entities.Roles;
+import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
+import org.projectmanagement.domain.exceptions.SystemRoleUpdateException;
 import org.projectmanagement.domain.repository.RolesRepository;
 import org.projectmanagement.domain.services.RolesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +49,11 @@ public class RolesServiceImpl implements RolesService {
 
         Optional<Roles> rolesWithSameName = rolesRepository.findByExactName(role.getName(), companyId);
         if (rolesWithSameName.isEmpty() && existingRole.isPresent()) {
+
+            if (Boolean.TRUE.equals(existingRole.get().getIsSystemRole())) {
+                throw new SystemRoleUpdateException("System roles cannot be updated.");
+            }
+
             existingRole.get().setName(role.getName());
             return rolesRepository.save(existingRole.get());
         } else {
@@ -55,6 +63,15 @@ public class RolesServiceImpl implements RolesService {
 
     @Transactional
     public Boolean deleteRole(UUID id) {
+        Roles roleFromDb = rolesRepository.findById(id).orElse(null);
+        if (roleFromDb == null) {
+            throw new ResourceNotFoundException("Role with id: " + id + "was not found.");
+        }
+
+        if (roleFromDb.getIsSystemRole()) {
+            throw new SystemRoleUpdateException("System roles cannot be updated.");
+        }
+
         rolesRepository.deleteById(id);
         //considering update the status to archived instead of deleting
         return true;
