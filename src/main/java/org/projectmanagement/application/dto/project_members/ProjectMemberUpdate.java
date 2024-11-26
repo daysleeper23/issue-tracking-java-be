@@ -1,10 +1,9 @@
 package org.projectmanagement.application.dto.project_members;
 
-import lombok.*;
+import jakarta.validation.constraints.NotNull;
 
 public record ProjectMemberUpdate(
-        @NonNull
+        @NotNull
         Boolean subscribed
 ) {
-
 }

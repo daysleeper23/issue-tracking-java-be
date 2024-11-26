@@ -66,6 +66,12 @@ public class ProjectMembersServiceImpl {
     }
 
     public ProjectMembers createProjectMember(UUID projectId, ProjectMemberCreate dto) {
+        Projects projectFromDB = projectRepository.findOneById(projectId).orElse(null);
+
+        if (projectFromDB == null) {
+            throw new ResourceNotFoundException("Project with id: " + projectId + " was not found.");
+        }
+
         return projectMembersRepository.save(
                 ProjectMembers.builder()
                         .userId(dto.userId())

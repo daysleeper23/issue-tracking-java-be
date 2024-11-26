@@ -1,11 +1,9 @@
 package org.projectmanagement.presentation.errors;
 
-import org.projectmanagement.domain.exceptions.InvalidInputException;
-import org.projectmanagement.domain.exceptions.ResourceAlreadyExistsException;
-import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
+import org.projectmanagement.domain.exceptions.*;
 import org.projectmanagement.application.exceptions.ApplicationException;
-import org.projectmanagement.domain.exceptions.SystemRoleUpdateException;
 import org.projectmanagement.presentation.response.GlobalResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -48,7 +46,6 @@ public class GlobalPresentationError {
         return new ResponseEntity<>(new GlobalResponse(404, errors), null, HttpStatus.NOT_FOUND);
     }
 
-
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<GlobalResponse> handleValidationExceptions(MethodArgumentTypeMismatchException ex) {
         List<GlobalResponse.ErrorItem> errors = List.of(new GlobalResponse.ErrorItem(ex.getMessage()));
@@ -71,6 +68,18 @@ public class GlobalPresentationError {
     public ResponseEntity<GlobalResponse> handleSystemRoleUpdateException(SystemRoleUpdateException ex) {
         List<GlobalResponse.ErrorItem> errors = List.of(new GlobalResponse.ErrorItem(ex.getMessage()));
         return new ResponseEntity<>(new GlobalResponse(403, errors), null, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<GlobalResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        List<GlobalResponse.ErrorItem> errors = List.of(new GlobalResponse.ErrorItem("Duplicate resource: " + ex.getMostSpecificCause().getMessage()));
+        return new ResponseEntity<>(new GlobalResponse(409, errors), null, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<GlobalResponse> handleDuplicateResourceException(DuplicateResourceException ex) {
+        List<GlobalResponse.ErrorItem> errors = List.of(new GlobalResponse.ErrorItem(ex.getMessage()));
+        return new ResponseEntity<>(new GlobalResponse(409, errors), null, HttpStatus.CONFLICT);
     }
 
 }

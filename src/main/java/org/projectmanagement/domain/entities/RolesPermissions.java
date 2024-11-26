@@ -7,7 +7,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "roles_permissions")
+@Table(name = "roles_permissions",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"role_id", "permission_id"})
+)
 @Getter
 @Setter
 @NoArgsConstructor

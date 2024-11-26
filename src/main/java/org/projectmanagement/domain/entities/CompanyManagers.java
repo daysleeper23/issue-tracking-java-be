@@ -8,7 +8,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "company_managers")
+@Table(name = "company_managers", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "company_id", "role_id"})
+})
 @Getter
 @Setter
 @NoArgsConstructor
