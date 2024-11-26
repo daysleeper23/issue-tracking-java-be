@@ -1,68 +1,103 @@
 package org.projectmanagement.presentation.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.projectmanagement.application.dto.roles.RolesCreate;
+import org.projectmanagement.application.dto.users.UsersLogin;
 import org.projectmanagement.domain.entities.Roles;
-import org.projectmanagement.infrastructure.InMemoryDatabase;
+import org.projectmanagement.domain.services.AuthService;
+import org.projectmanagement.test_data_factories.CompaniesDataFactory;
+import org.projectmanagement.test_data_factories.CompanyManagersDataFactory;
+import org.projectmanagement.test_data_factories.RolesDataFactory;
+import org.projectmanagement.test_data_factories.UsersDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.Instant;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import org.springframework.http.MediaType;
-
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 public class RolesControllerIntegrationTest {
+
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
 
-    InMemoryDatabase inMemoryDatabase;
-    UUID companyId = UUID.fromString("b541ade4-9cfa-4664-b9e3-d9923ae02fb4");
-    UUID roleAdminId = UUID.fromString("7b149139-6b39-4e5c-9e24-70c092df4a5d");
-    UUID roleDeveloperId = UUID.fromString("78b4fe40-5f93-40ef-9095-7b25c7bb62ff");
-    UUID roleProjectDirectorId = UUID.fromString("fed18c17-dc47-45f4-8b59-aafc04089a58");
+    @Autowired
+    private RolesDataFactory rolesDataFactory;
+
+    @Autowired
+    private CompaniesDataFactory companiesDataFactory;
+
+    @Autowired
+    private UsersDataFactory usersDataFactory;
+
+    @Autowired
+    private CompanyManagersDataFactory companyManagersDataFactory;
+
+    @Autowired
+    private AuthService authService;
+
+    private UUID companyId;
+    private UUID userId;
+    private UUID adminRoleId;
+    private UUID developerRoleId;
+    private UUID projectDirectorRoleId;
+    private UUID companyManagerId;
+    private String token;
 
     @BeforeEach
     void setUp() {
-        inMemoryDatabase = InMemoryDatabase.getInstance();
-        inMemoryDatabase.roles.clear();
+        // Set up data for the company and roles
+        companyId = companiesDataFactory.createCompany();
 
-        inMemoryDatabase.roles.add(new Roles(roleAdminId, "Admin", companyId, false, true, Instant.now(), Instant.now()));
-        inMemoryDatabase.roles.add(new Roles(roleDeveloperId, "Developer", companyId, false, true, Instant.now(), Instant.now()));
-        inMemoryDatabase.roles.add(new Roles(roleProjectDirectorId, "Team Leader", companyId, false, true, Instant.now(), Instant.now()));
+        userId = usersDataFactory.createOwnerUser(companyId, "testuser@example.com", "hashedpassword");
 
-        System.out.println("Roles count in setup: " + inMemoryDatabase.roles.size());
+        adminRoleId = rolesDataFactory.createRoleWithAllPermissions("Admin", companyId ,true);
+
+        developerRoleId = rolesDataFactory.createRoleWithoutPermissions("Developer", companyId);
+        projectDirectorRoleId = rolesDataFactory.createRoleWithoutPermissions("Team Leader", companyId);
+
+        companyManagerId = companyManagersDataFactory.createCompanyManager(userId, adminRoleId, companyId);
+
+        UsersLogin userLogin = new UsersLogin("testuser@example.com", "hashedpassword");
+        token = authService.authenticate(userLogin);
+    }
+
+    @AfterEach
+    void cleanUp() {
+        rolesDataFactory.deleteAll();
+        companiesDataFactory.deleteAll();
+        usersDataFactory.deleteAll();
     }
 
     @Nested
     class GetRoles {
         @Test
         void getAllRolesCorrectly() throws Exception {
-            mockMvc.perform(get("/"+ companyId + "/roles"))
+            mockMvc.perform(get("/" + companyId + "/roles")
+                            .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.data").isArray())
-                    .andExpect(jsonPath("$.data", hasSize(4)))
+                    .andExpect(jsonPath("$.data", hasSize(3)))
                     .andDo(print());
         }
     }
@@ -70,108 +105,117 @@ public class RolesControllerIntegrationTest {
     @Nested
     class PostRoles {
         @Test
-        void shouldCreateRoleNormallyWithProperData() throws Exception{
-//            RolesCreate newRole = new RolesCreate("Project Manager", companyId);
-//            String roleJson = objectMapper.writeValueAsString(newRole);
-//
-//            mockMvc.perform(post("/" + companyId + "/roles")
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .content(roleJson))
-//                    .andExpect(status().isCreated())
-//                    .andExpect(jsonPath("$.status").value("success"))
-//                    .andExpect(jsonPath("$.data.name").value("Project Manager"))
-//                    .andDo(print());
+        void shouldCreateRoleNormallyWithProperData() throws Exception {
+            RolesCreate newRole = new RolesCreate("Project Manager");
+            String roleJson = objectMapper.writeValueAsString(newRole);
+
+            mockMvc.perform(post("/" + companyId + "/roles")
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(roleJson))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.status").value("success"))
+                    .andExpect(jsonPath("$.data.name").value("Project Manager"))
+                    .andDo(print());
         }
 
         @Test
-        void shouldNotCreateRoleWithBlankName() throws Exception{
-//            RolesCreate newRole = new RolesCreate("", companyId);
-//            String roleJson = objectMapper.writeValueAsString(newRole);
-//
-//            mockMvc.perform(post("/" + companyId + "/roles")
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .content(roleJson))
-//                    .andExpect(status().isBadRequest())
-//                    .andExpect(jsonPath("$.status").value("error"))
-//                    .andExpect(jsonPath("$.data").value(nullValue()))
-//                    .andExpect(jsonPath("$.errors[0].message").value("name cannot be blank"))
-//                    .andDo(print());
+        void shouldNotCreateRoleWithBlankName() throws Exception {
+            RolesCreate newRole = new RolesCreate("");
+            String roleJson = objectMapper.writeValueAsString(newRole);
+
+            mockMvc.perform(post("/" + companyId + "/roles")
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(roleJson))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value("error"))
+                    .andExpect(jsonPath("$.data").value(nullValue()))
+                    .andExpect(jsonPath("$.errors[0].message").value("name cannot be blank"));
         }
 
         @Test
-        void shouldNotCreateRoleWithNullCompanyId() throws Exception{
-//            RolesCreate newRole = new RolesCreate("Project Manager", null);
-//            String roleJson = objectMapper.writeValueAsString(newRole);
-//
-//            mockMvc.perform(post("/" + companyId + "/roles")
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .content(roleJson))
-//                    .andExpect(status().isBadRequest())
-//                    .andExpect(jsonPath("$.status").value("error"))
-//                    .andExpect(jsonPath("$.data").value(nullValue()))
-//                    .andExpect(jsonPath("$.errors[0].message").value("companyId cannot be null"))
-//                    .andDo(print());
+        void shouldNotCreateRoleWithDuplicateName() throws Exception {
+            RolesCreate duplicateRole = new RolesCreate("Admin"); // "Admin" already exists
+            String roleJson = objectMapper.writeValueAsString(duplicateRole);
+
+            mockMvc.perform(post("/" + companyId + "/roles")
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(roleJson))
+                    .andExpect(status().isConflict())
+                    .andExpect(jsonPath("$.status").value("error"))
+                    .andDo(print());
         }
 
         @Test
-        void shouldNotCreateRoleWithExistingName() throws Exception{
-//            RolesCreate newRole = new RolesCreate("Admin", companyId);
-//            String roleJson = objectMapper.writeValueAsString(newRole);
-//
-//            mockMvc.perform(post("/" + companyId + "/roles")
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .content(roleJson))
-//                    .andExpect(status().isConflict())
-//                    .andExpect(jsonPath("$.status").value("error"))
-//                    .andExpect(jsonPath("$.data").value(nullValue()))
-//                    .andDo(print());
+        void shouldNotCreateRoleWithMissingName() throws Exception {
+            String roleJson = "{ }"; // No name field
+
+            mockMvc.perform(post("/" + companyId + "/roles")
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(roleJson))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value("error"))
+                    .andExpect(jsonPath("$.errors[0].message").value("name cannot be blank"))
+                    .andDo(print());
         }
     }
 
     @Nested
-    class PutRoles {
+    class UpdateRoles {
         @Test
-        void shouldUpdateRoleNameNormally() throws Exception{
-//            RolesCreate updatedRole = new RolesCreate("Project Director", companyId);
-//            String updatedRoleJson = objectMapper.writeValueAsString(updatedRole);
-//
-//            mockMvc.perform(put("/" + companyId + "/roles/" + roleDeveloperId)
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .content(updatedRoleJson))
-//                    .andExpect(status().isOk())
-//                    .andExpect(jsonPath("$.status").value("success"))
-//                    .andExpect(jsonPath("$.data.name").value("Project Director"))
-//                    .andDo(print());
-        }
+        void shouldNotUpdateSystemRole() throws Exception {
 
-        @Test
-        void shouldNotUpdateRoleWithBlankName() throws Exception{
-//            RolesCreate updatedRole = new RolesCreate("", companyId);
-//            String updatedRoleJson = objectMapper.writeValueAsString(updatedRole);
-//
-//            mockMvc.perform(put("/" + companyId + "/roles/" + roleDeveloperId)
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content(updatedRoleJson))
-//                    .andExpect(status().isBadRequest())
-//                    .andExpect(jsonPath("$.status").value("error"))
-//                    .andExpect(jsonPath("$.data").value(nullValue()))
-//                    .andExpect(jsonPath("$.errors[0].message").value("name cannot be blank"))
-//                    .andDo(print());
-        }
+            RolesCreate updatedRole = new RolesCreate("Updated System Role Name");
+            String updatedRoleJson = objectMapper.writeValueAsString(updatedRole);
 
-        @Test
-        void shouldNotUpdateRoleWithNullName() throws Exception {
-//            RolesCreate updatedRole = new RolesCreate(null, companyId);
-//            String updatedRoleJson = objectMapper.writeValueAsString(updatedRole);
-//
-//            mockMvc.perform(put("/" + companyId + "/roles/" + roleDeveloperId)
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content(updatedRoleJson))
-//                    .andExpect(status().isBadRequest())
-//                    .andExpect(jsonPath("$.status").value("error"))
-//                    .andExpect(jsonPath("$.data").value(nullValue()))
-//                    .andExpect(jsonPath("$.errors[0].message").value("name cannot be blank"))
-//                    .andDo(print());
+            // Act & Assert: Attempt to update the system role and expect an exception
+            mockMvc.perform(put("/" + companyId + "/roles/" + adminRoleId)
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(updatedRoleJson))
+                    .andExpect(status().isForbidden()) // Changed from isBadRequest() to isForbidden()
+                    .andExpect(jsonPath("$.status").value("error"))
+                    .andExpect(jsonPath("$.errors[0].message").value("System roles cannot be updated."))
+                    .andDo(print());
         }
     }
+
+    @Nested
+    class DeleteRoles {
+        @Test
+        void shouldDeleteNonSystemRoleSuccessfully() throws Exception {
+            mockMvc.perform(delete("/" + companyId + "/roles/" + developerRoleId)
+                            .header("Authorization", "Bearer " + token))
+                    .andExpect(status().isNoContent())
+                    .andDo(print());
+        }
+
+        @Test
+        void shouldNotDeleteSystemRole() throws Exception {
+            mockMvc.perform(delete("/" + companyId + "/roles/" + adminRoleId) // adminRoleId is system role
+                            .header("Authorization", "Bearer " + token))
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("$.status").value("error"))
+                    .andExpect(jsonPath("$.errors[0].message").value("System roles cannot be deleted."))
+                    .andDo(print());
+        }
+
+        @Test
+        void shouldReturnNotFoundForNonExistingRole() throws Exception {
+            UUID nonExistingRoleId = UUID.randomUUID();
+
+            mockMvc.perform(delete("/" + companyId + "/roles/" + nonExistingRoleId)
+                            .header("Authorization", "Bearer " + token))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.status").value("error"))
+                    .andExpect(jsonPath("$.errors[0].message").value("Role with id: " + nonExistingRoleId + " was not found."))
+                    .andDo(print());
+        }
+    }
+
+
+
 }

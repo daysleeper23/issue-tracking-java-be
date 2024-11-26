@@ -65,11 +65,11 @@ public class RolesServiceImpl implements RolesService {
     public Boolean deleteRole(UUID id) {
         Roles roleFromDb = rolesRepository.findById(id).orElse(null);
         if (roleFromDb == null) {
-            throw new ResourceNotFoundException("Role with id: " + id + "was not found.");
+            throw new ResourceNotFoundException("Role with id: " + id + " was not found.");
         }
 
         if (roleFromDb.getIsSystemRole()) {
-            throw new SystemRoleUpdateException("System roles cannot be updated.");
+            throw new SystemRoleUpdateException("System roles cannot be deleted.");
         }
 
         rolesRepository.deleteById(id);
