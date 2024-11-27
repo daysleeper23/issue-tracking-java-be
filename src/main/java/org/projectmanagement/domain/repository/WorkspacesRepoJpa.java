@@ -29,7 +29,7 @@ public interface WorkspacesRepoJpa extends JpaRepository<Workspaces, UUID> {
                     "WHERE id = :id"
             , nativeQuery = true
     )
-    void deleteById(@Param("id") UUID id);
+    int deleteWorkspaceById(@Param("id") UUID id);
 
     @Modifying
     @Query(value = "UPDATE Workspaces " +

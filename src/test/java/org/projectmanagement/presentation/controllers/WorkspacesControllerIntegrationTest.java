@@ -302,7 +302,7 @@ public class WorkspacesControllerIntegrationTest {
         //TODO: How about workspaces with projects?
         //TODO: --Archive projects -> the project service will archive tasks
         @Test
-        void shouldBeAbleToDeleteWorkspaceWithProjects() throws Exception {
+        void shouldBeAbleToDeleteChildProjectsAfterDeletingWorkspace() throws Exception {
             mockMvc.perform(delete("/" + companyId + "/workspaces/" + workspace1Id)
                     .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isNoContent());

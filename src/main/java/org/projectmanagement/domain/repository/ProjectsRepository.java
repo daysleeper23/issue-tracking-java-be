@@ -15,4 +15,5 @@ public interface ProjectsRepository {
 
     List<Projects> findAllFromWorkspace(UUID workspaceId);
 
+    int deleteProjectsByWorkspaceId(UUID workspaceId);
 }

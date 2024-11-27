@@ -5,7 +5,10 @@ import org.projectmanagement.application.dto.workspaces.WorkspacesCreate;
 import org.projectmanagement.application.dto.workspaces.WorkspacesMapper;
 import org.projectmanagement.application.dto.workspaces.WorkspacesRead;
 import org.projectmanagement.application.dto.workspaces.WorkspacesUpdate;
+import org.projectmanagement.application.exceptions.AppMessage;
+import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.domain.entities.Workspaces;
+import org.projectmanagement.domain.repository.ProjectsRepository;
 import org.projectmanagement.domain.repository.WorkspacesRepository;
 import org.projectmanagement.domain.services.WorkspacesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +22,15 @@ import java.util.UUID;
 @Service
 public class WorkspacesServiceImpl implements WorkspacesService {
     private final WorkspacesRepository workspacesRepository;
+    private final ProjectsRepository projectsRepository;
 
     @Autowired
-    public WorkspacesServiceImpl(WorkspacesRepository workspacesRepository) {
+    public WorkspacesServiceImpl(
+        WorkspacesRepository workspacesRepository
+        , ProjectsRepository projectsRepository
+    ) {
         this.workspacesRepository = workspacesRepository;
+        this.projectsRepository = projectsRepository;
     }
 
     public Optional<WorkspacesRead> createWorkspace(UUID companyId, WorkspacesCreate workspace) {
@@ -51,9 +59,10 @@ public class WorkspacesServiceImpl implements WorkspacesService {
 
     @Transactional
     public Optional<WorkspacesRead> updateWorkspace(UUID id, WorkspacesUpdate wu) {
+        // Check if workspace exists
         Optional<Workspaces> existingWorkspace = workspacesRepository.findById(id);
         if (existingWorkspace.isEmpty()) {
-            return Optional.empty();
+            throw new ApplicationException(AppMessage.WORKSPACE_NOT_FOUND);
         }
 
         System.out.println("Existing workspace: " + existingWorkspace.get());
@@ -71,6 +80,21 @@ public class WorkspacesServiceImpl implements WorkspacesService {
 
     @Transactional
     public void deleteWorkspace(UUID id) {
-        workspacesRepository.deleteById(id);
+        // Check if workspace exists
+        Optional<Workspaces> existingWorkspace = workspacesRepository.findById(id);
+        if (existingWorkspace.isEmpty()) {
+            throw new ApplicationException(AppMessage.WORKSPACE_NOT_FOUND);
+        }
+
+        int result = workspacesRepository.deleteById(id);
+        if (result == 0) {
+            throw new ApplicationException(AppMessage.WORKSPACE_NOT_FOUND);
+        }
+
+        // Delete all projects in the workspace
+        result = projectsRepository.deleteProjectsByWorkspaceId(id);
+        if (result == 0) {
+            throw new ApplicationException(AppMessage.PROJECT_DELETE_FAILED);
+        }
     }
 }
