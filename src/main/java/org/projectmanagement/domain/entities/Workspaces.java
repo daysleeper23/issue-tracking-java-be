@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -16,7 +14,7 @@ import java.util.UUID;
 @SuperBuilder
 @Entity
 @Table(name = "workspaces", uniqueConstraints = {
-        @UniqueConstraint(name = "uc_workspace_name",columnNames = {"name", "company_id"})
+        @UniqueConstraint(name = "uc_workspace_name", columnNames = {"name", "company_id"})
 })
 public class Workspaces extends BaseEntity {
     @Id

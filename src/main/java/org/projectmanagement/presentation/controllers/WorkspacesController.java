@@ -20,7 +20,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/{companyId}/workspaces")
 @Validated
-@PreAuthorize("@permissionEvaluator.hasPermissionOnCompany(authentication, #companyId)")
 public class WorkspacesController {
 
     private final WorkspacesService workspacesService;
@@ -54,10 +53,15 @@ public class WorkspacesController {
                     HttpStatus.CONFLICT
                 ));
     }
-    
+
+    @PreAuthorize(
+        "@permissionEvaluator.hasPermissionOnSingleResource(authentication, #id, {'WORKSPACE_UPDATE_ALL', 'WORKSPACE_UPDATE_ONE'})")
     @PatchMapping("/{id}")
-    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #id, {'WORKSPACE_UPDATE_ALL', 'WORKSPACE_UPDATE_ONE'})")
-    public ResponseEntity<GlobalResponse<WorkspacesRead>> updateWorkspace(@PathVariable UUID companyId, @PathVariable UUID id, @RequestBody @Valid WorkspacesUpdate workspace) {
+    public ResponseEntity<GlobalResponse<WorkspacesRead>> updateWorkspace(
+        @PathVariable UUID companyId
+        , @PathVariable UUID id
+        , @RequestBody @Valid WorkspacesUpdate workspace
+    ) {
         Optional<WorkspacesRead> updatedWorkspace = workspacesService.updateWorkspace(id, workspace);
         return updatedWorkspace
                 .map(workspacesRead -> new ResponseEntity<>(
@@ -70,11 +74,14 @@ public class WorkspacesController {
                 ));
     }
 
+    @PreAuthorize(
+        "@permissionEvaluator.hasPermissionOnSingleResource(authentication, #id, {'WORKSPACE_DELETE_ALL', 'WORKSPACE_DELETE_ONE'})")
     @DeleteMapping("/{id}")
-    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #id, {'WORKSPACE_DELETE_ALL', 'WORKSPACE_DELETE_ONE'})")
-    public ResponseEntity<GlobalResponse<Void>> deleteWorkspace(@PathVariable UUID companyId, @PathVariable UUID id) {
+    public ResponseEntity<GlobalResponse<Void>> deleteWorkspace(
+        @PathVariable UUID companyId
+        , @PathVariable UUID id)
+    {
         workspacesService.deleteWorkspace(id);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NO_CONTENT.value(), null), HttpStatus.NO_CONTENT);
     }
-
 }

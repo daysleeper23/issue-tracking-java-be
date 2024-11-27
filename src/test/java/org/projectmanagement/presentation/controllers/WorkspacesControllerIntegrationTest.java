@@ -200,11 +200,120 @@ public class WorkspacesControllerIntegrationTest {
 
     @Nested
     class PatchWorkspace {
+        @Test
+        void shouldBeAbleToUpdateWorkspaceName() throws Exception {
+            mockMvc.perform(patch("/" + companyId + "/workspaces/" + workspace1Id)
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "name", "Workspace 1 updated"
+                    )))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.data.name").value("Workspace 1 updated"));
+        }
+
+        @Test
+        void shouldBeAbleToUpdateWorkspaceDescription() throws Exception {
+            mockMvc.perform(patch("/" + companyId + "/workspaces/" + workspace1Id)
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "description", "Workspace 1 description updated"
+                    )))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.data.description").value("Workspace 1 description updated"));
+        }
+
+        @Test
+        void shouldNotBeAbleToUpdateWorkspaceWithEmptyName() throws Exception {
+            mockMvc.perform(patch("/" + companyId + "/workspaces/" + workspace1Id)
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "name", ""
+                    )))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.errors[0].message").value("name must not be empty or whitespace"));
+        }
+
+        @Test
+        void shouldNotBeAbleToUpdateWorkspaceWithWhitespaceName() throws Exception {
+            mockMvc.perform(patch("/" + companyId + "/workspaces/" + workspace1Id)
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "name", " "
+                    )))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.errors[0].message").value("name must not be empty or whitespace"));
+        }
+
+        @Test
+        void shouldNotBeAbleToUpdateWorkspaceWithOtherFields() throws Exception {
+            mockMvc.perform(patch("/" + companyId + "/workspaces/" + workspace1Id)
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "companyId", UUID.randomUUID()
+                    )))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.errors[0].message").value("Invalid JSON"));
+        }
+
+        @Test
+        void shouldNotBeAbleToUpdateWorkspaceForAnotherCompany() throws Exception {
+            mockMvc.perform(patch("/" + UUID.randomUUID() + "/workspaces/" + workspace1Id)
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "name", "Workspace 1 updated"
+                    )))
+                )
+                .andExpect(status().isForbidden());
+        }
     }
 
     @Nested
     class DeleteWorkspace {
+        @Test
+        void shouldBeAbleToDeleteWorkspace() throws Exception {
+            mockMvc.perform(delete("/" + companyId + "/workspaces/" + workspace1Id)
+                    .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isNoContent());
+        }
+
+        @Test
+        void shouldNotBeAbleToDeleteWorkspaceForAnotherCompany() throws Exception {
+            mockMvc.perform(delete("/" + UUID.randomUUID() + "/workspaces/" + workspace1Id)
+                    .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isForbidden());
+        }
+
+        //TODO: How about workspaces with projects?
+        //TODO: --Archive projects -> the project service will archive tasks
+        @Test
+        void shouldBeAbleToDeleteWorkspaceWithProjects() throws Exception {
+            mockMvc.perform(delete("/" + companyId + "/workspaces/" + workspace1Id)
+                    .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isNoContent());
+
+            mockMvc.perform(get("/" + companyId + "/" + workspace1Id + "/projects")
+                    .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.data", hasSize(0)));
+
+            //TODO: Check if the tasks are archived
+        }
     }
-
-
 }

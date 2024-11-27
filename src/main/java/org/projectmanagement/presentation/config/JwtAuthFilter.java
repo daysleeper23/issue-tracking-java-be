@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.projectmanagement.application.services.UserDetailsServiceImpl;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -52,6 +53,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             }
+
+            // Check if the user has access on the company
+            String companyId = request.getRequestURI().split("/")[1];
+            System.out.println("Company ID: " + companyId);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null
+                && !authentication.getAuthorities().stream().anyMatch(
+                    a -> a.getAuthority().equals(companyId.toString()))
+            ) {
+                throw new AccessDeniedException("Access denied");
+            }
+
             filterChain.doFilter(request, response);
         } catch (AccessDeniedException e) {
             System.out.println("Access denied");
