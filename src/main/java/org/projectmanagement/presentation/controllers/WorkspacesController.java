@@ -78,8 +78,7 @@ public class WorkspacesController {
         "@permissionEvaluator.hasPermissionOnSingleResource(authentication, #id, {'WORKSPACE_DELETE_ALL', 'WORKSPACE_DELETE_ONE'})")
     @DeleteMapping("/{id}")
     public ResponseEntity<GlobalResponse<Void>> deleteWorkspace(
-        @PathVariable UUID companyId
-        , @PathVariable UUID id)
+        @PathVariable UUID id)
     {
         workspacesService.deleteWorkspace(id);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NO_CONTENT.value(), null), HttpStatus.NO_CONTENT);

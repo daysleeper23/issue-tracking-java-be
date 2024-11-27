@@ -29,7 +29,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException, java.io.IOException {
+        throws ServletException, IOException, java.io.IOException {
         try {
             String authHeader = request.getHeader("Authorization");
             String token = null;
@@ -48,22 +48,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 if (jwtHelper.isTokenValid(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authenticationToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             }
 
             // Check if the user has access on the company
-            String companyId = request.getRequestURI().split("/")[1];
-            System.out.println("Company ID: " + companyId);
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null
-                && !authentication.getAuthorities().stream().anyMatch(
-                    a -> a.getAuthority().equals(companyId.toString()))
-            ) {
-                throw new AccessDeniedException("Access denied");
-            }
+//            String companyId = request.getRequestURI().split("/")[1];
+//            System.out.println("Company ID: " + companyId);
+//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//            if (authentication != null
+//                && !authentication.getAuthorities().stream().anyMatch(
+//                a -> a.getAuthority().equals(companyId.toString()))
+//            ) {
+//                throw new AccessDeniedException("Access denied");
+//            }
 
             filterChain.doFilter(request, response);
         } catch (AccessDeniedException e) {

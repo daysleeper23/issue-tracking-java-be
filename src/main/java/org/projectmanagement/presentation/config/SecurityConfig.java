@@ -24,10 +24,12 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
+    private final CompanyFilter companyFilter;
 
-    public SecurityConfig(UserDetailsServiceImpl udsi, JwtAuthFilter jwtAF) {
+    public SecurityConfig(UserDetailsServiceImpl udsi, JwtAuthFilter jwtAF, CompanyFilter cF) {
         this.userDetailsService = udsi;
         this.jwtAuthFilter = jwtAF;
+        this.companyFilter = cF;
     }
 
     @Bean
@@ -183,6 +185,7 @@ public class SecurityConfig {
 
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(companyFilter, JwtAuthFilter.class)
             .authenticationManager(authenticationManager(http));
         return http.build();
     }

@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/companies")
+//@RequestMapping("/companies")
 @RestController
 @RequiredArgsConstructor
 public class CompaniesController {
@@ -18,7 +18,7 @@ public class CompaniesController {
     private final CompaniesService companiesService;
 
 
-    @PostMapping
+    @PostMapping("/companies")
     public ResponseEntity<GlobalResponse<Companies>> createCompany(
             @RequestBody @Valid Company dto
             ){
@@ -27,7 +27,7 @@ public class CompaniesController {
                 HttpStatus.CREATED);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<GlobalResponse<Companies>> getCompany(
             @PathVariable String id
     ){

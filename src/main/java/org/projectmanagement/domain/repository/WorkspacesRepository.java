@@ -13,7 +13,7 @@ public interface WorkspacesRepository {
 
     List<Workspaces> findAllWorkspaces(UUID companyId);
 
-    void deleteById(UUID id);
+    int deleteById(UUID id);
 
     Workspaces save(Workspaces build);
 

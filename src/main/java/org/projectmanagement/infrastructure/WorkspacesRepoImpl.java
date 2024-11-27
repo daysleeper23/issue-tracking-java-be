@@ -37,7 +37,7 @@ public class WorkspacesRepoImpl implements WorkspacesRepository {
         return Optional.empty();
     }
 
-    public void deleteById(UUID id) {
-        jpaRepo.deleteById(id);
+    public int deleteById(UUID id) {
+        return jpaRepo.deleteWorkspaceById(id);
     }
 }
