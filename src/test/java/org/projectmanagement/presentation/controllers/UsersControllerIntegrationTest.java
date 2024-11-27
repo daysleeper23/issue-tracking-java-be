@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.projectmanagement.application.dto.users.UsersCreate;
 import org.projectmanagement.application.dto.users.UsersLogin;
 import org.projectmanagement.application.dto.users.UsersUpdate;
+import org.projectmanagement.application.exceptions.AppMessage;
 import org.projectmanagement.domain.services.AuthService;
 import org.projectmanagement.test_data_factories.CompaniesDataFactory;
 import org.projectmanagement.test_data_factories.RolesDataFactory;
@@ -20,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Map;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -124,6 +126,71 @@ public class UsersControllerIntegrationTest {
                     .andExpect(jsonPath("$.errors[0].message").value("name cannot be blank"))
                     .andDo(print());
         }
+
+        @Test
+        void shouldNotCreateUserWithBlankEmail() throws Exception {
+            UsersCreate user = new UsersCreate(
+                    "John Doe",
+                    "",
+                    "passwordHash",
+                    null,
+                    true,
+                    companyId,
+                    adminRoleId
+            );
+            String userJson = objectMapper.writeValueAsString(user);
+
+            mockMvc.perform(post("/" + companyId + "/members")
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(userJson))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.errors[0].message").value("email cannot be blank"))
+                    .andDo(print());
+        }
+
+        @Test
+        void shouldNotCreateUserWithBlankPassword() throws Exception {
+            UsersCreate user = new UsersCreate(
+                "John Doe",
+                "jdoe@test.com",
+                "",
+                null,
+                true,
+                companyId,
+                adminRoleId
+            );
+            String userJson = objectMapper.writeValueAsString(user);
+            mockMvc.perform(post("/" + companyId + "/members")
+                    .header("Authorization", "Bearer " + token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(userJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("password cannot be blank"))
+                .andDo(print());
+        }
+
+        @Test
+        void shouldNotCreateUserIfEmailIsUsed() throws Exception {
+            UsersCreate user = new UsersCreate(
+                "John Doe",
+                "owner@fs19java.com",
+                "passwordHash",
+                null,
+                true,
+                companyId,
+                adminRoleId
+            );
+            String userJson = objectMapper.writeValueAsString(user);
+
+            mockMvc.perform(post("/" + companyId + "/members")
+                    .header("Authorization", "Bearer " + token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(userJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value(AppMessage.EMAIL_ALREADY_IN_USE.getMessage()))
+                .andDo(print());
+        }
     }
 
     @Nested
@@ -192,6 +259,5 @@ public class UsersControllerIntegrationTest {
                     .andExpect(jsonPath("$.data").isEmpty())
                     .andDo(print());
         }
-
     }
 }

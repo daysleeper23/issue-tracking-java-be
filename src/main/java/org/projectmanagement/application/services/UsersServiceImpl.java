@@ -7,6 +7,8 @@ import java.util.UUID;
 
 import jakarta.transaction.Transactional;
 import org.projectmanagement.application.dto.users.*;
+import org.projectmanagement.application.exceptions.AppMessage;
+import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.domain.entities.CompanyManagers;
 import org.projectmanagement.domain.entities.Users;
 import org.projectmanagement.domain.entities.WorkspacesMembersRoles;
@@ -20,6 +22,8 @@ import org.projectmanagement.presentation.config.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import javax.swing.text.html.Option;
 
 @Service
 public class UsersServiceImpl implements UsersService {
@@ -73,7 +77,7 @@ public class UsersServiceImpl implements UsersService {
         //check if the email is already in use
         Optional<Users> existingUser = usersRepository.findOneByEmail(ownersCreate.email());
         if (existingUser.isPresent()) {
-            return Optional.empty();
+            throw new ApplicationException(AppMessage.EMAIL_ALREADY_IN_USE);
         }
 
         System.out.println("Creating owner with pwd: " + ownersCreate.password());
@@ -99,6 +103,12 @@ public class UsersServiceImpl implements UsersService {
 
     public UsersRead createUser(UsersCreate user, UUID companyId) {
 
+        //check if the email is already in use
+        Optional<Users> existingUser = usersRepository.findOneByEmail(user.email());
+        if (existingUser.isPresent()) {
+            throw new ApplicationException(AppMessage.EMAIL_ALREADY_IN_USE);
+        }
+
         //create a new user
         Users newUser = usersRepository.save(
                Users.builder()
@@ -106,7 +116,7 @@ public class UsersServiceImpl implements UsersService {
                         .email(user.email())
                         .passwordHash(user.password())
                         .title(user.title())
-                        .isActive(user.isActive())
+                        .isActive(user.isActive() == null ? true : user.isActive())
                         .companyId(companyId)
                         .isOwner(false)
                         .isDeleted(false)
@@ -129,6 +139,12 @@ public class UsersServiceImpl implements UsersService {
 
     public UsersRead createAdminOrCompanyManagers(UsersCreate user, UUID companyId) {
 
+        //check if the email is already in use
+        Optional<Users> existingUser = usersRepository.findOneByEmail(user.email());
+        if (existingUser.isPresent()) {
+            throw new ApplicationException(AppMessage.EMAIL_ALREADY_IN_USE);
+        }
+
         //create a new user
         Users newUser = usersRepository.save(
                 Users.builder()
@@ -136,7 +152,7 @@ public class UsersServiceImpl implements UsersService {
                         .email(user.email())
                         .passwordHash(user.password())
                         .title(user.title())
-                        .isActive(user.isActive())
+                        .isActive(user.isActive() == null ? true : user.isActive())
                         .companyId(companyId)
                         .isOwner(false)
                         .isDeleted(false)
@@ -158,11 +174,11 @@ public class UsersServiceImpl implements UsersService {
     }
 
     public Optional<UsersRead> getUserById(UUID id) {
-        Users users = usersRepository.findById(id).orElse(null);
-        if (users == null) {
-            return Optional.empty();
+        Optional<Users> user = usersRepository.findById(id);
+        if (user.isEmpty()) {
+            throw new ApplicationException(AppMessage.USER_NOT_FOUND);
         }
-        return Optional.of(UsersMapper.toUsersRead(users));
+        return Optional.of(UsersMapper.toUsersRead(user.get()));
     }
 
     public List<UsersRead> getAllUsersOfCompany(UUID companyId) {
@@ -172,24 +188,25 @@ public class UsersServiceImpl implements UsersService {
 
     @Transactional
     public Boolean deleteUser(UUID id) {
-        Users userFromDb = usersRepository.findById(id).orElse(null);
-        if (userFromDb == null) {
-            throw new ResourceNotFoundException("User with id: " + id + " was not found");
+        Optional<Users> userFromDb = usersRepository.findById(id);
+        if (userFromDb.isEmpty()) {
+            throw new ApplicationException(AppMessage.USER_NOT_FOUND);
         }
+
         usersRepository.deleteById(id);
         return true;
     }
 
     @Transactional
     public UsersRead updateUser(UUID id, UsersUpdate user) {
-        Users existingUser = usersRepository.findById(id).orElse(null);
+        Optional<Users> existingUser = usersRepository.findById(id);
 
-        if (existingUser == null) {
-            return null;
+        if (existingUser.isEmpty()) {
+            throw new ApplicationException(AppMessage.USER_NOT_FOUND);
         }
 
-        UsersMapper.INSTANCE.toUsersFromUsersUpdate(user, existingUser);
-        Users updatedUser = usersRepository.save(existingUser);
+        UsersMapper.INSTANCE.toUsersFromUsersUpdate(user, existingUser.get());
+        Users updatedUser = usersRepository.save(existingUser.get());
         return UsersMapper.toUsersRead(updatedUser);
     }
 }
