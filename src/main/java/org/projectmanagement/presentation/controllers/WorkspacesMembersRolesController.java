@@ -78,7 +78,7 @@ public class WorkspacesMembersRolesController {
             @PathVariable UUID id,
             @PathVariable UUID workspaceId
     ) {
-        wmrs.deleteWorkspacesMembersRoles(id);
+        wmrs.deleteWorkspacesMembersRoles(id, workspaceId);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NO_CONTENT.value(), null), HttpStatus.NO_CONTENT);
     }
 }

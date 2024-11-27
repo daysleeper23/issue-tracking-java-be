@@ -17,5 +17,5 @@ public interface WorkspacesMembersRolesService {
 
     WorkspacesMembersRolesRead updateWorkspacesMembersRoles(UUID id, UUID workspaceId, WorkspacesMembersRolesCreate newRole);
 
-    void deleteWorkspacesMembersRoles(UUID id);
+    void deleteWorkspacesMembersRoles(UUID id, UUID workspaceId);
 }

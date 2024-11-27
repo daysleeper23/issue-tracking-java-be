@@ -12,7 +12,6 @@ import org.projectmanagement.domain.repository.RolesRepository;
 import org.projectmanagement.domain.repository.UsersRepository;
 import org.projectmanagement.domain.repository.WorkspacesMembersRolesRepository;
 import org.projectmanagement.domain.repository.WorkspacesRepository;
-import org.projectmanagement.domain.services.RolesService;
 import org.projectmanagement.domain.services.WorkspacesMembersRolesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -112,7 +111,7 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
             UUID workspaceId,
             WorkspacesMembersRolesCreate newRole)
     {
-        //check if the member is in the workspace with a role, if not return null
+        //check if WMR id exists
         Optional<WorkspacesMembersRoles> wmr = wmrRepository.findById(id);
         if (wmr.isEmpty()) {
             throw new ApplicationException(AppMessage.WMR_ROLE_NOT_FOUND);
@@ -150,8 +149,19 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
 
     //delete a role for a user in a workspace == remove the user from the workspace
     @Transactional
-    public void deleteWorkspacesMembersRoles(UUID id) {
+    public void deleteWorkspacesMembersRoles(UUID id, UUID workspaceId) {
+        //check if the member is in the workspace with a role, if not return null
+        Optional<WorkspacesMembersRoles> wmr = wmrRepository.findById(id);
+        if (wmr.isEmpty()) {
+            throw new ApplicationException(AppMessage.WMR_ROLE_NOT_FOUND);
+        }
 
+        //check if the workspace id of the role is the same as the workspace id in the path
+        if (!wmr.get().getWorkspaceId().equals(workspaceId)) {
+            throw new ApplicationException(AppMessage.WMR_INVALID_WORKSPACE);
+        }
+
+        //delete the role
         wmrRepository.deleteById(id);
     }
 }
