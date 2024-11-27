@@ -3,6 +3,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.projectmanagement.application.utils.validation.annotation.EnumValidation;
 import org.projectmanagement.domain.enums.DefaultStatus;
 
 import java.time.Instant;
@@ -17,10 +18,9 @@ public record ProjectsCreate(
         Instant startDate,
         @Min(0)
         @Max(4)
-        int priority,
-        @NotNull(message = "Can not be null")
+        Integer priority,
+        @EnumValidation(target = DefaultStatus.class)
         DefaultStatus status,
-        @NotNull(message = "Can not be null")
         UUID leaderId,
         @NotNull(message = "Can not be null")
         UUID workspaceId
