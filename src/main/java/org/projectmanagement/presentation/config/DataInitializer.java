@@ -142,7 +142,7 @@ public class DataInitializer {
 
         jdbcTemplate.update(sql, UUID.fromString("1e72d950-3e30-4a79-b705-a04d1157862a"), "USER_UPDATE_ONE");
         jdbcTemplate.update(sql, UUID.fromString("3a99f3f5-a8ee-423c-8bb8-21751aa48c49"), "USER_DELETE_ALL");
-        jdbcTemplate.update(sql, UUID.fromString("47b88087-c0ef-4e64-8200-caaee3559c6e"), "USER_DELETE_ONE");
+//        jdbcTemplate.update(sql, UUID.fromString("47b88087-c0ef-4e64-8200-caaee3559c6e"), "USER_DELETE_ONE");
         jdbcTemplate.update(sql, UUID.fromString("6f982bb7-50ce-4610-8295-19afead33bee"), "USER_UPDATE_ALL");
 
         sql = "INSERT INTO roles_permissions (id, role_id, permission_id) VALUES (?, ?, ?)";

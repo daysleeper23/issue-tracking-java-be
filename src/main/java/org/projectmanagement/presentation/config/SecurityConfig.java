@@ -169,6 +169,7 @@ public class SecurityConfig {
                         //TODO: Missing endpoints for updating permissions for a custom roles?
                     //Allow GET requests on /rolesPermissions
                     .requestMatchers(HttpMethod.GET,"/rolesPermissions").hasAuthority("ROLE_READ_ALL")
+
                     /* Allow Invitations endpoints /{companyId}/invitations/**  */
                     .requestMatchers(HttpMethod.POST,"/{companyId}/invitations/").hasAuthority("COMPANY_UPDATE")
                     .requestMatchers(HttpMethod.GET,"/{companyId}/invitations/").hasAuthority("COMPANY_UPDATE")

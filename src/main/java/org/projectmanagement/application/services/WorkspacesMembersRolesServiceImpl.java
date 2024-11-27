@@ -49,7 +49,7 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
             UUID workspaceId,
             WorkspacesMembersRolesCreate wmrc) {
         //check if the role id is valid
-        Optional<Roles> roleInfo = rolesRepository.findById(wmrc.getRoleId());
+        Optional<Roles> roleInfo = rolesRepository.findById(wmrc.roleId());
         if (roleInfo.isEmpty()) {
             throw new ApplicationException(AppMessage.ROLE_NOT_FOUND);
         }
@@ -61,7 +61,7 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
         }
 
         //check if the user exists
-        if (usersRepository.findById(wmrc.getUserId()).isEmpty()) {
+        if (usersRepository.findById(wmrc.userId()).isEmpty()) {
             throw new ApplicationException(AppMessage.USER_NOT_FOUND);
         }
 
@@ -71,15 +71,15 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
         }
 
         //check if a role for the user in the workspace exists already, if it does return null
-        if (wmrRepository.findByUserIdAndWorkspaceId(wmrc.getUserId(), workspaceId).isPresent()) {
+        if (wmrRepository.findByUserIdAndWorkspaceId(wmrc.userId(), workspaceId).isPresent()) {
             throw new ApplicationException(AppMessage.WRM_USER_ALREADY_IN_WORKSPACE);
         }
 
         //create a new role for the user in the workspace
         WorkspacesMembersRoles wmr = wmrRepository.save(
-                WorkspacesMembersRoles.builder().userId(wmrc.getUserId())
+                WorkspacesMembersRoles.builder().userId(wmrc.userId())
                         .workspaceId(workspaceId)
-                        .roleId(wmrc.getRoleId())
+                        .roleId(wmrc.roleId())
                         .createdAt(Instant.now())
                         .updatedAt(Instant.now())
                         .build()
@@ -123,13 +123,13 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
             throw new ApplicationException(AppMessage.WMR_INVALID_WORKSPACE);
         }
 
-        System.out.println("Existing user id: " + wmr.get().getUserId() + " - Updating user id: " + newRole.getUserId());
-        if (!wmr.get().getUserId().equals(newRole.getUserId())) {
+        System.out.println("Existing user id: " + wmr.get().getUserId() + " - Updating user id: " + newRole.userId());
+        if (!wmr.get().getUserId().equals(newRole.userId())) {
             throw new ApplicationException(AppMessage.WMR_INVALID_USER);
         }
 
         //check if the new role id is valid
-        Optional<Roles> roleInfo = rolesRepository.findById(newRole.getRoleId());
+        Optional<Roles> roleInfo = rolesRepository.findById(newRole.roleId());
         if (roleInfo.isEmpty()) {
             throw new ApplicationException(AppMessage.ROLE_NOT_FOUND);
         }
@@ -141,7 +141,7 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
         }
 
         //update the role using the new roleId from newRole
-        Optional<WorkspacesMembersRoles> newWmr = wmrRepository.updateWorkspacesMembersRoles(id, newRole.getRoleId());
+        Optional<WorkspacesMembersRoles> newWmr = wmrRepository.updateWorkspacesMembersRoles(id, newRole.roleId());
         if (newWmr.isEmpty()) {
             throw new ApplicationException(AppMessage.WMR_UPDATE_ERROR);
         }

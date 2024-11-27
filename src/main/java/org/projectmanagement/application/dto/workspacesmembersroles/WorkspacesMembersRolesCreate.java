@@ -1,17 +1,15 @@
 package org.projectmanagement.application.dto.workspacesmembersroles;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-@NonNull
-@Getter
-@Setter
-@AllArgsConstructor
-public class WorkspacesMembersRolesCreate {
-    private UUID userId;
-    private UUID roleId;
+
+public record WorkspacesMembersRolesCreate (
+    @NotNull(message = "is required")
+    UUID userId,
+
+    @NotNull(message = "is required")
+    UUID roleId
+) {
 }

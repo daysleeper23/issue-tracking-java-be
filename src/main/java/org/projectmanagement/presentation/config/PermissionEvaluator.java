@@ -29,4 +29,20 @@ public class PermissionEvaluator {
         return authentication.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals(permissionAll) || authority.getAuthority().equals(permissionOne));
     }
+
+    // Check if the user has access on the company
+    public boolean hasPermissionOnCompany(
+            Authentication authentication
+            , UUID companyId
+    ) {
+        System.out.println("Checking permission on company: " + companyId);
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return false; // User is not authenticated
+        }
+
+        // Assuming your user has roles or permissions stored in their authorities
+        return authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals(companyId.toString()));
+    }
 }

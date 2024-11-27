@@ -48,6 +48,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         //retrieve user roles and permissions
         List<GrantedAuthority> authorities = new ArrayList<>();
 
+        //add company id as permission
+        authorities.add(user.get().getCompanyId()::toString);
+
         //add permissions if user is company managers or admin
         populateCompanyPermissions(authorities, user.get().getId());
 
