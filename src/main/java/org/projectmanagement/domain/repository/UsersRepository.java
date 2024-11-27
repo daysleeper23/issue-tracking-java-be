@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
-import org.projectmanagement.application.dto.users.UsersLogin;
 import org.projectmanagement.domain.entities.Users;
 
 public interface UsersRepository {
