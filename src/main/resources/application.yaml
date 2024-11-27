@@ -3,9 +3,8 @@ server:
 spring:
   application:
     name: "project-management-service"
-  spring:
-    config:
-      import: "optional:file:.env"
+  config:
+    import: "optional:file:.env"
   profiles:
     active: "dev"
   web:
@@ -42,3 +41,6 @@ springdoc:
     operationsSorter: method
   api-docs:
     path : "/api-docs"
+logging:
+  level:
+    web: debug

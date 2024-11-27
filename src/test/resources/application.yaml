@@ -1,0 +1,23 @@
+spring:
+  config:
+      import: "optional:file:.env"
+  profiles:
+    active: "test"
+  web:
+    locale: en_GB
+    locale-resolver: fixed
+  ## Database Configuration
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update #for testing purpose changing it to 'update' or 'validate' and has your schema created in your database
+      show-sql: true
+  mail:
+      password: password
+      username: tester
+      host: 127.0.0.1
+      port: 3025 # default protocol port + 3000 as offset
+      protocol: smtp
