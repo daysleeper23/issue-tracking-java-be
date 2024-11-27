@@ -1,18 +1,12 @@
 package org.projectmanagement.application.dto.roles;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-import java.util.UUID;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-public class RolesCreate {
-
+@JsonIgnoreProperties(ignoreUnknown = false)
+public record RolesCreate(
     @NotBlank(message = "cannot be blank")
-    private String name;
+    String name
+) {
 }

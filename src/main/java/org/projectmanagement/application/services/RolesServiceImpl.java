@@ -26,11 +26,11 @@ public class RolesServiceImpl implements RolesService {
     }
 
     public Roles createRole(UUID companyId, RolesCreate role) {
-        Optional<Roles> roles = rolesRepository.findByExactName(role.getName(), companyId);
+        Optional<Roles> roles = rolesRepository.findByExactName(role.name(), companyId);
         if (roles.isEmpty()) {
             return rolesRepository.save(
                     Roles.builder()
-                    .name(role.getName())
+                    .name(role.name())
                     .companyId(companyId)
                     .isDeleted(false)
                     .isSystemRole(false)
@@ -47,14 +47,14 @@ public class RolesServiceImpl implements RolesService {
     public Roles updateRoleName(UUID id, UUID companyId, RolesCreate role) {
         Optional<Roles> existingRole = rolesRepository.findById(id);
 
-        Optional<Roles> rolesWithSameName = rolesRepository.findByExactName(role.getName(), companyId);
+        Optional<Roles> rolesWithSameName = rolesRepository.findByExactName(role.name(), companyId);
         if (rolesWithSameName.isEmpty() && existingRole.isPresent()) {
 
             if (Boolean.TRUE.equals(existingRole.get().getIsSystemRole())) {
                 throw new SystemRoleUpdateException("System roles cannot be updated.");
             }
 
-            existingRole.get().setName(role.getName());
+            existingRole.get().setName(role.name());
             return rolesRepository.save(existingRole.get());
         } else {
             return null;
