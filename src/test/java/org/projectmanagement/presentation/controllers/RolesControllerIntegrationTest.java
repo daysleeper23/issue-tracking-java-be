@@ -171,12 +171,11 @@ public class RolesControllerIntegrationTest {
             RolesCreate updatedRole = new RolesCreate("Updated System Role Name");
             String updatedRoleJson = objectMapper.writeValueAsString(updatedRole);
 
-            // Act & Assert: Attempt to update the system role and expect an exception
             mockMvc.perform(put("/" + companyId + "/roles/" + adminRoleId)
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(updatedRoleJson))
-                    .andExpect(status().isForbidden()) // Changed from isBadRequest() to isForbidden()
+                    .andExpect(status().isForbidden())
                     .andExpect(jsonPath("$.status").value("error"))
                     .andExpect(jsonPath("$.errors[0].message").value("System roles cannot be updated."))
                     .andDo(print());
