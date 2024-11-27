@@ -1,5 +1,6 @@
 package org.projectmanagement.application.dto.tasks;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -11,6 +12,7 @@ import org.projectmanagement.domain.enums.DefaultStatus;
 import java.time.Instant;
 
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = false)
 public record TasksCreate(
         @NotBlank(message = "length must greater than 0")
         String name,
