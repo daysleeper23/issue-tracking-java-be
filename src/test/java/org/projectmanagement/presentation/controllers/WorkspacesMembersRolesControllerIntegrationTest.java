@@ -386,4 +386,34 @@ public class WorkspacesMembersRolesControllerIntegrationTest {
                     .andDo(print());
         }
     }
+
+    @Nested
+    class DeleteWorkspacesMembersRoles {
+        @Test
+        void shouldBeAbleToDeleteRoleForMemberInWorkspace() throws Exception {
+            mockMvc.perform(delete("/" + companyId + "/" + workspace1Id + "/members/roles" + "/" + wmr_m1_1Id)
+                    .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isNoContent());
+        }
+
+        @Test
+        void shouldNotDeleteRoleForMemberInWorkspaceWithInvalidId() throws Exception {
+            mockMvc.perform(delete("/" + companyId + "/" + workspace1Id + "/members/roles" + "/" + UUID.randomUUID())
+                    .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.errors[0].message").value(AppMessage.WMR_ROLE_NOT_FOUND.getMessage()))
+                .andDo(print());
+        }
+
+        @Test
+        void shouldNotDeleteRoleForMemberInWorkspaceWithDifferentWorkspace() throws Exception {
+            mockMvc.perform(delete("/" + companyId + "/" + workspace2Id + "/members/roles" + "/" + wmr_m1_1Id)
+                    .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.errors[0].message").value(AppMessage.WMR_INVALID_WORKSPACE.getMessage()))
+                .andDo(print());
+        }
+    }
 }
