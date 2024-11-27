@@ -55,7 +55,7 @@ public class UsersDataFactory {
         return user.getId();
     }
 
-    public UUID createNonOwnerUser(UUID companyId,String userName, String password) {
+    public UUID createNonOwnerUser(UUID companyId, String userName, String password) {
         Users user = usersRepoJpa.save(Users.builder()
                 .name("Test User2")
                 .email(userName)

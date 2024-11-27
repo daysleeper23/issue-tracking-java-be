@@ -10,6 +10,7 @@ import org.projectmanagement.application.dto.users.*;
 import org.projectmanagement.domain.entities.CompanyManagers;
 import org.projectmanagement.domain.entities.Users;
 import org.projectmanagement.domain.entities.WorkspacesMembersRoles;
+import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
 import org.projectmanagement.domain.repository.CompanyManagersRepository;
 import org.projectmanagement.domain.repository.UsersRepository;
 import org.projectmanagement.domain.repository.WorkspacesMembersRolesRepository;
@@ -171,6 +172,10 @@ public class UsersServiceImpl implements UsersService {
 
     @Transactional
     public Boolean deleteUser(UUID id) {
+        Users userFromDb = usersRepository.findById(id).orElse(null);
+        if (userFromDb == null) {
+            throw new ResourceNotFoundException("User with id: " + id + " was not found");
+        }
         usersRepository.deleteById(id);
         return true;
     }

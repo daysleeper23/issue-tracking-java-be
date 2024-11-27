@@ -120,7 +120,7 @@ public class ProjectMembersControllerTest {
     class GetProjectMembers {
         @Test
         void shouldReturnAllProjectMembersByProjectId() throws Exception {
-            mockMvc.perform(get("/" + projectId + "/projectMembers")
+            mockMvc.perform(get("/" + companyId + "/" + projectId + "/projectMembers")
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
@@ -131,7 +131,7 @@ public class ProjectMembersControllerTest {
 
         @Test
         void shouldReturnProjectMemberById() throws Exception {
-            mockMvc.perform(get("/" + projectId + "/projectMembers/" + projectMemberId)
+            mockMvc.perform(get("/" + companyId + "/" + projectId + "/projectMembers/" + projectMemberId)
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
@@ -143,7 +143,7 @@ public class ProjectMembersControllerTest {
         void shouldReturnNotFoundWhenProjectMemberByIdDoesNotExist() throws Exception {
             UUID nonExistingProjectMemberId = UUID.randomUUID();
 
-            mockMvc.perform(get("/" + projectId + "/projectMembers/" + nonExistingProjectMemberId)
+            mockMvc.perform(get("/" + companyId + "/" + projectId + "/projectMembers/" + nonExistingProjectMemberId)
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.status").value("error"))
@@ -155,7 +155,7 @@ public class ProjectMembersControllerTest {
         void shouldReturnNotFoundWhenGettingProjectMembersForNonExistingProject() throws Exception {
             UUID nonExistingProjectId = UUID.randomUUID();
 
-            mockMvc.perform(get("/" + nonExistingProjectId + "/projectMembers")
+            mockMvc.perform(get("/" + companyId + "/" + nonExistingProjectId + "/projectMembers")
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.status").value("error"))
@@ -172,7 +172,7 @@ public class ProjectMembersControllerTest {
             ProjectMemberCreate createDto = new ProjectMemberCreate(user2Id, false);
             String createJson = objectMapper.writeValueAsString(createDto);
 
-            mockMvc.perform(post("/" + projectId + "/projectMembers")
+            mockMvc.perform(post("/" + companyId + "/" + projectId + "/projectMembers")
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(createJson))
@@ -188,7 +188,7 @@ public class ProjectMembersControllerTest {
             ProjectMemberCreate createDto = new ProjectMemberCreate(userId, false);
             String createJson = objectMapper.writeValueAsString(createDto);
 
-            mockMvc.perform(post("/" + nonExistingProjectId + "/projectMembers")
+            mockMvc.perform(post("/" + companyId + "/" + nonExistingProjectId + "/projectMembers")
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(createJson))
@@ -204,7 +204,7 @@ public class ProjectMembersControllerTest {
             String createJson = objectMapper.writeValueAsString(createDto);
 
             // Add the same member twice
-            mockMvc.perform(post("/" + projectId + "/projectMembers")
+            mockMvc.perform(post("/" + companyId + "/" + projectId + "/projectMembers")
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(createJson))
@@ -218,7 +218,7 @@ public class ProjectMembersControllerTest {
             ProjectMemberCreate createDto = new ProjectMemberCreate(userId, false);
             String createJson = objectMapper.writeValueAsString(createDto);
 
-            mockMvc.perform(post("/" + projectId + "/projectMembers")
+            mockMvc.perform(post("/" + companyId + "/" + projectId + "/projectMembers")
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(createJson))
@@ -239,7 +239,7 @@ public class ProjectMembersControllerTest {
             ProjectMemberUpdate updateDto = new ProjectMemberUpdate(true);
             String updateJson = objectMapper.writeValueAsString(updateDto);
 
-            mockMvc.perform(patch("/" + projectId + "/projectMembers/" + projectMemberId)
+            mockMvc.perform(patch("/" + companyId + "/" + projectId + "/projectMembers/" + projectMemberId)
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(updateJson))
@@ -254,7 +254,7 @@ public class ProjectMembersControllerTest {
     class DeleteProject {
         @Test
         void shouldDeleteProjectSuccessfully() throws Exception {
-            mockMvc.perform(delete("/" + projectId + "/projectMembers/" + projectMemberId)
+            mockMvc.perform(delete("/" + companyId + "/" + projectId + "/projectMembers/" + projectMemberId)
                             .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))

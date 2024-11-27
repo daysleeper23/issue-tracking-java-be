@@ -5,8 +5,15 @@ import org.projectmanagement.application.dto.projects.ProjectMapper;
 import org.projectmanagement.application.dto.projects.ProjectsCreate;
 import org.projectmanagement.application.dto.projects.ProjectsUpdate;
 import org.projectmanagement.domain.entities.Projects;
+import org.projectmanagement.domain.entities.Tasks;
+import org.projectmanagement.domain.entities.Users;
+import org.projectmanagement.domain.entities.Workspaces;
+import org.projectmanagement.domain.enums.DefaultStatus;
 import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
 import org.projectmanagement.domain.repository.ProjectsRepository;
+import org.projectmanagement.domain.repository.TasksRepository;
+import org.projectmanagement.domain.repository.UsersRepository;
+import org.projectmanagement.domain.repository.WorkspacesRepository;
 import org.projectmanagement.domain.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,10 +27,19 @@ import java.util.UUID;
 public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectsRepository projectsRepository;
+    private final TasksRepository tasksRepository;
+    private final WorkspacesRepository workspacesRepository;
+    private final UsersRepository usersRepository;
 
     @Autowired
-    ProjectServiceImpl(ProjectsRepository projectsRepository){
+    ProjectServiceImpl(ProjectsRepository projectsRepository,
+                       TasksRepository tasksRepository,
+                       WorkspacesRepository workspacesRepository,
+                       UsersRepository usersRepository){
         this.projectsRepository = projectsRepository;
+        this.tasksRepository = tasksRepository;
+        this.workspacesRepository = workspacesRepository;
+        this.usersRepository = usersRepository;
     }
 
     public Optional<Projects> getProjectById(UUID id) {
@@ -35,25 +51,42 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     public List<Projects> getProjectsByWorkspaceId(UUID workspaceId) {
-        List<Projects> projects = projectsRepository.findAllFromWorkspace(workspaceId);
-        return projects;
+        Workspaces workspace = workspacesRepository.findById(workspaceId).orElse(null);
+
+        if (workspace == null){
+            throw new ResourceNotFoundException("Workspace with id: " + workspaceId + " was not found.");
+        }
+
+        return projectsRepository.findAllFromWorkspace(workspaceId);
     }
 
     public Projects createProject(ProjectsCreate dto){
-        Projects project = projectsRepository.save(
-            Projects.builder()
-                    .name(dto.name())
-                    .description(dto.description())
-                    .endDate(dto.endDate())
-                    .startDate(dto.startDate())
-                    .priority(dto.priority())
-                    .status(dto.status())
-                    .leaderId(dto.leaderId())
-                    .workspaceId(dto.workspaceId())
-                    .isDeleted(false)
-                    .build()
+        Workspaces workspace = workspacesRepository.findById(dto.workspaceId()).orElse(null);
+        if (workspace == null){
+            throw new ResourceNotFoundException("Workspace with id: " + dto.workspaceId() + " was not found.");
+        }
+
+        if (dto.leaderId() != null) {
+            Users userFromDb = usersRepository.findById(dto.leaderId()).orElse(null);
+
+            if (userFromDb == null){
+                throw new ResourceNotFoundException("User with id: " + dto.leaderId() + " was not found.");
+            }
+        }
+
+        return projectsRepository.save(
+                Projects.builder()
+                        .name(dto.name())
+                        .description(dto.description())
+                        .endDate(dto.endDate())
+                        .startDate(dto.startDate())
+                        .priority(dto.priority() == null ? 0 : dto.priority())
+                        .status(dto.status())
+                        .leaderId(dto.leaderId())
+                        .workspaceId(dto.workspaceId())
+                        .isDeleted(false)
+                        .build()
         );
-        return projectsRepository.save(project);
     }
 
     @Transactional
@@ -75,6 +108,12 @@ public class ProjectServiceImpl implements ProjectService {
         if (projectToDelete == null) {
             throw new ResourceNotFoundException("Project with id: " + id + " was not found.");
         }
+
+        List<Tasks> projectRelatedTasks = tasksRepository.findByProjectId(id);
+
+        projectRelatedTasks.forEach(task -> task.setStatus(DefaultStatus.ARCHIVED));
+
+        tasksRepository.saveAll(projectRelatedTasks);
 
         projectToDelete.setIsDeleted(true);
         projectsRepository.save(projectToDelete);

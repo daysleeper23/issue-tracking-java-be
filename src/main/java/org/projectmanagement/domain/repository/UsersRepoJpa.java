@@ -29,9 +29,9 @@ public interface UsersRepoJpa extends JpaRepository<Users, UUID> {
     Optional<Users> findOneByEmail(@Param("email") String email);
 
     @Modifying
-    @Query(value = "UPDATE users u " +
-            "SET u.is_deleted = true " +
-            "WHERE u.id = :id"
+    @Query(value = "UPDATE users " +
+            "SET is_deleted = true " +
+            "WHERE id = :id"
         , nativeQuery = true
     )
     void deleteById(@Param("id") UUID id);
