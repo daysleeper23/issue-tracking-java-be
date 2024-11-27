@@ -46,7 +46,6 @@ public class Projects extends BaseEntity {
     @Column(name = "status", nullable = false)
     private DefaultStatus status;
 
-    @NonNull
     @JoinColumn(name = "leader_id", nullable = false)
     private UUID leaderId;
 

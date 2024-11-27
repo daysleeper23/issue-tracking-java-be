@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/{projectId}/projectMembers")
+@RequestMapping("/{companyId}/{projectId}/projectMembers")
 public class ProjectMemberController {
     private ProjectMembersServiceImpl projectMembersService;
 

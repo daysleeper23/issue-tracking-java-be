@@ -17,10 +17,18 @@ public class CompaniesDataFactory {
         companiesRepoJpa.deleteAll();
     }
 
-    public  UUID createCompany() {
+    public UUID createCompany() {
         Companies company = companiesRepoJpa.save(Companies.builder()
                         .name("Test Company")
                         .description("Test Description")
+                .build());
+        return company.getId();
+    }
+
+    public UUID createCompany(String name) {
+        Companies company = companiesRepoJpa.save(Companies.builder()
+                .name(name)
+                .description("Test Description")
                 .build());
         return company.getId();
     }

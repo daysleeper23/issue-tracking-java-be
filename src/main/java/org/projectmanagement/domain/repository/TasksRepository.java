@@ -18,4 +18,6 @@ public interface TasksRepository {
     Tasks findById(UUID id);
 
     List<Tasks> findAllTasksUserAssociated(UUID userId);
+
+    List<Tasks> saveAll(List<Tasks> tasks);
 }
