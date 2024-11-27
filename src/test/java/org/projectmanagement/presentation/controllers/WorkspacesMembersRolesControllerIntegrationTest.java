@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.projectmanagement.application.dto.users.UsersLogin;
 import org.projectmanagement.application.dto.workspacesmembersroles.WorkspacesMembersRolesCreate;
 import org.projectmanagement.application.exceptions.AppMessage;
-import org.projectmanagement.infrastructure.InMemoryDatabase;
 import org.projectmanagement.presentation.config.DataInitializer;
 import org.projectmanagement.presentation.config.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;

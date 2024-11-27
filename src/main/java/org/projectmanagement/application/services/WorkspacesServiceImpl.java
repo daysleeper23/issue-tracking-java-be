@@ -28,8 +28,8 @@ public class WorkspacesServiceImpl implements WorkspacesService {
     public Optional<WorkspacesRead> createWorkspace(UUID companyId, WorkspacesCreate workspace) {
         Workspaces newWorkspace = workspacesRepository.save(
                 Workspaces.builder()
-                        .name(workspace.getName())
-                        .description(workspace.getDescription())
+                        .name(workspace.name())
+                        .description(workspace.description())
                         .companyId(companyId)
                         .isDeleted(false)
                         .createdAt(Instant.now())

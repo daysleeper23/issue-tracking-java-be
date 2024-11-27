@@ -20,6 +20,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/{companyId}/workspaces")
 @Validated
+@PreAuthorize("@permissionEvaluator.hasPermissionOnCompany(authentication, #companyId)")
 public class WorkspacesController {
 
     private final WorkspacesService workspacesService;
@@ -32,16 +33,16 @@ public class WorkspacesController {
     @GetMapping
     public ResponseEntity<GlobalResponse<List<WorkspacesRead>>> getWorkspaces(@PathVariable UUID companyId) {
         return new ResponseEntity<>(
-                new GlobalResponse<>(
-                        HttpStatus.OK.value(),
-                        workspacesService.findAllWorkspaces(companyId)
-                ),
-                HttpStatus.OK
+            new GlobalResponse<>(
+                HttpStatus.OK.value(),
+                workspacesService.findAllWorkspaces(companyId)
+            ),
+            HttpStatus.OK
         );
     }
 
     @PostMapping
-    public ResponseEntity<GlobalResponse<WorkspacesRead>> createWorkspace(@PathVariable UUID companyId, @RequestBody WorkspacesCreate workspace) {
+    public ResponseEntity<GlobalResponse<WorkspacesRead>> createWorkspace(@PathVariable UUID companyId, @RequestBody @Valid WorkspacesCreate workspace) {
         Optional<WorkspacesRead> createdWorkspace = workspacesService.createWorkspace(companyId, workspace);
         return createdWorkspace
                 .map(workspacesRead -> new ResponseEntity<>(
@@ -56,7 +57,7 @@ public class WorkspacesController {
     
     @PatchMapping("/{id}")
     @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #id, {'WORKSPACE_UPDATE_ALL', 'WORKSPACE_UPDATE_ONE'})")
-    public ResponseEntity<GlobalResponse<WorkspacesRead>> updateWorkspace(@PathVariable UUID id, @RequestBody @Valid WorkspacesUpdate workspace) {
+    public ResponseEntity<GlobalResponse<WorkspacesRead>> updateWorkspace(@PathVariable UUID companyId, @PathVariable UUID id, @RequestBody @Valid WorkspacesUpdate workspace) {
         Optional<WorkspacesRead> updatedWorkspace = workspacesService.updateWorkspace(id, workspace);
         return updatedWorkspace
                 .map(workspacesRead -> new ResponseEntity<>(
@@ -71,7 +72,7 @@ public class WorkspacesController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #id, {'WORKSPACE_DELETE_ALL', 'WORKSPACE_DELETE_ONE'})")
-    public ResponseEntity<GlobalResponse<Void>> deleteWorkspace(@PathVariable UUID id) {
+    public ResponseEntity<GlobalResponse<Void>> deleteWorkspace(@PathVariable UUID companyId, @PathVariable UUID id) {
         workspacesService.deleteWorkspace(id);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NO_CONTENT.value(), null), HttpStatus.NO_CONTENT);
     }
