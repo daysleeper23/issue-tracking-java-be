@@ -5,8 +5,11 @@ import org.projectmanagement.application.dto.projects.ProjectMapper;
 import org.projectmanagement.application.dto.projects.ProjectsCreate;
 import org.projectmanagement.application.dto.projects.ProjectsUpdate;
 import org.projectmanagement.domain.entities.Projects;
+import org.projectmanagement.domain.entities.Tasks;
+import org.projectmanagement.domain.enums.DefaultStatus;
 import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
 import org.projectmanagement.domain.repository.ProjectsRepository;
+import org.projectmanagement.domain.repository.TasksRepository;
 import org.projectmanagement.domain.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,10 +23,13 @@ import java.util.UUID;
 public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectsRepository projectsRepository;
+    private final TasksRepository tasksRepository;
 
     @Autowired
-    ProjectServiceImpl(ProjectsRepository projectsRepository){
+    ProjectServiceImpl(ProjectsRepository projectsRepository,
+                       TasksRepository tasksRepository){
         this.projectsRepository = projectsRepository;
+        this.tasksRepository = tasksRepository;
     }
 
     public Optional<Projects> getProjectById(UUID id) {
@@ -75,6 +81,12 @@ public class ProjectServiceImpl implements ProjectService {
         if (projectToDelete == null) {
             throw new ResourceNotFoundException("Project with id: " + id + " was not found.");
         }
+
+        List<Tasks> projectRelatedTasks = tasksRepository.findByProjectId(id);
+
+        projectRelatedTasks.forEach(task -> task.setStatus(DefaultStatus.ARCHIVED));
+
+        tasksRepository.saveAll(projectRelatedTasks);
 
         projectToDelete.setIsDeleted(true);
         projectsRepository.save(projectToDelete);
