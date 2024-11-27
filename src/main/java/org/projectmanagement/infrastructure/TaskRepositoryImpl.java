@@ -36,4 +36,9 @@ public class TaskRepositoryImpl implements TasksRepository {
         return jpaRepository.findAllTasksUserAssociated(userId);
     }
 
+    @Override
+    public List<Tasks> saveAll(List<Tasks> tasks) {
+        return jpaRepository.saveAll(tasks);
+    }
+
 }
