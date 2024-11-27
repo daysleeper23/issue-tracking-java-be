@@ -62,10 +62,14 @@ public class ProjectsControllerIntegrationTest {
     private WorkspaceMemberRolesDataFactory workspaceMemberRolesDataFactory;
 
     UUID companyId;
+    UUID company2Id;
     UUID workspaceId;
     UUID userId;
+    UUID company2userId;
+
     UUID projectId;
     UUID roleId;
+    UUID company2roleId;
     String token;
 
 
@@ -73,14 +77,18 @@ public class ProjectsControllerIntegrationTest {
     void setUp() {
 
         companyId = companiesDataFactory.createCompany();
+        company2Id = companiesDataFactory.createCompany("company 2");
 
         workspaceId = workspacesDataFactory.createWorkspace(companyId);
 
         userId = usersDataFactory.createOwnerUser(companyId, "testuser@example.com", "hashedpassword");
+        company2userId = usersDataFactory.createOwnerUser(company2Id, "testuserCompany2@example.com", "hashedpassword");
 
         projectId = projectsDataFactory.createProject("Project Name", workspaceId, userId);
 
         roleId = rolesDataFactory.createRoleWithAllPermissions("custom name", companyId, false);
+
+        company2roleId = rolesDataFactory.createRoleWithAllPermissions("custom name2", company2Id, false);
 
         workspaceMemberRolesDataFactory.createWorkspacesMembersRole(userId, roleId, workspaceId);
 
@@ -112,6 +120,17 @@ public class ProjectsControllerIntegrationTest {
                     .andExpect(jsonPath("$.data", hasSize(1)))
                     .andDo(print());
         }
+
+        @Test
+        void shouldNotReturnProjectsFromAnotherCompanyByWorkspaceId() throws Exception {
+            UsersLogin userLogin2 = new UsersLogin("testuserCompany2@example.com", "hashedpassword");
+            String token2 = authService.authenticate(userLogin2);
+
+            mockMvc.perform(get("/" + companyId + "/" + workspaceId + "/projects")
+                            .header("Authorization", "Bearer " + token2))
+                    .andExpect(status().isForbidden())
+                    .andDo(print());
+        }
     }
 
     @Nested
@@ -123,7 +142,7 @@ public class ProjectsControllerIntegrationTest {
                     "A new project description",
                     Instant.now().plusSeconds(7200),
                     Instant.now(),
-                    2,
+                    null,
                     DefaultStatus.IN_PROGRESS,
                     userId,
                     workspaceId
