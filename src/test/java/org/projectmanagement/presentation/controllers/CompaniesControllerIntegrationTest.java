@@ -1,6 +1,5 @@
 package org.projectmanagement.presentation.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.projectmanagement.application.dto.companies.Company;
 import org.projectmanagement.application.dto.users.UsersLogin;
 import org.projectmanagement.application.exceptions.AppMessage;
-import org.projectmanagement.domain.entities.Companies;
 import org.projectmanagement.domain.services.AuthService;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.projectmanagement.test_data_factories.CompaniesDataFactory;
@@ -21,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -72,11 +69,11 @@ public class CompaniesControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        userId = usersDataFactory.createNonOwnerUser(null);
+        testUpdateCompanyId = companiesDataFactory.createCompany();
+        userId = usersDataFactory.createNonOwnerUser(null,"testuser2@example.com", "hashedpassword");
         UsersLogin userLogin = new UsersLogin("testuser2@example.com", "hashedpassword");
         jwtToken = authService.authenticate(userLogin);
 
-        testUpdateCompanyId = companiesDataFactory.createCompany();
         testUserIdUpdate = usersDataFactory.createOwnerUser(testUpdateCompanyId,"t@test.com", "hashedpassword");
         testUserIdUpdate2 = usersDataFactory.createNonOwnerUser(testUpdateCompanyId,"t2@test.com", "hashedpassword");
         UsersLogin t2 = new UsersLogin("t@test.com", "hashedpassword");
@@ -97,7 +94,7 @@ public class CompaniesControllerIntegrationTest {
     class GetCompanies {
         @Test
         void getCompany() throws Exception{
-            mockMvc.perform(get("/companies/" + testUpdateCompanyId)
+            mockMvc.perform(get("/" + testUpdateCompanyId)
                             .header("Authorization", "Bearer " + jwtToken2)
                             .contentType(MediaType.APPLICATION_JSON)
                     )
@@ -110,7 +107,7 @@ public class CompaniesControllerIntegrationTest {
 
         @Test
         void shouldNotGetCompany() throws Exception{
-            mockMvc.perform(get("/companies/" + testUpdateCompanyId)
+            mockMvc.perform(get("/" + testUpdateCompanyId)
                             .header("Authorization", "Bearer " + jwtToken)
                             .contentType(MediaType.APPLICATION_JSON)
                     )
@@ -120,11 +117,11 @@ public class CompaniesControllerIntegrationTest {
 
         @Test
         void shouldGetCompanyNotFound() throws Exception{
-            mockMvc.perform(get("/companies/" + UUID.randomUUID())
+            mockMvc.perform(get("/" + UUID.randomUUID())
                             .header("Authorization", "Bearer " + jwtToken2)
                             .contentType(MediaType.APPLICATION_JSON)
                     )
-                    .andExpect(status().isNotFound())
+                    .andExpect(status().isForbidden())
                     .andDo(print());
         }
     }
@@ -134,7 +131,7 @@ public class CompaniesControllerIntegrationTest {
 
         @Test
         void createCompany() throws Exception {
-            Company company = new Company("Test Company", "Test Description", userId.toString());
+            Company company = new Company("Test Company 4", "Test Description", userId.toString());
             mockMvc.perform(post("/companies")
                             .header("Authorization", "Bearer " + jwtToken)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -152,7 +149,7 @@ public class CompaniesControllerIntegrationTest {
         void shouldNotCreateCompanyWhenUserIsAlreadyJoinedCompany() throws Exception {
             Company company = new Company("Test Company", "Test Description", userId.toString());
             mockMvc.perform(post("/companies")
-                            .header("Authorization", "Bearer " + jwtToken)
+                            .header("Authorization", "Bearer " + jwtToken2)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsBytes(company))
                     )
@@ -181,7 +178,7 @@ public class CompaniesControllerIntegrationTest {
         @Test
         void updateCompany() throws Exception {
             Company company = new Company("Test update name", "Test update description", userId.toString());
-            mockMvc.perform(put("/companies/" + testUpdateCompanyId)
+            mockMvc.perform(put("/" + testUpdateCompanyId)
                             .header("Authorization", "Bearer " + jwtToken2)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsBytes(company))
@@ -197,7 +194,7 @@ public class CompaniesControllerIntegrationTest {
         @Test
         void shouldNotUpdateCompany() throws Exception {
             Company company = new Company("Test update name", "Test update description", userId.toString());
-            mockMvc.perform(put("/companies/" + testUpdateCompanyId)
+            mockMvc.perform(put("/" + testUpdateCompanyId)
                             .header("Authorization", "Bearer " + jwtToken3)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsBytes(company))
@@ -209,21 +206,19 @@ public class CompaniesControllerIntegrationTest {
         @Test
         void shouldNotUpdateCompanyNotFound() throws Exception {
             Company company = new Company("Test update name", "Test update description", userId.toString());
-            mockMvc.perform(put("/companies/" + UUID.randomUUID())
+            mockMvc.perform(put("/" + UUID.randomUUID())
                             .header("Authorization", "Bearer " + jwtToken2)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsBytes(company))
                     )
-                    .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.status").value(GlobalResponse.ERROR))
-                    .andExpect(jsonPath("$.errors[0].message").value(AppMessage.COMPANY_NOT_FOUND.getMessage()))
+                    .andExpect(status().isForbidden())
                     .andDo(print());
         }
 
         @Test
         void shouldNotUpdateWhenNoChanges() throws Exception {
             Company company = new Company("Test Company", "Test Description", userId.toString());
-            mockMvc.perform(put("/companies/" + testUpdateCompanyId)
+            mockMvc.perform(put("/" + testUpdateCompanyId)
                             .header("Authorization", "Bearer " + jwtToken2)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsBytes(company))

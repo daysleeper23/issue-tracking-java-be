@@ -57,10 +57,10 @@ public class SecurityConfig {
                         COMPANY PERMISSIONS
                      */
                     //Allow GET requests on /companies
-                    .requestMatchers(HttpMethod.GET,"/companies/{id}").hasAuthority("COMPANY_READ")
+                    .requestMatchers(HttpMethod.GET,"/{companyId}").hasAuthority("COMPANY_READ")
 
                     //Allow PUT requests on /companies
-                    .requestMatchers(HttpMethod.PUT,"/companies/{id}").hasAuthority("COMPANY_UPDATE")
+                    .requestMatchers(HttpMethod.PUT,"/{companyId}").hasAuthority("COMPANY_UPDATE")
 
                     //Allow GET requests on /{companyId}/companyManagers
                     .requestMatchers(HttpMethod.GET,"/{companyId}/companyManagers")

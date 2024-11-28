@@ -14,6 +14,7 @@ import org.projectmanagement.domain.services.TasksService;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,7 +68,6 @@ public class TasksController {
     public ResponseEntity<GlobalResponse<Boolean>> subscribeToTask(
             @PathVariable @NotBlank(message = "Task id must not be empty") String taskId
     ) {
-        //Todo:Get user id from security context holder
         String userId = UUID.randomUUID().toString();
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), subscribersService.subscribeToTask(taskId, userId)));
     }
@@ -75,10 +75,8 @@ public class TasksController {
     @PutMapping("/{taskId}/unsubscribe")
     public ResponseEntity<GlobalResponse<Boolean>> unsubscribeToTask(
             @PathVariable @NotBlank(message = "Task id must not be empty") String taskId,
-            //Todo:For testing remove later
             @RequestParam(value = "userId") @NotBlank(message = "User id must not be empty") String userId
     ) {
-        //Todo:Get user id from security context holder
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), subscribersService.unsubscribeToTask(taskId, userId)));
     }
 

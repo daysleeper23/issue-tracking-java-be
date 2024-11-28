@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.projectmanagement.application.dto.roles.RolesCreate;
 import org.projectmanagement.application.dto.users.UsersLogin;
-import org.projectmanagement.domain.entities.Roles;
 import org.projectmanagement.domain.services.AuthService;
 import org.projectmanagement.test_data_factories.CompaniesDataFactory;
 import org.projectmanagement.test_data_factories.CompanyManagersDataFactory;

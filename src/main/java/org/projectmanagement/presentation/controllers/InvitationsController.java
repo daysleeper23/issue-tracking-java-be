@@ -2,6 +2,7 @@ package org.projectmanagement.presentation.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.UUID;
 import org.projectmanagement.application.dto.invitations.InvitationsCreate;
@@ -42,7 +43,7 @@ public class InvitationsController {
     }
 
     @PutMapping("/verify")
-    public ResponseEntity<GlobalResponse<Boolean>> acceptInvitation(
+    public ResponseEntity<GlobalResponse<InvitationsInfo>> acceptInvitation(
             @RequestParam("token") String token,
             @RequestParam("timestamp") Long timestamp
     ) {
@@ -58,12 +59,12 @@ public class InvitationsController {
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.refreshInvitation(companyId, invitationId, days)));
     }
 
-    @DeleteMapping("/{invitationId}")
+    @DeleteMapping("/")
     public ResponseEntity<GlobalResponse<Boolean>> revokeInvitation(
             @PathVariable @UUID String companyId,
-            @PathVariable @UUID String invitationId
+            @RequestParam(value = "email") @Valid @Email String email
     ) {
-        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.revokeInvitation(companyId, invitationId)));
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.revokeInvitation(companyId, email)));
     }
 
 }
