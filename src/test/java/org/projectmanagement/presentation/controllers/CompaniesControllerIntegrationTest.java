@@ -131,7 +131,7 @@ public class CompaniesControllerIntegrationTest {
 
         @Test
         void createCompany() throws Exception {
-            Company company = new Company("Test Company", "Test Description", userId.toString());
+            Company company = new Company("Test Company 4", "Test Description", userId.toString());
             mockMvc.perform(post("/companies")
                             .header("Authorization", "Bearer " + jwtToken)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -149,7 +149,7 @@ public class CompaniesControllerIntegrationTest {
         void shouldNotCreateCompanyWhenUserIsAlreadyJoinedCompany() throws Exception {
             Company company = new Company("Test Company", "Test Description", userId.toString());
             mockMvc.perform(post("/companies")
-                            .header("Authorization", "Bearer " + jwtToken)
+                            .header("Authorization", "Bearer " + jwtToken2)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsBytes(company))
                     )

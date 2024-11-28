@@ -11,6 +11,7 @@ public record InvitationsInfo(String id,
                               String invitedBy,
                               Instant expiredAt,
                               Instant createdAt,
-                              Instant updatedAt
+                              Instant updatedAt,
+                              boolean isAdmin
 ) {
 }

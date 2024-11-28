@@ -8,7 +8,6 @@ import java.util.Map;
 public class CustomDataIntegrityViolationMessage {
 
     final static Map<String, String> constraintMessageMap = new HashMap<>(){{
-        put("uc_companies_name", "Company name already exist");
         put("uc_cm_member_role", "User already a company manager");
         put("uc_invitations_email", "Invitation already sent to this email");
         put("uc_project_members", "User already a member of this project");
