@@ -2,7 +2,6 @@ package org.projectmanagement.domain.services;
 
 import org.projectmanagement.application.dto.invitations.InvitationsCreate;
 import org.projectmanagement.application.dto.invitations.InvitationsInfo;
-import org.projectmanagement.domain.entities.Invitations;
 import org.springframework.web.util.UriBuilder;
 
 import java.util.List;
@@ -13,9 +12,9 @@ public interface InvitationsService {
 
     List<InvitationsInfo> getInvitations(String companyId);
 
-    InvitationsInfo acceptInvitation(String token, Long timestamp);
+    InvitationsInfo acceptInvitation(String companyId, String token, Long timestamp);
 
-    Invitations refreshInvitation(String companyId, String invitationId, int days);
+    InvitationsInfo refreshInvitation(String companyId, String invitationId, int days);
 
     boolean revokeInvitation(String companyId, String email);
 }

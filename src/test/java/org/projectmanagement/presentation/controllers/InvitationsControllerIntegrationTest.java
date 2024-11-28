@@ -70,6 +70,8 @@ public class InvitationsControllerIntegrationTest {
     private UUID companyId;
     private UUID adminRoleId;
     private UUID workspaceId;
+    InvitationsDataFactory.InvitationDaoMock invitationDaoMock;
+    InvitationsDataFactory.InvitationDaoMock invitationDaoMockExpired;
 
     @BeforeEach
     public void before() {
@@ -84,7 +86,8 @@ public class InvitationsControllerIntegrationTest {
         workspaceId = workspacesDataFactory.createWorkspace(companyId);
         adminRoleId = rolesDataFactory.createRoleWithAllPermissions(Roles.SystemRoles.ADMIN.getName(), companyId, false);
         companyManagersDataFactory.createCompanyManager(userId, adminRoleId, companyId);
-
+        invitationDaoMock = invitationsDataFactory.createInvitation(companyId, "testuser2@example.com");
+        invitationDaoMockExpired = invitationsDataFactory.createInvitationExpired(companyId, "testuser3@example.com");
 
     }
 
@@ -150,35 +153,6 @@ public class InvitationsControllerIntegrationTest {
         @Test
         void getInvitations() throws Exception {
 
-            Instant expirationDate = Instant.now().minus(1, ChronoUnit.DAYS);
-            InvitationsCreate invitationsCreate = new InvitationsCreate("testuserinvitationemail@test.com",
-                    workspaceId.toString(),
-                    adminRoleId.toString(),
-                    expirationDate, false);
-
-            InvitationsCreate invitationsCreate2 = new InvitationsCreate("testuserinvitationemai2l@test.com",
-                    workspaceId.toString(),
-                    adminRoleId.toString(),
-                    expirationDate, false);
-
-            mockMvc.perform(post("/" + companyId + "/invitations/")
-                            .header("Authorization", "Bearer " + jwtToken)
-                            .contentType("application/json")
-                            .content(objectMapper.writeValueAsString(invitationsCreate)))
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.status").value(GlobalResponse.SUCCESS))
-                    .andExpect(jsonPath("$.data.userEmail").value(invitationsCreate.userEmail()))
-                    .andDo(print());
-
-            mockMvc.perform(post("/" + companyId + "/invitations/")
-                            .header("Authorization", "Bearer " + jwtToken)
-                            .contentType("application/json")
-                            .content(objectMapper.writeValueAsString(invitationsCreate2)))
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.status").value(GlobalResponse.SUCCESS))
-                    .andExpect(jsonPath("$.data.userEmail").value(invitationsCreate2.userEmail()))
-                    .andDo(print());
-
             mockMvc.perform(get("/" + companyId + "/invitations/")
                             .header("Authorization", "Bearer " + jwtToken)
                             .contentType("application/json"))
@@ -198,6 +172,42 @@ public class InvitationsControllerIntegrationTest {
                     .andDo(print());
         }
 
+        @Test
+        void verifyInvitation() throws Exception {
+            mockMvc.perform(get("/" + companyId + "/invitations/verify")
+                            .param("token", invitationDaoMock.invitationId().toString())
+                            .param("timestamp", invitationDaoMock.createAt().toString())
+                            .contentType("application/json"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value(GlobalResponse.SUCCESS))
+                    .andExpect(jsonPath("$.data.userEmail").value(invitationDaoMock.userEmail()))
+                    .andExpect(jsonPath("$.data.companyId").value(companyId.toString()))
+                    .andDo(print());
+        }
+
+        @Test
+        void shouldNotVerifyInvitationIfWrongValue() throws Exception {
+            mockMvc.perform(get("/" + companyId + "/invitations/verify")
+                            .param("token", invitationDaoMock.invitationId().toString())
+                            .param("timestamp", String.valueOf(Instant.now().toEpochMilli()))
+                            .contentType("application/json"))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print());
+
+
+        }
+
+        @Test
+        void shouldNotVerifyInvitationIfExpired() throws Exception {
+            mockMvc.perform(get("/" + companyId + "/invitations/verify")
+                            .param("token", invitationDaoMockExpired.invitationId().toString())
+                            .param("timestamp", invitationDaoMockExpired.createAt().toString())
+                            .contentType("application/json"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(GlobalResponse.ERROR))
+                    .andExpect(jsonPath("$.errors[0].message").value(AppMessage.INVITATION_EXPIRED.getMessage()))
+                    .andDo(print());
+        }
     }
 
     @Nested
@@ -289,7 +299,7 @@ public class InvitationsControllerIntegrationTest {
 
             mockMvc.perform(delete("/" + companyId + "/invitations/")
                             .header("Authorization", "Bearer " + jwtToken)
-                            .param("email",invitationsCreate.userEmail())
+                            .param("email", invitationsCreate.userEmail())
                     )
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(GlobalResponse.SUCCESS))
@@ -319,7 +329,7 @@ public class InvitationsControllerIntegrationTest {
 
             mockMvc.perform(delete("/" + companyId + "/invitations/")
                             .header("Authorization", "Bearer " + jwtToken)
-                            .param("email",invitationsCreate.userEmail())
+                            .param("email", invitationsCreate.userEmail())
                     )
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(GlobalResponse.SUCCESS))
@@ -328,7 +338,7 @@ public class InvitationsControllerIntegrationTest {
 
             mockMvc.perform(delete("/" + companyId + "/invitations/")
                             .header("Authorization", "Bearer " + jwtToken)
-                            .param("email",invitationsCreate.userEmail())
+                            .param("email", invitationsCreate.userEmail())
                     )
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(GlobalResponse.ERROR))
@@ -336,5 +346,5 @@ public class InvitationsControllerIntegrationTest {
                     .andDo(print());
         }
     }
-
 }
+

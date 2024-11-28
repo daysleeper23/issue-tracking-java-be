@@ -27,5 +27,5 @@ public interface ProjectsRepoJpa extends JpaRepository<Projects, UUID> {
             "updated_at = CURRENT_TIMESTAMP " +
             "WHERE workspace_id = :workspaceId",
             nativeQuery = true)
-    int deleteProjectsByWorkspaceId(UUID workspaceId);
+    int deleteProjectsByWorkspaceId(@Param("workspaceId")UUID workspaceId);
 }

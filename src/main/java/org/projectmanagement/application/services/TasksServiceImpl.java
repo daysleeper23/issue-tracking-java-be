@@ -71,18 +71,22 @@ public class TasksServiceImpl implements TasksService {
     }
 
     @Override
-    public List<TasksCompact> getAllTask(String projectId, String assigneeId) {
+    public List<TasksCompact> getAllTaskInProject(String projectId) {
         UserDetails user = SecurityUtils.getCurrentUser();
         Users users =usersRepository.findOneByEmail(user.getUsername())
                 .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, AppMessage.USER_NOT_FOUND));
-        if (projectId != null) {
-            Optional<Projects> project = projectsRepository.findOneById(UUID.fromString(projectId));
-            if (project.isEmpty()) {
-                throw new ApplicationException(AppMessage.PROJECT_NOT_FOUND);
-            }
-            return TasksMapper.mapper.entitiesToCompactDtoList(tasksRepository.findByProjectId(UUID.fromString(projectId)));
+        Optional<Projects> project = projectsRepository.findOneById(UUID.fromString(projectId));
+        if (project.isEmpty()) {
+            throw new ApplicationException(AppMessage.PROJECT_NOT_FOUND);
         }
-        //Todo:only get all tasks from projects that user has access to (custom query planed)
+        return TasksMapper.mapper.entitiesToCompactDtoList(tasksRepository.findByProjectId(UUID.fromString(projectId)));
+    }
+
+    @Override
+    public List<TasksCompact> getAllTaskByUser() {
+        UserDetails user = SecurityUtils.getCurrentUser();
+        Users users =usersRepository.findOneByEmail(user.getUsername())
+                .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, AppMessage.USER_NOT_FOUND));
         return TasksMapper.mapper.entitiesToCompactDtoList(tasksRepository.findAllTasksUserAssociated(users.getId()));
     }
 
@@ -101,7 +105,6 @@ public class TasksServiceImpl implements TasksService {
             throw new ApplicationException(HttpStatus.FORBIDDEN, AppMessage.USER_NOT_IN_PROJECT);
         }
         List<TaskSubscribers> subscribers = subscribersRepository.getSubscriberByTaskId(info.getId());
-        //Move to dto
         return TasksMapper.mapper.entityToInfoDto(info, subscribers);
     }
 

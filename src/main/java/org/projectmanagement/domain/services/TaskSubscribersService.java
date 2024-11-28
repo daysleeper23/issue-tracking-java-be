@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 public interface TaskSubscribersService {
 
-    boolean subscribeToTask(String taskId, String userId);
+    boolean subscribeToTask(String taskId);
 
-    boolean unsubscribeToTask(String taskId, String userId);
+    boolean unsubscribeToTask(String taskId);
 }
