@@ -14,6 +14,7 @@ public interface UsersRepository {
   List<Users> findAllFromCompany(UUID companyId);
 
   Optional<Users> findById(UUID id);
+  Optional<Users> findByIdForCompany(UUID id, UUID companyId);
 
   void deleteById(UUID id);
 

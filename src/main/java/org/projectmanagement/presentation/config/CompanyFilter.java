@@ -24,7 +24,7 @@ public class CompanyFilter extends OncePerRequestFilter {
 
             System.out.println("Filtering --- Company ID: " + companyId);
             if (companyId.equals("companies") || companyId.equals("auth")) {
-                System.out.println("Company ID is companies or auth");
+                System.out.println("By passing company check for COMPANIES or AUTH!!!");
                 filterChain.doFilter(request, response);
                 return;
             }

@@ -31,6 +31,10 @@ public class UsersRepoImpl implements UsersRepository {
         return jpaRepo.findById(id);
     }
 
+    public Optional<Users> findByIdForCompany(UUID id, UUID companyId) {
+        return jpaRepo.findByIdForCompany(id, companyId);
+    }
+
     public void deleteById(UUID id) {
         jpaRepo.deleteById(id);
     }

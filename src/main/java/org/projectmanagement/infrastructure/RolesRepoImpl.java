@@ -30,6 +30,10 @@ public class RolesRepoImpl implements RolesRepository {
         return jpaRepo.findById(id);
     }
 
+    public Optional<Roles> findByIdForCompany(UUID id, UUID companyId) {
+        return jpaRepo.findByIdForCompany(id, companyId);
+    }
+
     public void deleteById(UUID id) {
         jpaRepo.deleteById(id);
     }

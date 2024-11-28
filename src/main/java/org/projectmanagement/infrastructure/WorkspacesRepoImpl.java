@@ -26,6 +26,10 @@ public class WorkspacesRepoImpl implements WorkspacesRepository {
         return jpaRepo.findById(id);
     }
 
+    public Optional<Workspaces> findByIdForCompany(UUID id, UUID companyId) {
+        return jpaRepo.findByIdForCompany(id, companyId);
+    }
+
     public List<Workspaces> findAllWorkspaces(UUID companyId) {
         return jpaRepo.findAllByCompanyId(companyId);
     }
