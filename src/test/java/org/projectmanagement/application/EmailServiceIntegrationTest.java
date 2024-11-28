@@ -25,13 +25,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
-
-import java.io.IOException;
 import java.time.Instant;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.from;
+
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -66,13 +63,12 @@ public class EmailServiceIntegrationTest {
         emailService.sendInvitationEmail("email_integration_test@localhost",uriBuilder ,invitationMailBody);
         greenMail.waitForIncomingEmail(1);
 
-        await().atMost(60*60, SECONDS).untilAsserted(() -> {
+        await().atMost(2, SECONDS).untilAsserted(() -> {
             MimeMessage[] receivedMessages = greenMail.getReceivedMessages();
             assertEquals(1, receivedMessages.length);
             MimeMessage receivedMessage = receivedMessages[0];
             assertEquals("Invitation to join project management system", receivedMessage.getSubject());
-            assertEquals("email_integration_test@localhost ", receivedMessage.getFrom());
-
+            assertEquals("tester", GreenMailUtil.getAddressList(receivedMessage.getFrom()));
         });
     }
 

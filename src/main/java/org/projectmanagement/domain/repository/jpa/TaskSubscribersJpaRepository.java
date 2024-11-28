@@ -5,6 +5,7 @@ import org.projectmanagement.domain.entities.TaskSubscribers;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,10 +14,12 @@ public interface TaskSubscribersJpaRepository extends JpaRepository<TaskSubscrib
 
     List<TaskSubscribers> findByTaskId(UUID taskId);
 
+    @Query(value = "SELECT * FROM task_subscribers WHERE task_id =:taskId and user_id =:userId and is_del = false",
+            nativeQuery = true)
     TaskSubscribers findByTaskIdAndUserId(UUID taskId, UUID userId);
 
     @Modifying
-    @Query(value = "Update task_subscribers SET is_del = 1 WHERE task_id =:taskId and user_id =:userId",
+    @Query(value = "Update task_subscribers SET is_del = true WHERE task_id =:taskId and user_id =:userId",
             nativeQuery = true)
-    boolean deleteByTaskIdAndUserId(UUID taskId, UUID userId);
+    int deleteByTaskIdAndUserId(@Param("taskId")UUID taskId,@Param("userId") UUID userId);
 }

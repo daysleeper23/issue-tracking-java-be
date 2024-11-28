@@ -177,9 +177,6 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET,"/{companyId}/invitations/").hasAuthority("COMPANY_UPDATE")
                     .requestMatchers(HttpMethod.PUT,"/{companyId}/invitations/{invitationId}").hasAuthority("COMPANY_UPDATE")
                     .requestMatchers(HttpMethod.DELETE,"/{companyId}/invitations/{invitationId}").hasAuthority("COMPANY_UPDATE")
-                        //TODO: add authority for when tasks permissions are added
-                    .requestMatchers("/{companyId}/task/**").authenticated()
-
 //                    .requestMatchers("/**").permitAll()
                     .anyRequest().authenticated()
 

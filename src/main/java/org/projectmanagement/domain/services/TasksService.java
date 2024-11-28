@@ -14,7 +14,9 @@ public interface TasksService {
 
     TasksInfo updateTask(String taskId, TasksUpdate dto);
 
-    List<TasksCompact> getAllTask(String projectId, String assigneeId);
+    List<TasksCompact> getAllTaskByUser();
+
+    List<TasksCompact> getAllTaskInProject(String projectId);
 
     TasksInfo getTaskInfo(String taskId);
 

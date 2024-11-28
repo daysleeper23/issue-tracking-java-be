@@ -2,10 +2,7 @@ package org.projectmanagement.application.dto.tasks;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.Value;
+import lombok.*;
 import org.projectmanagement.application.utils.validation.annotation.EnumValidation;
 import org.projectmanagement.application.utils.validation.annotation.NullOrNotBlank;
 import org.projectmanagement.domain.enums.DefaultStatus;
@@ -13,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class TasksUpdate {

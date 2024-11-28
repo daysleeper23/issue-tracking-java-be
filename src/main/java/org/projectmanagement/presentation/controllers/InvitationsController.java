@@ -42,16 +42,17 @@ public class InvitationsController {
     return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.getInvitations(companyId)));
     }
 
-    @PutMapping("/verify")
-    public ResponseEntity<GlobalResponse<InvitationsInfo>> acceptInvitation(
+    @GetMapping("/verify")
+    public ResponseEntity<GlobalResponse<InvitationsInfo>> verifyToken(
+            @PathVariable String companyId,
             @RequestParam("token") String token,
             @RequestParam("timestamp") Long timestamp
     ) {
-        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.acceptInvitation(token,timestamp)));
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), invitationsService.acceptInvitation(companyId,token,timestamp)));
     }
 
     @PutMapping("/{invitationId}")
-    public ResponseEntity<GlobalResponse<Invitations>> refreshInvitations(
+    public ResponseEntity<GlobalResponse<InvitationsInfo>> refreshInvitations(
             @PathVariable @UUID String companyId,
             @PathVariable @UUID String invitationId,
             @RequestParam(value = "extend", required = false, defaultValue = "1") int days

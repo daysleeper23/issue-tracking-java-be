@@ -18,5 +18,5 @@ public interface TaskSubscribersRepository {
 
     TaskSubscribers getSubscriberByTaskIdAndUserId(UUID taskId, UUID userId);
 
-    boolean deleteByTaskIdAndUserId(UUID taskId, UUID userId);
+    int deleteByTaskIdAndUserId(UUID taskId, UUID userId);
 }
