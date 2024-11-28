@@ -14,7 +14,7 @@ WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
 
-COPY .env /app/
+#COPY .env /app/
 
 EXPOSE 8080
 
