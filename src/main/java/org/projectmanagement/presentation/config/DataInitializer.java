@@ -45,6 +45,11 @@ public class DataInitializer {
     private final UUID project1Id = UUID.fromString("d9b2efea-9447-49a2-b904-f3be8261f8d2");
     private final UUID project2Id = UUID.fromString("4863b61b-f2ac-488d-b80f-68748cd0978b");
 
+    private final UUID invitation1Id = UUID.fromString("47c4ee2c-4d56-450b-afbe-6efaa800944e");
+    private final UUID invitation2Id = UUID.fromString("3302b5f9-a749-4a09-a737-2faf9d4243a3");
+    private final String invitingEmail1 = "invite-email1@fs19java.com";
+    private final String invitingEmail2 = "invite-email2@fs19java.com";
+
     public DataInitializer(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -57,6 +62,7 @@ public class DataInitializer {
             initializeRolesPermissions();
             initializeWorkspacesAndMemberRoles();
             initializeProjectsAndMembers();
+            initializeInvitations();
         };
     }
 
@@ -108,8 +114,11 @@ public class DataInitializer {
         jdbcTemplate.update(sql, workspaceManagerRoleId, "Workspace Manager", true, false, companyId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
         jdbcTemplate.update(sql, memberRoleId, "Member", true, false, companyId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
 
-        sql = "DELETE FROM roles_permissions WHERE role_id IN (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, adminRoleId, companyManagerRoleId, workspaceManagerRoleId, memberRoleId);
+//        sql = "DELETE FROM roles_permissions WHERE role_id IN (?, ?, ?, ?)";
+//        jdbcTemplate.update(sql, adminRoleId, companyManagerRoleId, workspaceManagerRoleId, memberRoleId);
+
+        sql = "DELETE FROM roles_permissions";
+        jdbcTemplate.update(sql);
 
         sql = "DELETE FROM permissions WHERE name <> ?";
         jdbcTemplate.update(sql, "READONLY");
@@ -256,5 +265,16 @@ public class DataInitializer {
         jdbcTemplate.update(sql, UUID.randomUUID(), Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), project2Id, true, member3Id);
         jdbcTemplate.update(sql, UUID.randomUUID(), Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), project2Id, true, member4Id);
         jdbcTemplate.update(sql, UUID.randomUUID(), Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), project2Id, true, workspaceManager2Id);
+    }
+
+    public void initializeInvitations() {
+        String sql = "DELETE FROM invitations WHERE company_id = ?";
+        jdbcTemplate.update(sql, companyId);
+
+        sql = "INSERT INTO invitations (id, created_at, updated_at, company_id, user_email, expired_at, invited_by, is_admin, is_del, role_id, workspace_id)" +
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        // Example Data
+        jdbcTemplate.update(sql, invitation1Id, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), companyId, invitingEmail1, Timestamp.from(Instant.now()), ownerId, false, false, workspaceManagerRoleId, workspace1Id);
     }
 }

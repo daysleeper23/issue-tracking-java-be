@@ -36,18 +36,10 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<GlobalResponse<OwnersRead>> createOwner(@RequestBody @Valid OwnersCreate owner) {
-        Optional<OwnersRead> createdUser = usersService.createOwner(owner);
-        return createdUser
-            .map(ownersRead ->
-                new ResponseEntity<>(
-                    new GlobalResponse<>(HttpStatus.CREATED.value(), ownersRead)
-                    , HttpStatus.CREATED)
-            )
-            .orElseGet(() ->
-                new ResponseEntity<>(
-                    new GlobalResponse<>(HttpStatus.BAD_REQUEST.value(), null), HttpStatus.BAD_REQUEST
-                )
-            );
+        OwnersRead createdUser = usersService.createOwner(owner);
+        return new ResponseEntity<>(
+                    new GlobalResponse<>(HttpStatus.CREATED.value(), createdUser)
+                    , HttpStatus.CREATED);
     }
 
     @PostMapping("/login")

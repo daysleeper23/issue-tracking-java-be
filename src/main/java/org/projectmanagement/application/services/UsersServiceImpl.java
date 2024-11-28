@@ -11,6 +11,7 @@ import org.projectmanagement.application.exceptions.AppMessage;
 import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.domain.entities.*;
 import org.projectmanagement.domain.repository.*;
+import org.projectmanagement.domain.services.InvitationsService;
 import org.projectmanagement.domain.services.UsersService;
 
 import org.projectmanagement.presentation.config.JwtHelper;
@@ -29,6 +30,7 @@ public class UsersServiceImpl implements UsersService {
     private final CompanyManagersRepository cmRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtHelper jwtHelper;
+    private final InvitationsService invitationsService;
 
     @Autowired
     public UsersServiceImpl(
@@ -39,6 +41,7 @@ public class UsersServiceImpl implements UsersService {
             , CompanyManagersRepository cmr
             , PasswordEncoder pe
             , JwtHelper jwth
+            , InvitationsService is
     ) {
         this.usersRepository = usersRepository;
         this.wmrRepository = wmrr;
@@ -47,6 +50,7 @@ public class UsersServiceImpl implements UsersService {
         this.passwordEncoder = pe;
         this.jwtHelper = jwth;
         this.workspacesRepo = wr;
+        this.invitationsService = is;
     }
 
     public Optional<UsersRead> login(UsersLogin user) {
@@ -73,7 +77,7 @@ public class UsersServiceImpl implements UsersService {
         return jwtHelper.generateToken(new UsersLogin(existingUser.get().getEmail(), existingUser.get().getPasswordHash()));
     }
 
-    public Optional<OwnersRead> createOwner(OwnersCreate ownersCreate) {
+    public OwnersRead createOwner(OwnersCreate ownersCreate) {
         //check if the email is already in use
         Optional<Users> existingUser = usersRepository.findOneByEmail(ownersCreate.email());
         if (existingUser.isPresent()) {
@@ -97,7 +101,7 @@ public class UsersServiceImpl implements UsersService {
                         .build()
         );
 
-        return Optional.of(new OwnersRead(newUser.getId(), newUser.getName(), newUser.getEmail()));
+        return new OwnersRead(newUser.getId(), newUser.getName(), newUser.getEmail());
     }
 
     @Transactional
@@ -122,8 +126,8 @@ public class UsersServiceImpl implements UsersService {
         }
 
         //check if the role is a member role or workspace manager role
-        if (role.get().getName().equals(Roles.SystemRoles.ADMIN)
-            || role.get().getName().equals(Roles.SystemRoles.COMPANY_MANAGER)
+        if (role.get().getName().equals(Roles.SystemRoles.ADMIN.getName())
+            || role.get().getName().equals(Roles.SystemRoles.COMPANY_MANAGER.getName())
         ) {
             throw new ApplicationException(AppMessage.WMR_INVALID_ROLE);
         }
@@ -153,6 +157,9 @@ public class UsersServiceImpl implements UsersService {
                         .build()
         );
 
+        //revoke invitation after user creation
+        invitationsService.revokeInvitation(companyId.toString(), user.email());
+
         return UsersMapper.toUsersRead(newUser);
     }
 
@@ -172,8 +179,8 @@ public class UsersServiceImpl implements UsersService {
         }
 
         //check if the role is a super admin role or company managers role
-        if (!role.get().getName().equals(Roles.SystemRoles.ADMIN)
-            && !role.get().getName().equals(Roles.SystemRoles.COMPANY_MANAGER)
+        if (!role.get().getName().equals(Roles.SystemRoles.ADMIN.getName())
+            && !role.get().getName().equals(Roles.SystemRoles.COMPANY_MANAGER.getName())
         ) {
             throw new ApplicationException(AppMessage.USER_INVALID_ROLE_FOR_ADMIN);
         }
@@ -202,6 +209,9 @@ public class UsersServiceImpl implements UsersService {
                 .roleId(user.roleId())
                 .build()
         );
+
+        //revoke invitation after user creation
+        invitationsService.revokeInvitation(companyId.toString(), user.email());
 
         return UsersMapper.toUsersRead(newUser);
     }

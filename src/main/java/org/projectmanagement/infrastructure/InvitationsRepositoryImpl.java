@@ -28,7 +28,7 @@ public class InvitationsRepositoryImpl implements InvitationsRepository {
 
     @Override
     public Invitations findByIdAndCompanyId(String invitationId, String companyId) {
-        return jpa.findByIdAndCompanyId(UUID.fromString(invitationId), UUID.fromString(companyId)).orElse(null);
+        return jpa.findByIdAndCompanyId(invitationId, UUID.fromString(companyId)).orElse(null);
     }
 
     @Override
