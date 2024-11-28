@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.Map;
 import java.util.UUID;
 
 @SpringBootTest
@@ -123,7 +124,7 @@ public class AuthorizationIntegrationTest {
                 mockMvc.perform(get("/" + companyId + "/workspaces")
                         .header("Authorization", "Bearer " + adminToken))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.data", hasSize(1)))
+                    .andExpect(jsonPath("$.data", hasSize(3)))
                     .andDo(print());
             }
 
@@ -241,22 +242,22 @@ public class AuthorizationIntegrationTest {
                 mockMvc.perform(patch("/" + companyId + "/" + workspace1Id + "/projects/" + project1Id)
                     .header("Authorization", "Bearer " + adminToken)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content("" +
-                        "{\"name\": \"Project Test Authorization Updated\"" +
-                        ", \"description\": \"Description 1 Updated\" " +
-                        ", \"leaderId\": \"" + member1Id + "\"" +
-                        ", \"workspaceId\": \"" + workspace1Id + "\" }"))
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "name", "Project Test Authorization Updated",
+                        "description", "Description 1 Updated",
+                        "leaderId", member1Id,
+                        "workspaceId", workspace1Id
+                    ))))
                     .andExpect(status().isOk())
                     .andDo(print());
 
                 mockMvc.perform(patch("/" + companyId + "/" + workspace2Id + "/projects/" + project2Id)
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("" +
-                            "{\"name\": \"Project Test Authorization 2 Updated\"" +
-                            ", \"description\": \"Description 2 Updated\" " +
-                            ", \"leaderId\": \"" + member2Id + "\"" +
-                            ", \"workspaceId\": \"" + workspace2Id + "\" }"))
+                        .content(objectMapper.writeValueAsString(Map.of(
+                            "name", "Project Test Authorization 2 Updated",
+                            "description", "Description 2 Updated"
+                        ))))
                     .andExpect(status().isOk())
                     .andDo(print());
             }
@@ -266,7 +267,7 @@ public class AuthorizationIntegrationTest {
                 //TODO: Should we return NoContent or Ok?
                 mockMvc.perform(delete("/" + companyId + "/" + workspace1Id + "/projects/" + project1Id)
                     .header("Authorization", "Bearer " + adminToken))
-                    .andExpect(status().isNoContent())
+                    .andExpect(status().isOk())
                     .andDo(print());
 
                 mockMvc.perform(get("/" + companyId + "/" + workspace1Id + "/projects")
@@ -277,7 +278,7 @@ public class AuthorizationIntegrationTest {
 
                 mockMvc.perform(delete("/" + companyId + "/" + workspace2Id + "/projects/" + project2Id)
                         .header("Authorization", "Bearer " + adminToken))
-                    .andExpect(status().isNoContent())
+                    .andExpect(status().isOk())
                     .andDo(print());
 
                 mockMvc.perform(get("/" + companyId + "/" + workspace2Id + "/projects")

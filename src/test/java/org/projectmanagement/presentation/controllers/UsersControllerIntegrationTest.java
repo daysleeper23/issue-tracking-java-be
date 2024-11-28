@@ -69,6 +69,9 @@ public class UsersControllerIntegrationTest {
     private final UUID adminRoleId2 = UUID.fromString("0c3bc98e-f22b-42ae-875e-0ab066ecd327");
     private final UUID memberRoleId = UUID.fromString("238bb464-40fb-4bdb-8d10-d2e97c4849a7");
     private final UUID companyManagerRoleId = UUID.fromString("1e8cdfaa-4bd4-4111-866f-6292f26d97f1");
+    private final UUID workspaceManagerRoleId = UUID.fromString("22bd7e77-7830-46c7-943a-c706b174c390");
+
+    private final String invitingEmail1 = "invite-email1@fs19java.com";
 
     @Autowired
     private JwtHelper jwtHelper;
@@ -100,6 +103,7 @@ public class UsersControllerIntegrationTest {
         dataInitializer.initializeRolesPermissions();
         dataInitializer.initializeWorkspacesAndMemberRoles();
         dataInitializer.initializeProjectsAndMembers();
+        dataInitializer.initializeInvitations();
     }
 
     @AfterEach
@@ -107,6 +111,71 @@ public class UsersControllerIntegrationTest {
         usersDataFactory.deleteAll();
         rolesDataFactory.deleteAll();
         companiesDataFactory.deleteAll();
+    }
+
+    @Nested
+    class CreateOwner {
+        @Test
+        void shouldCreateOwnerWithProperData() throws Exception {
+            mockMvc.perform(post("/auth/signup")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "name", "John Doe",
+                        "password", "passwordHash",
+                        "email", "jd@fs19java.com"
+                    ))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.data.id").isNotEmpty())
+                .andExpect(jsonPath("$.data.name").value("John Doe"))
+                .andExpect(jsonPath("$.data.email").value("jd@fs19java.com"))
+                .andDo(print());
+        }
+
+        @Test
+        void shouldNotCreateOwnerWithBlankName() throws Exception {
+            mockMvc.perform(post("/auth/signup")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "name", "",
+                        "password", "passwordHash",
+                        "email", "jd@fs19java.com"
+                    ))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.errors[0].message").value("name cannot be blank"))
+                .andDo(print());
+        }
+
+        @Test
+        void shouldNotCreateOwnerWithBlankEmail() throws Exception {
+            mockMvc.perform(post("/auth/signup")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "name", "John Doe",
+                        "password", "passwordHash",
+                        "email", ""
+                    ))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.errors[0].message").value("email cannot be blank"))
+                .andDo(print());
+        }
+
+        @Test
+        void shouldNotCreateOwnerWithBlankPassword() throws Exception {
+            mockMvc.perform(post("/auth/signup")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "name", "John Doe",
+                        "password", "",
+                        "email", "jd@fs19java.com"
+                    ))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.errors[0].message").value("password cannot be blank"))
+                .andDo(print());
+        }
     }
 
     @Nested
@@ -118,7 +187,7 @@ public class UsersControllerIntegrationTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(Map.of(
                         "name", "Another CM",
-                        "email", "another-cm@fs19java.com",
+                        "email", invitingEmail1,
                         "password", "passwordHash",
                         "isActive", "true",
                         "roleId", companyManagerRoleId
@@ -136,7 +205,7 @@ public class UsersControllerIntegrationTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(Map.of(
                         "name", "Another Admin",
-                        "email", "another-admin@fs19java.com",
+                        "email", invitingEmail1,
                         "password", "passwordHash",
                         "isActive", "true",
                         "roleId", adminRoleId2
@@ -172,12 +241,12 @@ public class UsersControllerIntegrationTest {
         void shouldCreateMemberWithProperData() throws Exception {
             UsersCreate user = new UsersCreate(
                     "John Doe",
-                    "jdoe@test.com",
+                    invitingEmail1,
                     "passwordHash",
                     null,
                     true,
                     workspace1Id,
-                    memberRoleId
+                    workspaceManagerRoleId
             );
             String userJson = objectMapper.writeValueAsString(user);
 

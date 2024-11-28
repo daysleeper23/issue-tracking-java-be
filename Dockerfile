@@ -18,5 +18,4 @@ COPY .env /app/
 
 EXPOSE 8080
 
-#CMD ["mvn spring-boot:run"]
 ENTRYPOINT ["sh", "-c", "java -jar /app/app.jar"]
