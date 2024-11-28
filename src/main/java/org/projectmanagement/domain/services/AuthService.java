@@ -6,7 +6,7 @@ import org.projectmanagement.application.dto.users.UsersLogin;
 import java.util.Optional;
 
 public interface AuthService {
-    Optional<UsersAuth> login(UsersLogin user);
+    UsersAuth login(UsersLogin user);
 
     String authenticate(UsersLogin user);
 }

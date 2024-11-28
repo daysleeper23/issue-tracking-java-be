@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.projectmanagement.application.dto.users.UsersCreate;
 import org.projectmanagement.application.dto.users.UsersRead;
 import org.projectmanagement.application.dto.users.UsersUpdate;
+import org.projectmanagement.application.exceptions.AppMessage;
 import org.projectmanagement.domain.services.UsersService;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,14 +45,11 @@ public class UsersController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GlobalResponse<UsersRead>> getUserById(@PathVariable UUID id) {
-        UsersRead user = usersService.getUserById(id).orElse(null);
-
-        if (user == null) {
-            return new ResponseEntity<>(
-                    new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), null), HttpStatus.NOT_FOUND
-            );
-        }
+    public ResponseEntity<GlobalResponse<UsersRead>> getUserById(
+        @PathVariable UUID id
+        , @PathVariable UUID companyId
+    ) {
+        UsersRead user = usersService.getUserByIdForCompany(id, companyId);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), user), HttpStatus.OK);
     }
 
@@ -79,22 +77,21 @@ public class UsersController {
     @PatchMapping("/{id}")
     public ResponseEntity<GlobalResponse<UsersRead>> updateUser(
             @PathVariable UUID id
+            , @PathVariable UUID companyId
             , @RequestBody @Valid UsersUpdate user) {
-        UsersRead updatedUser = usersService.updateUser(id, user);
+        UsersRead updatedUser = usersService.updateUser(id, companyId, user);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedUser), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<GlobalResponse<String>> deleteUser(@PathVariable UUID id) {
-        Boolean ok = usersService.deleteUser(id);
-        return ok
-                ? new ResponseEntity<>(
-                    new GlobalResponse<>(HttpStatus.OK.value(), "User deleted"),
-                    HttpStatus.OK
-                )
-                : new ResponseEntity<>(
-                    new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), null),
-                    HttpStatus.NOT_FOUND
-                );
+    public ResponseEntity<GlobalResponse<String>> deleteUser(
+        @PathVariable UUID id
+        , @PathVariable UUID companyId
+    ) {
+        usersService.deleteUser(id, companyId);
+        return new ResponseEntity<>(
+            new GlobalResponse<>(HttpStatus.OK.value(), AppMessage.USER_DELETED.getMessage()),
+            HttpStatus.OK
+        );
     }
 }

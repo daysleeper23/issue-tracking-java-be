@@ -16,6 +16,15 @@ public interface UsersRepoJpa extends JpaRepository<Users, UUID> {
 
     @Query(value = "SELECT * " +
             "FROM users u " +
+            "WHERE u.id = :id " +
+            "AND u.company_id = :companyId " +
+            "AND u.is_deleted = false"
+        , nativeQuery = true
+    )
+    Optional<Users> findByIdForCompany(@Param("id") UUID id, @Param("companyId") UUID companyId);
+
+    @Query(value = "SELECT * " +
+            "FROM users u " +
             "WHERE u.company_id = :companyId " +
             "AND u.is_deleted = false"
         , nativeQuery = true)

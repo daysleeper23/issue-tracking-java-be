@@ -1,7 +1,6 @@
 package org.projectmanagement.domain.repository;
 
 import org.projectmanagement.domain.entities.Roles;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +11,7 @@ public interface RolesRepository {
     Roles save(Roles role);
 
     Optional<Roles> findById(UUID id);
+    Optional<Roles> findByIdForCompany(UUID id, UUID companyId);
 
     Optional<Roles> findByExactName(String name, UUID companyId);
 

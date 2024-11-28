@@ -31,6 +31,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException, java.io.IOException {
         try {
+            String bypassEndpoints = request.getRequestURI().split("/")[1];
+            if (bypassEndpoints.equals("companies") || bypassEndpoints.equals("auth")) {
+                System.out.println("By passing token check for COMPANIES or AUTH!!!");
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            System.out.println("Not bypassing token check because not COMPANIES or AUTH!!!");
+
             String authHeader = request.getHeader("Authorization");
             String token = null;
             String username = null;
@@ -53,17 +62,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             }
-
-            // Check if the user has access on the company
-//            String companyId = request.getRequestURI().split("/")[1];
-//            System.out.println("Company ID: " + companyId);
-//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//            if (authentication != null
-//                && !authentication.getAuthorities().stream().anyMatch(
-//                a -> a.getAuthority().equals(companyId.toString()))
-//            ) {
-//                throw new AccessDeniedException("Access denied");
-//            }
 
             filterChain.doFilter(request, response);
         } catch (AccessDeniedException e) {

@@ -9,26 +9,22 @@ import jakarta.transaction.Transactional;
 import org.projectmanagement.application.dto.users.*;
 import org.projectmanagement.application.exceptions.AppMessage;
 import org.projectmanagement.application.exceptions.ApplicationException;
-import org.projectmanagement.domain.entities.CompanyManagers;
-import org.projectmanagement.domain.entities.Users;
-import org.projectmanagement.domain.entities.WorkspacesMembersRoles;
-import org.projectmanagement.domain.exceptions.ResourceNotFoundException;
-import org.projectmanagement.domain.repository.CompanyManagersRepository;
-import org.projectmanagement.domain.repository.UsersRepository;
-import org.projectmanagement.domain.repository.WorkspacesMembersRolesRepository;
+import org.projectmanagement.domain.entities.*;
+import org.projectmanagement.domain.repository.*;
 import org.projectmanagement.domain.services.UsersService;
 
 import org.projectmanagement.presentation.config.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.swing.text.html.Option;
 
 @Service
 public class UsersServiceImpl implements UsersService {
 
     private final UsersRepository usersRepository;
+    private final WorkspacesRepository workspacesRepo;
+    private final RolesRepository rolesRepo;
     private final WorkspacesMembersRolesRepository wmrRepository;
     private final CompanyManagersRepository cmRepository;
     private final PasswordEncoder passwordEncoder;
@@ -37,6 +33,8 @@ public class UsersServiceImpl implements UsersService {
     @Autowired
     public UsersServiceImpl(
             UsersRepository usersRepository
+            , WorkspacesRepository wr
+            , RolesRepository rr
             , WorkspacesMembersRolesRepository wmrr
             , CompanyManagersRepository cmr
             , PasswordEncoder pe
@@ -44,9 +42,11 @@ public class UsersServiceImpl implements UsersService {
     ) {
         this.usersRepository = usersRepository;
         this.wmrRepository = wmrr;
+        this.rolesRepo = rr;
         this.cmRepository = cmr;
         this.passwordEncoder = pe;
         this.jwtHelper = jwth;
+        this.workspacesRepo = wr;
     }
 
     public Optional<UsersRead> login(UsersLogin user) {
@@ -80,7 +80,6 @@ public class UsersServiceImpl implements UsersService {
             throw new ApplicationException(AppMessage.EMAIL_ALREADY_IN_USE);
         }
 
-        System.out.println("Creating owner with pwd: " + ownersCreate.password());
         //hash the password
         String hashedPassword = passwordEncoder.encode(ownersCreate.password());
 
@@ -101,12 +100,30 @@ public class UsersServiceImpl implements UsersService {
         return Optional.of(new OwnersRead(newUser.getId(), newUser.getName(), newUser.getEmail()));
     }
 
+    @Transactional
     public UsersRead createUser(UsersCreate user, UUID companyId) {
 
         //check if the email is already in use
         Optional<Users> existingUser = usersRepository.findOneByEmail(user.email());
         if (existingUser.isPresent()) {
             throw new ApplicationException(AppMessage.EMAIL_ALREADY_IN_USE);
+        }
+
+        //check if the workspace exists in the company
+        Optional<Workspaces> ws = workspacesRepo.findByIdForCompany(user.workspaceId(), companyId);
+        if (ws.isEmpty()) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, AppMessage.WORKSPACE_NOT_FOUND);
+        }
+
+        //check if the role exists in the company
+        Optional<Roles> role = rolesRepo.findByIdForCompany(user.roleId(), companyId);
+        if (role.isEmpty()) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, AppMessage.ROLE_NOT_FOUND);
+        }
+
+        //check if the role is a member role or workspace manager role
+        if (role.get().getName().equals("Super Admin") || role.get().getName().equals("Company Managers")) {
+            throw new ApplicationException(AppMessage.WMR_INVALID_ROLE);
         }
 
         //create a new user
@@ -137,12 +154,24 @@ public class UsersServiceImpl implements UsersService {
         return UsersMapper.toUsersRead(newUser);
     }
 
+    @Transactional
     public UsersRead createAdminOrCompanyManagers(UsersCreate user, UUID companyId) {
 
         //check if the email is already in use
         Optional<Users> existingUser = usersRepository.findOneByEmail(user.email());
         if (existingUser.isPresent()) {
             throw new ApplicationException(AppMessage.EMAIL_ALREADY_IN_USE);
+        }
+
+        //check if the role exists in the company
+        Optional<Roles> role = rolesRepo.findByIdForCompany(user.roleId(), companyId);
+        if (role.isEmpty()) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, AppMessage.ROLE_NOT_FOUND);
+        }
+
+        //check if the role is a super admin role or company managers role
+        if (!role.get().getName().equals("Super Admin") && !role.get().getName().equals("Company Managers")) {
+            throw new ApplicationException(AppMessage.USER_INVALID_ROLE_FOR_ADMIN);
         }
 
         //create a new user
@@ -163,22 +192,22 @@ public class UsersServiceImpl implements UsersService {
 
         //add the member to the company managers list
         cmRepository.save(
-                CompanyManagers.builder()
-                        .companyId(companyId)
-                        .userId(newUser.getId())
-                        .roleId(user.roleId())
-                        .build()
+            CompanyManagers.builder()
+                .companyId(companyId)
+                .userId(newUser.getId())
+                .roleId(user.roleId())
+                .build()
         );
 
         return UsersMapper.toUsersRead(newUser);
     }
 
-    public Optional<UsersRead> getUserById(UUID id) {
-        Optional<Users> user = usersRepository.findById(id);
+    public UsersRead getUserByIdForCompany(UUID id, UUID companyId) {
+        Optional<Users> user = usersRepository.findByIdForCompany(id, companyId);
         if (user.isEmpty()) {
-            throw new ApplicationException(AppMessage.USER_NOT_FOUND);
+            throw new ApplicationException(HttpStatus.NOT_FOUND, AppMessage.USER_NOT_FOUND);
         }
-        return Optional.of(UsersMapper.toUsersRead(user.get()));
+        return UsersMapper.toUsersRead(user.get());
     }
 
     public List<UsersRead> getAllUsersOfCompany(UUID companyId) {
@@ -187,10 +216,10 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Transactional
-    public Boolean deleteUser(UUID id) {
-        Optional<Users> userFromDb = usersRepository.findById(id);
-        if (userFromDb.isEmpty()) {
-            throw new ApplicationException(AppMessage.USER_NOT_FOUND);
+    public Boolean deleteUser(UUID id, UUID companyId) {
+        Optional<Users> existingUser = usersRepository.findByIdForCompany(id, companyId);
+        if (existingUser.isEmpty()) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, AppMessage.USER_NOT_FOUND);
         }
 
         usersRepository.deleteById(id);
@@ -198,11 +227,10 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Transactional
-    public UsersRead updateUser(UUID id, UsersUpdate user) {
-        Optional<Users> existingUser = usersRepository.findById(id);
-
+    public UsersRead updateUser(UUID id, UUID companyId, UsersUpdate user) {
+        Optional<Users> existingUser = usersRepository.findByIdForCompany(id, companyId);
         if (existingUser.isEmpty()) {
-            throw new ApplicationException(AppMessage.USER_NOT_FOUND);
+            throw new ApplicationException(HttpStatus.NOT_FOUND, AppMessage.USER_NOT_FOUND);
         }
 
         UsersMapper.INSTANCE.toUsersFromUsersUpdate(user, existingUser.get());
