@@ -31,6 +31,7 @@ import java.time.Instant;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.from;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -69,11 +70,9 @@ public class EmailServiceIntegrationTest {
             MimeMessage[] receivedMessages = greenMail.getReceivedMessages();
             assertEquals(1, receivedMessages.length);
             MimeMessage receivedMessage = receivedMessages[0];
-            MimeMessageParser parser = new MimeMessageParser(receivedMessage);
-            String getText = Jsoup.parse(parser.parse().getHtmlContent()).text();
-            Document doc = Jsoup.parse(parser.parse().getHtmlContent());
-            log.info("Email received: {}", getText);
-            log.info("Email received: {}", parser.parse().getHtmlContent());
+            assertEquals("Invitation to join project management system", receivedMessage.getSubject());
+            assertEquals("email_integration_test@localhost ", receivedMessage.getFrom());
+
         });
     }
 
