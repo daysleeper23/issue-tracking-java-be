@@ -11,9 +11,11 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "companies", uniqueConstraints = {
-        @UniqueConstraint(name = "uc_companies_name",columnNames = {"name"})
-})
+@Table(name = "companies"
+//    , uniqueConstraints = {
+//        @UniqueConstraint(name = "uc_companies_name",columnNames = {"name"})
+//}
+)
 @SuperBuilder
 @ToString
 @NoArgsConstructor

@@ -25,10 +25,10 @@ public interface InvitationsJpaRepository extends JpaRepository<Invitations, UUI
     @Query(value ="UPDATE invitations SET is_del=true WHERE id =:id",nativeQuery = true)
     int removeInvitation(@Param("id")UUID id);
 
-    @Query(value = "SELECT * FROM invitations t WHERE t.id =:id " +
+    @Query(value = "SELECT * FROM invitations t WHERE t.user_email =:id " +
             "AND t.company_id =:companyId " +
-            "AND t.is_del=false",
+            "AND t.is_del = false",
             nativeQuery = true)
-    Optional<Invitations> findByIdAndCompanyId(@Param("id")UUID id,@Param("companyId")UUID companyId);
+    Optional<Invitations> findByIdAndCompanyId(@Param("id")String id,@Param("companyId")UUID companyId);
 
 }

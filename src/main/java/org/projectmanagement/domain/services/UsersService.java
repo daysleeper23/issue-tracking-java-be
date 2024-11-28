@@ -12,7 +12,7 @@ public interface UsersService {
     Optional<UsersRead> login(UsersLogin user);
     String authenticate(UsersLogin user);
 
-    Optional<OwnersRead> createOwner(OwnersCreate user);
+    OwnersRead createOwner(OwnersCreate user);
     UsersRead createUser(UsersCreate user, UUID companyId);
     UsersRead createAdminOrCompanyManagers(UsersCreate user, UUID companyId);
 

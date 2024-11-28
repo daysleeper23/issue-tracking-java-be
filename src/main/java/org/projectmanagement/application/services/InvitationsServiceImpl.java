@@ -91,7 +91,7 @@ public class InvitationsServiceImpl implements InvitationsService {
 
     @Override
     public Invitations refreshInvitation(String companyId, String invitationId, int days) {
-        Invitations invitations = invitationsRepository.findByIdAndCompanyId(invitationId,companyId);
+        Invitations invitations = invitationsRepository.findByIdAndCompanyId(invitationId, companyId);
         if (invitations == null || !invitations.getCompanyId().toString().equals(companyId)) {
             throw new ApplicationException(AppMessage.INVITATION_NOT_FOUND);
         }
@@ -104,7 +104,7 @@ public class InvitationsServiceImpl implements InvitationsService {
     @Transactional
     @Override
     public boolean revokeInvitation(String companyId, String invitationId) {
-        Invitations invitations = invitationsRepository.findByIdAndCompanyId(invitationId,companyId);
+        Invitations invitations = invitationsRepository.findByIdAndCompanyId(invitationId, companyId);
         if ( invitations == null|| !invitations.getCompanyId().toString().equals(companyId)) {
             throw new ApplicationException(AppMessage.INVITATION_NOT_FOUND);
         }

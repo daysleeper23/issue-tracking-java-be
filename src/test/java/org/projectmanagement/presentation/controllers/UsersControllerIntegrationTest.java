@@ -110,6 +110,71 @@ public class UsersControllerIntegrationTest {
     }
 
     @Nested
+    class CreateOwner {
+        @Test
+        void shouldCreateOwnerWithProperData() throws Exception {
+            mockMvc.perform(post("/auth/signup")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "name", "John Doe",
+                        "password", "passwordHash",
+                        "email", "jd@fs19java.com"
+                    ))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.data.id").isNotEmpty())
+                .andExpect(jsonPath("$.data.name").value("John Doe"))
+                .andExpect(jsonPath("$.data.email").value("jd@fs19java.com"))
+                .andDo(print());
+        }
+
+        @Test
+        void shouldNotCreateOwnerWithBlankName() throws Exception {
+            mockMvc.perform(post("/auth/signup")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "name", "",
+                        "password", "passwordHash",
+                        "email", "jd@fs19java.com"
+                    ))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.errors[0].message").value("name cannot be blank"))
+                .andDo(print());
+        }
+
+        @Test
+        void shouldNotCreateOwnerWithBlankEmail() throws Exception {
+            mockMvc.perform(post("/auth/signup")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "name", "John Doe",
+                        "password", "passwordHash",
+                        "email", ""
+                    ))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.errors[0].message").value("email cannot be blank"))
+                .andDo(print());
+        }
+
+        @Test
+        void shouldNotCreateOwnerWithBlankPassword() throws Exception {
+            mockMvc.perform(post("/auth/signup")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "name", "John Doe",
+                        "password", "",
+                        "email", "jd@fs19java.com"
+                    ))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("error"))
+                .andExpect(jsonPath("$.errors[0].message").value("password cannot be blank"))
+                .andDo(print());
+        }
+    }
+
+    @Nested
     class CreateAdminOrCompanyManagers {
         @Test
         void shouldCreateCompanyManagersWithProperData() throws Exception {
