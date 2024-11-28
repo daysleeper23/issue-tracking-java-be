@@ -62,6 +62,7 @@ public class DataInitializer {
             initializeRolesPermissions();
             initializeWorkspacesAndMemberRoles();
             initializeProjectsAndMembers();
+            initializeInvitations();
         };
     }
 
@@ -113,8 +114,11 @@ public class DataInitializer {
         jdbcTemplate.update(sql, workspaceManagerRoleId, "Workspace Manager", true, false, companyId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
         jdbcTemplate.update(sql, memberRoleId, "Member", true, false, companyId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
 
-        sql = "DELETE FROM roles_permissions WHERE role_id IN (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, adminRoleId, companyManagerRoleId, workspaceManagerRoleId, memberRoleId);
+//        sql = "DELETE FROM roles_permissions WHERE role_id IN (?, ?, ?, ?)";
+//        jdbcTemplate.update(sql, adminRoleId, companyManagerRoleId, workspaceManagerRoleId, memberRoleId);
+
+        sql = "DELETE FROM roles_permissions";
+        jdbcTemplate.update(sql);
 
         sql = "DELETE FROM permissions WHERE name <> ?";
         jdbcTemplate.update(sql, "READONLY");
@@ -263,14 +267,14 @@ public class DataInitializer {
         jdbcTemplate.update(sql, UUID.randomUUID(), Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), project2Id, true, workspaceManager2Id);
     }
 
-    void initializeInvitations() {
+    public void initializeInvitations() {
         String sql = "DELETE FROM invitations WHERE company_id = ?";
         jdbcTemplate.update(sql, companyId);
 
         sql = "INSERT INTO invitations (id, created_at, updated_at, company_id, user_email, expired_at, invited_by, is_admin, is_del, role_id, workspace_id)" +
-            " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Example Data
-        jdbcTemplate.update(sql, invitation1Id, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), companyId, invitingEmail1, Timestamp.from(Instant.now()), ownerId, false, workspaceManagerRoleId, workspace1Id);
+        jdbcTemplate.update(sql, invitation1Id, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()), companyId, invitingEmail1, Timestamp.from(Instant.now()), ownerId, false, false, workspaceManagerRoleId, workspace1Id);
     }
 }

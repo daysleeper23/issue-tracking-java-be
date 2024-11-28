@@ -13,7 +13,7 @@ public interface UsersService {
     String authenticate(UsersLogin user);
 
     OwnersRead createOwner(OwnersCreate user);
-    UsersRead createUser(UsersCreate user, UUID companyId);
+UsersRead createUser(UsersCreate user, UUID companyId);
     UsersRead createAdminOrCompanyManagers(UsersCreate user, UUID companyId);
 
     UsersRead getUserByIdForCompany(UUID id, UUID companyId);

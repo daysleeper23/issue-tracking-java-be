@@ -126,8 +126,8 @@ public class UsersServiceImpl implements UsersService {
         }
 
         //check if the role is a member role or workspace manager role
-        if (role.get().getName().equals(Roles.SystemRoles.ADMIN)
-            || role.get().getName().equals(Roles.SystemRoles.COMPANY_MANAGER)
+        if (role.get().getName().equals(Roles.SystemRoles.ADMIN.getName())
+            || role.get().getName().equals(Roles.SystemRoles.COMPANY_MANAGER.getName())
         ) {
             throw new ApplicationException(AppMessage.WMR_INVALID_ROLE);
         }
@@ -179,8 +179,8 @@ public class UsersServiceImpl implements UsersService {
         }
 
         //check if the role is a super admin role or company managers role
-        if (!role.get().getName().equals(Roles.SystemRoles.ADMIN)
-            && !role.get().getName().equals(Roles.SystemRoles.COMPANY_MANAGER)
+        if (!role.get().getName().equals(Roles.SystemRoles.ADMIN.getName())
+            && !role.get().getName().equals(Roles.SystemRoles.COMPANY_MANAGER.getName())
         ) {
             throw new ApplicationException(AppMessage.USER_INVALID_ROLE_FOR_ADMIN);
         }
