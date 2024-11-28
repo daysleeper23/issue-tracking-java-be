@@ -295,6 +295,21 @@ public class UsersControllerIntegrationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].message").value(AppMessage.WMR_INVALID_ROLE.getMessage()))
                 .andDo(print());
+
+            mockMvc.perform(post("/" + company2Id + "/members")
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(Map.of(
+                        "name", "John Doe",
+                        "email", "jdoe2@fs19java.com",
+                        "password", "passwordHash",
+                        "isActive", "true",
+                        "workspaceId", workspace1Id,
+                        "roleId", companyManagerRoleId
+                    ))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value(AppMessage.WMR_INVALID_ROLE.getMessage()))
+                .andDo(print());
         }
     }
 
