@@ -65,18 +65,6 @@ public class EmailServiceIntegrationTest {
         emailService.sendInvitationEmail("email_integration_test@localhost",uriBuilder ,invitationMailBody);
         greenMail.waitForIncomingEmail(1);
 
-//        try (final Store store = greenMail.getImap().createStore()) {
-//            store.connect("tester", "password");
-//            final Folder inbox = store.getFolder("INBOX");
-//            inbox.open(Folder.READ_ONLY);
-//            assertThat(inbox.getMessageCount()).isEqualTo(1);
-//            MimeMessage message = (MimeMessage) inbox.getMessage(1);
-//            log.info("Email received: {}");
-//            assertThat(message.getSubject()).isEqualTo("Invitation to join project management system");
-//        } catch (MessagingException e) {
-//            log.error("Error while reading email", e);
-//        }
-
         await().atMost(60*60, SECONDS).untilAsserted(() -> {
             MimeMessage[] receivedMessages = greenMail.getReceivedMessages();
             assertEquals(1, receivedMessages.length);
