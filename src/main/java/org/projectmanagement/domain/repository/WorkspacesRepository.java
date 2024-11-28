@@ -18,4 +18,5 @@ public interface WorkspacesRepository {
     Workspaces save(Workspaces build);
 
     Optional<Workspaces> findById(UUID id);
+    Optional<Workspaces> findByIdForCompany(UUID id, UUID companyId);
 }

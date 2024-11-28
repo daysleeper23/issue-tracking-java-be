@@ -16,6 +16,15 @@ public interface RolesRepoJpa extends JpaRepository<Roles, UUID> {
 
     @Query(value = "SELECT * " +
             "FROM Roles r " +
+            "WHERE r.id = :id " +
+            "AND r.company_id = :companyId " +
+            "AND r.is_deleted = false"
+            , nativeQuery = true
+    )
+    Optional<Roles> findByIdForCompany(@Param("id") UUID id, @Param("companyId") UUID companyId);
+
+    @Query(value = "SELECT * " +
+            "FROM Roles r " +
             "WHERE r.name = :name " +
             "AND r.company_id = :companyId " +
             "AND r.is_deleted = false"

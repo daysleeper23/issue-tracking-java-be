@@ -16,6 +16,15 @@ public interface WorkspacesRepoJpa extends JpaRepository<Workspaces, UUID> {
 
     @Query(value = "SELECT * " +
                     "FROM Workspaces " +
+                    "WHERE id = :id " +
+                    "AND company_id = :companyId " +
+                    "AND is_deleted = false"
+            , nativeQuery = true
+    )
+    Optional<Workspaces> findByIdForCompany(@Param("id") UUID id, @Param("companyId") UUID companyId);
+
+    @Query(value = "SELECT * " +
+                    "FROM Workspaces " +
                     "WHERE company_id = :companyId " +
                     "AND is_deleted = false"
             , nativeQuery = true

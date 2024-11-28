@@ -16,11 +16,11 @@ public interface UsersService {
     UsersRead createUser(UsersCreate user, UUID companyId);
     UsersRead createAdminOrCompanyManagers(UsersCreate user, UUID companyId);
 
-    Optional<UsersRead> getUserById(UUID id);
+    UsersRead getUserByIdForCompany(UUID id, UUID companyId);
 
     List<UsersRead> getAllUsersOfCompany(UUID companyId);
 
-    UsersRead updateUser(UUID id, UsersUpdate user);
+    UsersRead updateUser(UUID id, UUID companyId, UsersUpdate user);
 
-    Boolean deleteUser(UUID id);
+    Boolean deleteUser(UUID id, UUID companyId);
 }

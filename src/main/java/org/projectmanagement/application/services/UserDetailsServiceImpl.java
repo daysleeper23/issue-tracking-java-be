@@ -1,7 +1,10 @@
 package org.projectmanagement.application.services;
 
+import org.projectmanagement.application.exceptions.AppMessage;
+import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.domain.entities.Users;
 import org.projectmanagement.domain.repository.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,14 +45,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Users> user = usersRepository.findOneByEmail(username);
         if (user.isEmpty()) {
-            throw new UsernameNotFoundException("User not found");
+            throw new ApplicationException(HttpStatus.NOT_FOUND, AppMessage.USER_NOT_FOUND);
         }
 
         //retrieve user roles and permissions
         List<GrantedAuthority> authorities = new ArrayList<>();
 
         //add company id as permission
-        authorities.add(user.get().getCompanyId()::toString);
+        if (user.get().getCompanyId() != null) {
+            authorities.add(user.get().getCompanyId()::toString);
+        }
 
         //add permissions if user is company managers or admin
         populateCompanyPermissions(authorities, user.get().getId());

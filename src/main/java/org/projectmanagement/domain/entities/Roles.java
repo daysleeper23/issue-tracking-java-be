@@ -53,7 +53,9 @@ public class Roles extends BaseEntity {
     @RequiredArgsConstructor
     public enum SystemRoles {
         ADMIN("Super Admin"),
-        COMPANY_MANAGER("Company Manager");
+        COMPANY_MANAGER("Company Manager"),
+        WORKSPACE_MANAGER("Workspace Manager"),
+        MEMBER("Member");
 
         private final String name;
 

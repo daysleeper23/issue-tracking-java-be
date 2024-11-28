@@ -53,29 +53,18 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<GlobalResponse<UsersAuth>> login(@RequestBody @Valid UsersLogin loginInfo) {
         System.out.println("Login attempt " + loginInfo.getEmail() + " " + loginInfo.getPassword());
-        try {
-            Authentication authentication = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginInfo.getEmail(),
-                            loginInfo.getPassword()
-                    )
-            );
-            Optional<UsersAuth> loggedInUser = authService.login(loginInfo);
-            return loggedInUser
-                    .map(usersRead ->
-                            new ResponseEntity<>(
-                                    new GlobalResponse<>(HttpStatus.OK.value(), usersRead)
-                                    , HttpStatus.OK)
-                    )
-                    .orElseGet(() ->
-                            new ResponseEntity<>(
-                                    new GlobalResponse<>(HttpStatus.UNAUTHORIZED.value(), null)
-                                    , HttpStatus.UNAUTHORIZED)
-                    );
-        } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(
-                    new GlobalResponse<>(HttpStatus.UNAUTHORIZED.value(), null)
-                    , HttpStatus.UNAUTHORIZED);
-        }
+        Authentication authentication = authManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                loginInfo.getEmail(),
+                loginInfo.getPassword()
+            )
+        );
+
+        System.out.println("Authentication OK!!");
+
+        UsersAuth loggedInUser = authService.login(loginInfo);
+        return new ResponseEntity<>(
+            new GlobalResponse<>(HttpStatus.OK.value(), loggedInUser)
+            , HttpStatus.OK);
     }
 }
