@@ -104,9 +104,9 @@ public class DataInitializer {
 
         // Roles Data
         jdbcTemplate.update(sql, adminRoleId, "Super Admin", true, false, companyId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
-        jdbcTemplate.update(sql, companyManagerRoleId, "Company Managers", true, false, companyId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
-        jdbcTemplate.update(sql, workspaceManagerRoleId, "Workspace Managers", true, false, companyId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
-        jdbcTemplate.update(sql, memberRoleId, "Members", true, false, companyId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
+        jdbcTemplate.update(sql, companyManagerRoleId, "Company Manager", true, false, companyId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
+        jdbcTemplate.update(sql, workspaceManagerRoleId, "Workspace Manager", true, false, companyId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
+        jdbcTemplate.update(sql, memberRoleId, "Member", true, false, companyId, Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
 
         sql = "DELETE FROM roles_permissions WHERE role_id IN (?, ?, ?, ?)";
         jdbcTemplate.update(sql, adminRoleId, companyManagerRoleId, workspaceManagerRoleId, memberRoleId);
