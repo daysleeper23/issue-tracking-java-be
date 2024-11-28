@@ -1,8 +1,6 @@
 package org.projectmanagement.domain.repository;
 
 import org.projectmanagement.domain.entities.Workspaces;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
