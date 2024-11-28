@@ -13,9 +13,9 @@ public interface InvitationsService {
 
     List<InvitationsInfo> getInvitations(String companyId);
 
-    boolean acceptInvitation(String token, Long timestamp);
+    InvitationsInfo acceptInvitation(String token, Long timestamp);
 
     Invitations refreshInvitation(String companyId, String invitationId, int days);
 
-    boolean revokeInvitation(String companyId, String invitationId);
+    boolean revokeInvitation(String companyId, String email);
 }

@@ -10,8 +10,8 @@ public record InvitationsInfo(String id,
                               String roleId,
                               String invitedBy,
                               Instant expiredAt,
-                              Boolean isAdmin,
                               Instant createdAt,
-                              Instant updatedAt
+                              Instant updatedAt,
+                              boolean isAdmin
 ) {
 }

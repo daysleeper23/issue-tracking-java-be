@@ -81,12 +81,21 @@ public class InvitationsServiceImpl implements InvitationsService {
     }
 
     @Override
-    public boolean acceptInvitation(String token, Long timestamp) {
+    public InvitationsInfo acceptInvitation(String token, Long timestamp) {
         //Todo: Implement the following checks
         // + Check if the invitation is still valid
         // + Check if the user is already in a company
-//        return invitationsRepository.acceptInvitation(token, timestamp);
-        return false;
+        Invitations invitation = invitationsRepository.findById(token);
+        if (invitation == null) {
+            throw new ApplicationException(AppMessage.INVITATION_NOT_FOUND);
+        }
+        if (invitation.getCreatedAt().toEpochMilli() != timestamp) {
+            throw new ApplicationException(AppMessage.INVITATION_NOT_FOUND);
+        }
+        if (invitation.getExpiredAt().isBefore(Instant.now())) {
+            throw new ApplicationException(AppMessage.INVITATION_EXPIRED);
+        }
+        return InvitationsMapper.mapper.entityToInvitationInfo(invitation);
     }
 
     @Override
@@ -103,8 +112,8 @@ public class InvitationsServiceImpl implements InvitationsService {
 
     @Transactional
     @Override
-    public boolean revokeInvitation(String companyId, String invitationId) {
-        Invitations invitations = invitationsRepository.findByIdAndCompanyId(invitationId,companyId);
+    public boolean revokeInvitation(String companyId, String email) {
+        Invitations invitations = invitationsRepository.findByEmailAndCompanyId(email, UUID.fromString(companyId));
         if ( invitations == null|| !invitations.getCompanyId().toString().equals(companyId)) {
             throw new ApplicationException(AppMessage.INVITATION_NOT_FOUND);
         }

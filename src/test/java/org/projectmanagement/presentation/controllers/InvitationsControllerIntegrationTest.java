@@ -287,8 +287,10 @@ public class InvitationsControllerIntegrationTest {
 
             String id = JsonPath.read(result.getResponse().getContentAsString(), "$.data.id");
 
-            mockMvc.perform(delete("/" + companyId + "/invitations/" + id)
-                            .header("Authorization", "Bearer " + jwtToken))
+            mockMvc.perform(delete("/" + companyId + "/invitations/")
+                            .header("Authorization", "Bearer " + jwtToken)
+                            .param("email",invitationsCreate.userEmail())
+                    )
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(GlobalResponse.SUCCESS))
                     .andExpect(jsonPath("$.data").value("true"))
@@ -315,15 +317,19 @@ public class InvitationsControllerIntegrationTest {
 
             String id = JsonPath.read(result.getResponse().getContentAsString(), "$.data.id");
 
-            mockMvc.perform(delete("/" + companyId + "/invitations/" + id)
-                            .header("Authorization", "Bearer " + jwtToken))
+            mockMvc.perform(delete("/" + companyId + "/invitations/")
+                            .header("Authorization", "Bearer " + jwtToken)
+                            .param("email",invitationsCreate.userEmail())
+                    )
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(GlobalResponse.SUCCESS))
                     .andExpect(jsonPath("$.data").value("true"))
                     .andDo(print());
 
-            mockMvc.perform(delete("/" + companyId + "/invitations/" + id)
-                            .header("Authorization", "Bearer " + jwtToken))
+            mockMvc.perform(delete("/" + companyId + "/invitations/")
+                            .header("Authorization", "Bearer " + jwtToken)
+                            .param("email",invitationsCreate.userEmail())
+                    )
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(GlobalResponse.ERROR))
                     .andExpect(jsonPath("$.errors[0].message").value(AppMessage.INVITATION_NOT_FOUND.getMessage()))

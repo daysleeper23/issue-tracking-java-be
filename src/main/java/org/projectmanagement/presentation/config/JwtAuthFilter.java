@@ -32,7 +32,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         throws ServletException, IOException, java.io.IOException {
         try {
             String bypassEndpoints = request.getRequestURI().split("/")[1];
-            if (bypassEndpoints.equals("companies") || bypassEndpoints.equals("auth")) {
+            if (bypassEndpoints.equals("auth")) {
                 System.out.println("By passing token check for COMPANIES or AUTH!!!");
                 filterChain.doFilter(request, response);
                 return;

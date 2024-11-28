@@ -22,6 +22,7 @@ public enum AppMessage {
     INVITATION_NOT_FOUND("Invitation not found"),
     INVITATION_ALREADY_SENT("Invitation already sent"),
     INVITATION_STILL_VALID("Invitation still valid"),
+    INVITATION_EXPIRED("Invitation expired"),
     //Mail Service errors
     MAIL_SEND_ERROR("Error sending mail"),
     //Workspace errors

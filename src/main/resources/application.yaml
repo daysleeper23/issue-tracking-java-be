@@ -1,11 +1,14 @@
+logging:
+  level:
+    org:
+      springframework: debug
 server:
     port: 8080
 spring:
   application:
     name: "project-management-service"
-  spring:
-    config:
-      import: "optional:file:.env"
+  config:
+    import: "optional:file:.env"
   profiles:
     active: "dev"
   web:

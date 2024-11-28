@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-//@RequestMapping("/companies")
 @RestController
 @RequiredArgsConstructor
 public class CompaniesController {
@@ -27,23 +26,23 @@ public class CompaniesController {
                 HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{companyId}")
     public ResponseEntity<GlobalResponse<Companies>> getCompany(
-            @PathVariable String id
+            @PathVariable String companyId
     ){
         return new ResponseEntity<>(
-                new GlobalResponse<>(HttpStatus.OK.value(), companiesService.getCompany(id)),
+                new GlobalResponse<>(HttpStatus.OK.value(), companiesService.getCompany(companyId)),
                 HttpStatus.OK
         );
     }
 
-    @PutMapping("{id}")
+    @PutMapping("{companyId}")
     public ResponseEntity<GlobalResponse<Companies>> updateCompany(
-            @PathVariable String id,
+            @PathVariable String companyId,
             @RequestBody @Valid Company dto
     ){
         return new ResponseEntity<>(
-                new GlobalResponse<>(HttpStatus.OK.value(), companiesService.updateCompany(id,dto)),
+                new GlobalResponse<>(HttpStatus.OK.value(), companiesService.updateCompany(companyId,dto)),
                 HttpStatus.OK
         );
     }

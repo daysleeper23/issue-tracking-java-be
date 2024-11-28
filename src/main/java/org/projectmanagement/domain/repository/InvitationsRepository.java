@@ -18,4 +18,5 @@ public interface InvitationsRepository {
     boolean removeInvitation(UUID invitationId);
 
     Invitations findByEmailAndCompanyId(String email, UUID companyId);
+
 }
