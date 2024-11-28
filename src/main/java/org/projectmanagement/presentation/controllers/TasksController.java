@@ -8,38 +8,39 @@ import org.projectmanagement.application.dto.tasks.TasksCompact;
 import org.projectmanagement.application.dto.tasks.TasksCreate;
 import org.projectmanagement.application.dto.tasks.TasksUpdate;
 import org.projectmanagement.application.dto.tasks.TasksInfo;
-import org.projectmanagement.domain.entities.Tasks;
 import org.projectmanagement.domain.services.TaskSubscribersService;
 import org.projectmanagement.domain.services.TasksService;
 import org.projectmanagement.presentation.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/{companyId}/tasks")
+@RequestMapping("/{companyId}")
 @RequiredArgsConstructor
-//Todo: Roles and Privileges check
 public class TasksController {
 
     private final TasksService tasksService;
     private final TaskSubscribersService subscribersService;
 
-
-    @PostMapping
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication,#projectId,{'PROJECT_UPDATE_ONE','PROJECT_UPDATE_ALL'})")
+    @PostMapping("/{projectId}/tasks")
     public ResponseEntity<GlobalResponse<TasksInfo>> addTask(
-           @RequestBody @Valid TasksCreate dto) {
+            @PathVariable(name = "projectId") String projectId,
+           @RequestBody @Valid TasksCreate dto
+    ) {
         TasksInfo createdTask = tasksService.addTask(dto);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), createdTask), null, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{taskId}")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication,#projectId,{'PROJECT_UPDATE_ONE','PROJECT_UPDATE_ALL'})")
+    @PutMapping("/{projectId}/tasks/{taskId}")
     public ResponseEntity<GlobalResponse<TasksInfo>> updateTask(
+            @PathVariable String projectId,
             @PathVariable String taskId,
             @RequestBody @Valid TasksUpdate dto
     ){
@@ -47,40 +48,51 @@ public class TasksController {
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), updatedTask));
     }
 
-    @GetMapping
-    public ResponseEntity<GlobalResponse<List<TasksCompact>>> getTasks(
-            @RequestParam(value = "projectId", required = false) @org.hibernate.validator.constraints.UUID String projectId,
-            @RequestParam(value = "assigneeId", required = false) @org.hibernate.validator.constraints.UUID String assigneeId
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication,#projectId,{'PROJECT_READ_ALL','PROJECT_READ_ONE'})")
+    @GetMapping("/tasks")
+    public ResponseEntity<GlobalResponse<List<TasksCompact>>> getAllTaskAssociated(
 
     ) {
-        List<TasksCompact> listTasks = tasksService.getAllTask(projectId, assigneeId);
+        List<TasksCompact> listTasks = tasksService.getAllTaskByUser();
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), listTasks));
     }
 
-    @GetMapping("/{taskId}")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication,#projectId,{'PROJECT_READ_ALL','PROJECT_READ_ONE'})")
+    @GetMapping("/{projectId}/tasks")
+    public ResponseEntity<GlobalResponse<List<TasksCompact>>> getTasksInProject(
+            @PathVariable(value = "projectId", required = false) @org.hibernate.validator.constraints.UUID String projectId
+    ) {
+        List<TasksCompact> listTasks = tasksService.getAllTaskInProject(projectId);
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), listTasks));
+    }
+
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication,#projectId,{'PROJECT_READ_ALL','PROJECT_READ_ONE'})")
+    @GetMapping("/{projectId}/tasks/{taskId}")
     public ResponseEntity<GlobalResponse<TasksInfo>> getTaskInfo(
             @PathVariable @NotBlank(message = "Task id must not be empty") String taskId
     ){
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), tasksService.getTaskInfo(taskId)));
     }
 
-    @PutMapping("/{taskId}/subscribe")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication,#projectId,{'PROJECT_READ_ALL','PROJECT_READ_ONE'})")
+    @PutMapping("/{projectId}/tasks/{taskId}/subscribe")
     public ResponseEntity<GlobalResponse<Boolean>> subscribeToTask(
             @PathVariable @NotBlank(message = "Task id must not be empty") String taskId
     ) {
-        String userId = UUID.randomUUID().toString();
-        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), subscribersService.subscribeToTask(taskId, userId)));
+
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), subscribersService.subscribeToTask(taskId )));
     }
 
-    @PutMapping("/{taskId}/unsubscribe")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication,#projectId,{'PROJECT_READ_ALL','PROJECT_READ_ONE'})")
+    @PutMapping("/{projectId}/tasks/{taskId}/unsubscribe")
     public ResponseEntity<GlobalResponse<Boolean>> unsubscribeToTask(
-            @PathVariable @NotBlank(message = "Task id must not be empty") String taskId,
-            @RequestParam(value = "userId") @NotBlank(message = "User id must not be empty") String userId
+            @PathVariable @NotBlank(message = "Task id must not be empty") String taskId
     ) {
-        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), subscribersService.unsubscribeToTask(taskId, userId)));
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), subscribersService.unsubscribeToTask(taskId)));
     }
 
-    @DeleteMapping("/{taskId}")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication,#projectId,{'PROJECT_UPDATE_ONE','PROJECT_UPDATE_ALL'})")
+    @DeleteMapping("/{projectId}/tasks/{taskId}")
     public ResponseEntity<GlobalResponse<Boolean>> archiveTask(
             @PathVariable @NotBlank(message = "Task id must not be empty") String taskId
     ) {

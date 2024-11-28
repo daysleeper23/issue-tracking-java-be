@@ -81,11 +81,11 @@ public class InvitationsServiceImpl implements InvitationsService {
     }
 
     @Override
-    public InvitationsInfo acceptInvitation(String token, Long timestamp) {
+    public InvitationsInfo acceptInvitation(String companyId, String token, Long timestamp) {
         //Todo: Implement the following checks
         // + Check if the invitation is still valid
         // + Check if the user is already in a company
-        Invitations invitation = invitationsRepository.findById(token);
+        Invitations invitation = invitationsRepository.findByIdAndCompanyId(token, companyId);
         if (invitation == null) {
             throw new ApplicationException(AppMessage.INVITATION_NOT_FOUND);
         }
@@ -99,7 +99,7 @@ public class InvitationsServiceImpl implements InvitationsService {
     }
 
     @Override
-    public Invitations refreshInvitation(String companyId, String invitationId, int days) {
+    public InvitationsInfo refreshInvitation(String companyId, String invitationId, int days) {
         Invitations invitations = invitationsRepository.findByIdAndCompanyId(invitationId,companyId);
         if (invitations == null || !invitations.getCompanyId().toString().equals(companyId)) {
             throw new ApplicationException(AppMessage.INVITATION_NOT_FOUND);
@@ -107,7 +107,8 @@ public class InvitationsServiceImpl implements InvitationsService {
         if (invitations.getExpiredAt().isAfter(Instant.now())){
             throw new ApplicationException(AppMessage.INVITATION_STILL_VALID);
         }
-        return invitationsRepository.save(invitations.toBuilder().expiredAt(Instant.now().plus(days, ChronoUnit.DAYS)).build());
+        return InvitationsMapper.mapper.entityToInvitationInfo(invitationsRepository
+                .save(invitations.toBuilder().expiredAt(Instant.now().plus(days, ChronoUnit.DAYS)).build()));
     }
 
     @Transactional

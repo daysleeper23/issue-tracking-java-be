@@ -59,6 +59,9 @@ public class SecurityConfig {
                     //Allow GET requests on /companies
                     .requestMatchers(HttpMethod.GET,"/{companyId}").hasAuthority("COMPANY_READ")
 
+                    //Allow POST requests on /companies
+                    .requestMatchers(HttpMethod.POST,"/companies").authenticated()
+
                     //Allow PUT requests on /companies
                     .requestMatchers(HttpMethod.PUT,"/{companyId}").hasAuthority("COMPANY_UPDATE")
 
@@ -174,11 +177,6 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET,"/{companyId}/invitations/").hasAuthority("COMPANY_UPDATE")
                     .requestMatchers(HttpMethod.PUT,"/{companyId}/invitations/{invitationId}").hasAuthority("COMPANY_UPDATE")
                     .requestMatchers(HttpMethod.DELETE,"/{companyId}/invitations/{invitationId}").hasAuthority("COMPANY_UPDATE")
-                        //TODO: add authority for when tasks permissions are added
-                    .requestMatchers("/{companyId}/task/**").authenticated()
-                    //Allow POST requests on /companies
-                    .requestMatchers(HttpMethod.POST,"/companies").authenticated()
-
 //                    .requestMatchers("/**").permitAll()
                     .anyRequest().authenticated()
 

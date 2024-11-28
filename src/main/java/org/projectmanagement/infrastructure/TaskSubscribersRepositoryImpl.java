@@ -14,7 +14,7 @@ import java.util.UUID;
 @Repository
 public class TaskSubscribersRepositoryImpl implements TaskSubscribersRepository {
 
-    private TaskSubscribersJpaRepository jpaRepository;
+    private final TaskSubscribersJpaRepository jpaRepository;
 
     @Override
     public TaskSubscribers save(TaskSubscribers taskSubscribers) {
@@ -31,7 +31,7 @@ public class TaskSubscribersRepositoryImpl implements TaskSubscribersRepository 
     }
 
     @Override
-    public boolean deleteByTaskIdAndUserId(UUID taskId, UUID userId) {
+    public int deleteByTaskIdAndUserId(UUID taskId, UUID userId) {
         return jpaRepository.deleteByTaskIdAndUserId(taskId, userId);
     }
 

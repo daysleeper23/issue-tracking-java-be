@@ -3,6 +3,7 @@ package org.projectmanagement.domain.repository.jpa;
 import org.projectmanagement.domain.entities.Tasks;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,7 +12,7 @@ public interface TasksJpaRepository extends JpaRepository<Tasks, UUID> {
     @Query(value ="SELECT * FROM tasks t WHERE t.project_id = :projectId",
             nativeQuery = true
     )
-    List<Tasks> findByProjectId(UUID projectId);
+    List<Tasks> findByProjectId(@Param("projectId")UUID projectId);
 
     @Query(value ="SELECT t.id, " +
             "t.name," +
@@ -29,5 +30,5 @@ public interface TasksJpaRepository extends JpaRepository<Tasks, UUID> {
             "WHERE t.assignee_id = :userId OR ts.user_id = :userId",
             nativeQuery = true
     )
-    List<Tasks> findAllTasksUserAssociated(UUID userId);
+    List<Tasks> findAllTasksUserAssociated(@Param("userId")UUID userId);
 }
