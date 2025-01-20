@@ -3,7 +3,7 @@ name: Wake Render Server
 on:
   schedule:
     # Runs every 30 minutes (adjust as needed to keep your server awake)
-    - cron: "*/30 * * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch: # Allows you to trigger manually if needed
 
 jobs:
