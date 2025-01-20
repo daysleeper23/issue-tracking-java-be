@@ -13,6 +13,8 @@ public interface WorkspacesMembersRolesService {
 
     WorkspacesMembersRolesRead getWorkspacesMembersRolesForUser(UUID userId, UUID workspaceId);
 
+    List<WorkspacesMembersRoles> getAllWorkspacesForUser(UUID userId);
+
     List<WorkspacesMembersRolesRead> getMembersRolesForWorkspace(UUID workspaceId);
 
     WorkspacesMembersRolesRead updateWorkspacesMembersRoles(UUID id, UUID workspaceId, WorkspacesMembersRolesCreate newRole);

@@ -18,6 +18,8 @@ public interface TasksService {
 
     List<TasksCompact> getAllTaskInProject(String projectId);
 
+    List<TasksInfo> getAllTaskInWorkspace(String workspaceId);
+
     TasksInfo getTaskInfo(String taskId);
 
     boolean archiveTasks(String taskId);

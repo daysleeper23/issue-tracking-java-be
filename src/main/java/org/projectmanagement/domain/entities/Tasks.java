@@ -30,14 +30,14 @@ public class Tasks extends BaseEntity {
     private UUID id;
 
     @Column(nullable = false)
-    private String name;
+    private String title;
 
     @Column
     private String description;
 
     //Todo: Redundant annotation, remove it after implementing jpa
     @Builder.Default
-    private DefaultStatus status= DefaultStatus.TODO;
+    private DefaultStatus status= DefaultStatus.BACKLOG;
 
     @Column(nullable = false, name = "assignee_id")
     private UUID assigneeId;
@@ -47,6 +47,9 @@ public class Tasks extends BaseEntity {
 
     @Column(nullable = false, name = "project_id")
     private UUID projectId;
+
+    @Column(nullable = false, name = "workspace_id")
+    private UUID workspaceId;
 
     @Column(name = "started_at")
     private Instant startedAt;

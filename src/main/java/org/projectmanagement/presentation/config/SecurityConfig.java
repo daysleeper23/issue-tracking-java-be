@@ -15,6 +15,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.Arrays;
 
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -40,7 +46,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(AbstractHttpConfigurer::disable)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(s ->
                 s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -85,6 +91,10 @@ public class SecurityConfig {
                     //Allow GET requests on /{companyId}/workspaces
                     .requestMatchers(HttpMethod.GET,"/{companyId}/workspaces")
                         .hasAnyAuthority("WORKSPACE_READ_ALL", "WORKSPACE_READ_ONE")
+
+                    //Allow GET requests on /{companyId}/{workspaceId}/tasks
+                    .requestMatchers(HttpMethod.GET,"/{companyId}/{workspaceId}/tasks")
+                    .hasAnyAuthority("WORKSPACE_READ_ALL", "WORKSPACE_READ_ONE")
 
                     //Allow POST requests on /{companyId}/workspaces
                     .requestMatchers(HttpMethod.POST,"/{companyId}/workspaces")
@@ -192,5 +202,17 @@ public class SecurityConfig {
         AuthenticationManagerBuilder amb = http.getSharedObject(AuthenticationManagerBuilder.class);
         amb.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
         return amb.build();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://dancing-selkie-f70674.netlify.app/")); // Add allowed origins
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

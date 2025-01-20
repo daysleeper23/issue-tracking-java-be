@@ -16,7 +16,7 @@ import java.time.Instant;
 @Setter
 public class TasksUpdate {
         @NullOrNotBlank
-        String name;
+        String title;
         String description;
         @Min(value = 0, message = "Priority must be greater than 0")
         @Max(value = 4, message = "Priority must be lesser than 4")
@@ -24,6 +24,7 @@ public class TasksUpdate {
         @EnumValidation(target = DefaultStatus.class)
         String status;
         String assigneeId;
+        String projectId;
         Instant startedAt;
         Instant endedAt;
 }

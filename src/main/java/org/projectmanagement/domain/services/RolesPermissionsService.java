@@ -1,6 +1,7 @@
 package org.projectmanagement.domain.services;
 
 import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsCreate;
+import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsRead;
 import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsUpdate;
 import org.projectmanagement.domain.entities.RolesPermissions;
 
@@ -18,5 +19,5 @@ public interface RolesPermissionsService {
 
     void removePermissionsFromRole(UUID roleId, RolesPermissionsUpdate dto);
 
-    List<RolesPermissions> getAllRolesPermissionsForCompany(UUID companyId);
+    List<RolesPermissionsRead> getAllRolesPermissionsForCompany(UUID companyId);
 }

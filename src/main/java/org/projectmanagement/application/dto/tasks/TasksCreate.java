@@ -16,7 +16,7 @@ import java.time.Instant;
 @JsonIgnoreProperties(ignoreUnknown = false)
 public record TasksCreate(
         @NotBlank(message = "length must greater than 0")
-        String name,
+        String title,
         String description,
         @UUID(message = "must be a valid UUID")
         String projectId,
@@ -25,6 +25,8 @@ public record TasksCreate(
         short priority,
         @EnumValidation(target = DefaultStatus.class)
         String status,
+        @UUID(message = "must be a valid UUID")
+        String workspaceId,
         @UUID(message = "must be a valid UUID")
         String assigneeId,
         Instant startedAt,

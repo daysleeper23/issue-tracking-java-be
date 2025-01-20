@@ -91,7 +91,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         //Check if user is member of a workspace  - concat WORKSPACE_XXX_ONE with workspaceId
         wmrRepository.findByUserId(userId)
             //add permissions if user has roles in some workplaces
-            .ifPresent(wmr ->
+            .forEach(wmr ->
                 rpRepository.findAllPermissionsOfRoleByRoleId(wmr.getRoleId()).forEach(rp ->
                     pjRepository.findById(rp).ifPresent(p -> {
                         //check if the permission is already added

@@ -22,7 +22,7 @@ public class WorkspacesMembersRolesRepoImpl implements WorkspacesMembersRolesRep
         return jpaRepo.save(workspacesMembersRoles);
     }
 
-    public Optional<WorkspacesMembersRoles> findByUserId(UUID userId) {
+    public List<WorkspacesMembersRoles> findByUserId(UUID userId) {
         return jpaRepo.findByUserId(userId);
     }
 

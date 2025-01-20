@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface WorkspacesMembersRolesRepository {
     WorkspacesMembersRoles save(WorkspacesMembersRoles workspacesMembersRoles);
 
-    Optional<WorkspacesMembersRoles> findByUserId(UUID userId);
+    List<WorkspacesMembersRoles> findByUserId(UUID userId);
     Optional<WorkspacesMembersRoles> findByUserIdAndWorkspaceId(UUID userId, UUID workspaceId);
 
     List<WorkspacesMembersRoles> findAllByWorkspaceId(UUID workspaceId);

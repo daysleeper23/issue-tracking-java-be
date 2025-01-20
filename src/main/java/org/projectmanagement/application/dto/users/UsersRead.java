@@ -12,6 +12,7 @@ public record UsersRead (
     Boolean isActive,
     UUID companyId,
     Boolean isOwner,
+    String avatarUrl,
     Instant updatedAt,
     Instant createdAt
 ) {

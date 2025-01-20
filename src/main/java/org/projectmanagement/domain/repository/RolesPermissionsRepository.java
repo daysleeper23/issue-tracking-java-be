@@ -1,6 +1,7 @@
 package org.projectmanagement.domain.repository;
 
 
+import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsRead;
 import org.projectmanagement.domain.entities.RolesPermissions;
 
 import java.util.List;
@@ -18,6 +19,6 @@ public interface RolesPermissionsRepository {
 
     List<RolesPermissions> findAllRolePermissionsByRoleId(UUID roleId);
 
-    List<RolesPermissions> findAllRolesPermissionsForCompany(UUID companyId);
+    List<RolesPermissionsRead> findAllRolesPermissionsForCompany(UUID companyId);
 
 }

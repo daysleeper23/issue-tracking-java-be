@@ -24,7 +24,9 @@ public record UsersCreate (
 
     UUID workspaceId,
 
-    UUID roleId
+    UUID roleId,
+
+    String avatarUrl
 )
     {
 }

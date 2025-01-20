@@ -111,7 +111,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<Tasks> projectRelatedTasks = tasksRepository.findByProjectId(id);
 
-        projectRelatedTasks.forEach(task -> task.setStatus(DefaultStatus.ARCHIVED));
+        projectRelatedTasks.forEach(task -> task.setStatus(DefaultStatus.CANCELLED));
 
         tasksRepository.saveAll(projectRelatedTasks);
 

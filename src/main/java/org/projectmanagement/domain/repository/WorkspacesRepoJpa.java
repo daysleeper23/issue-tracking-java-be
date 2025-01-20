@@ -49,4 +49,6 @@ public interface WorkspacesRepoJpa extends JpaRepository<Workspaces, UUID> {
                     "AND is_deleted = false"
             , nativeQuery = true)
     int updateById(@Param("id") UUID id, @Param("workspace") Workspaces workspace);
+
+    Optional<Workspaces> findById(UUID id);
 }

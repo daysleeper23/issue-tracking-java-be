@@ -2,6 +2,7 @@ package org.projectmanagement.presentation.controllers;
 
 import jakarta.validation.Valid;
 import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsCreate;
+import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsRead;
 import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsUpdate;
 import org.projectmanagement.domain.entities.RolesPermissions;
 import org.projectmanagement.domain.services.RolesPermissionsService;
@@ -24,8 +25,8 @@ public class RolesPermissionsController {
     }
 
     @GetMapping
-    public ResponseEntity<GlobalResponse<List<RolesPermissions>>> getAllRolesPermissions(@PathVariable UUID companyId) {
-        List<RolesPermissions> rolesPermissions = rolesPermissionsService.getAllRolesPermissionsForCompany(companyId);
+    public ResponseEntity<GlobalResponse<List<RolesPermissionsRead>>> getAllRolesPermissions(@PathVariable UUID companyId) {
+        List<RolesPermissionsRead> rolesPermissions = rolesPermissionsService.getAllRolesPermissionsForCompany(companyId);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), rolesPermissions), HttpStatus.OK);
     }
 

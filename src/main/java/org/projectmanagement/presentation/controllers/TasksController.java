@@ -57,12 +57,22 @@ public class TasksController {
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), listTasks));
     }
 
-    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication,#projectId,{'PROJECT_READ_ALL','PROJECT_READ_ONE'})")
-    @GetMapping("/{projectId}/tasks")
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #projectId,{'PROJECT_READ_ALL','PROJECT_READ_ONE'})")
+    @GetMapping("/{workspaceId}/{projectId}/tasks")
     public ResponseEntity<GlobalResponse<List<TasksCompact>>> getTasksInProject(
             @PathVariable(value = "projectId", required = false) @org.hibernate.validator.constraints.UUID String projectId
     ) {
         List<TasksCompact> listTasks = tasksService.getAllTaskInProject(projectId);
+        return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), listTasks));
+    }
+
+    @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #workspaceId,{'WORKSPACE_READ_ALL','WORKSPACE_READ_ONE'})")
+    @GetMapping("/{workspaceId}/tasks")
+    public ResponseEntity<GlobalResponse<List<TasksInfo>>> getTasksInWorkspace(
+        @PathVariable(value = "companyId", required = false) @org.hibernate.validator.constraints.UUID String companyId,
+        @PathVariable(value = "workspaceId", required = false) @org.hibernate.validator.constraints.UUID String workspaceId
+    ) {
+        List<TasksInfo> listTasks = tasksService.getAllTaskInWorkspace(workspaceId);
         return ResponseEntity.ok(new GlobalResponse<>(HttpStatus.OK.value(), listTasks));
     }
 

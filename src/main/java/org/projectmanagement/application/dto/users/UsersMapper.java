@@ -18,6 +18,7 @@ public interface UsersMapper {
                 user.getIsActive(),
                 user.getCompanyId(),
                 user.getIsOwner(),
+                user.getAvatarUrl(),
                 user.getUpdatedAt(),
                 user.getCreatedAt());
     }

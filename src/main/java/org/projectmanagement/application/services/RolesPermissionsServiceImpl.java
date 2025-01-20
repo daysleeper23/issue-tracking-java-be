@@ -3,6 +3,7 @@ package org.projectmanagement.application.services;
 
 import jakarta.transaction.Transactional;
 import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsCreate;
+import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsRead;
 import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsUpdate;
 import org.projectmanagement.domain.entities.Permissions;
 import org.projectmanagement.domain.entities.RolesPermissions;
@@ -38,7 +39,7 @@ public class RolesPermissionsServiceImpl implements RolesPermissionsService {
 
 
     @Override
-    public List<RolesPermissions> getAllRolesPermissionsForCompany(UUID companyId) {
+    public List<RolesPermissionsRead> getAllRolesPermissionsForCompany(UUID companyId) {
         return rolesPermissionsRepository.findAllRolesPermissionsForCompany(companyId);
     }
 

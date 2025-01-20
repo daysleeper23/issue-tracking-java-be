@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.projectmanagement.application.dto.tasks.*;
 import org.projectmanagement.application.exceptions.AppMessage;
 import org.projectmanagement.application.exceptions.ApplicationException;
-import org.projectmanagement.domain.entities.Projects;
-import org.projectmanagement.domain.entities.TaskSubscribers;
-import org.projectmanagement.domain.entities.Tasks;
-import org.projectmanagement.domain.entities.Users;
+import org.projectmanagement.domain.entities.*;
 import org.projectmanagement.domain.enums.DefaultStatus;
 import org.projectmanagement.domain.repository.*;
 import org.projectmanagement.domain.services.TasksService;
@@ -35,6 +32,7 @@ public class TasksServiceImpl implements TasksService {
     private final ProjectMembersRepository projectMembersRepository;
     private final ProjectsRepository projectsRepository;
     private final UsersRepository usersRepository;
+    private final WorkspacesRepository workspacesRepository;
 
     @Override
     public TasksInfo addTask(TasksCreate newTask) {
@@ -42,11 +40,11 @@ public class TasksServiceImpl implements TasksService {
         UserDetails user = SecurityUtils.getCurrentUser();
         Users users = usersRepository.findOneByEmail(user.getUsername())
                 .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, AppMessage.USER_NOT_FOUND));
-        if (projectMembersRepository
-                .findByProjectIdAndUserId(UUID.fromString(newTask.projectId()),
-                        users.getId()).isEmpty()){
-            throw new ApplicationException(HttpStatus.FORBIDDEN, AppMessage.USER_NOT_IN_PROJECT);
-        }
+//        if (projectMembersRepository
+//                .findByProjectIdAndUserId(UUID.fromString(newTask.projectId()),
+//                        users.getId()).isEmpty()){
+//            throw new ApplicationException(HttpStatus.FORBIDDEN, AppMessage.USER_NOT_IN_PROJECT);
+//        }
         Tasks newTasks = TasksMapper.mapper.createDtoToEntity(newTask);
         // Todo: user who created this tasks also is a subscriber and order should be after task is created
         //subscriberRepository.save(new TaskSubscribers(taskId, userId));
@@ -59,11 +57,11 @@ public class TasksServiceImpl implements TasksService {
         if (existed == null){
             throw new ApplicationException(HttpStatus.NOT_FOUND,TASK_NOT_FOUND);
         }
-        if (!isChanged(taskDTO,existed)){
+        if (!isChanged(taskDTO, existed)){
             throw new ApplicationException(AppMessage.NO_CHANGE);
         }
 
-        TasksMapper.mapper.updateDtoToEntity(taskDTO,existed);
+        TasksMapper.mapper.updateDtoToEntity(taskDTO, existed);
         return TasksMapper.mapper.entityToInfoDto(
                 tasksRepository.save(existed),
                 subscribersRepository.getSubscriberByTaskId(existed.getId())
@@ -83,6 +81,18 @@ public class TasksServiceImpl implements TasksService {
     }
 
     @Override
+    public List<TasksInfo> getAllTaskInWorkspace(String workspaceId) {
+        UserDetails user = SecurityUtils.getCurrentUser();
+        Users users = usersRepository.findOneByEmail(user.getUsername())
+            .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, AppMessage.USER_NOT_FOUND));
+        Optional<Workspaces> workspaces = workspacesRepository.findById(UUID.fromString(workspaceId));
+        if (workspaces.isEmpty()) {
+            throw new ApplicationException(AppMessage.WORKSPACE_NOT_FOUND);
+        }
+        return TasksMapper.mapper.entitiesToInfoDtoList(tasksRepository.findByWorkspaceId(UUID.fromString(workspaceId)));
+    }
+
+    @Override
     public List<TasksCompact> getAllTaskByUser() {
         UserDetails user = SecurityUtils.getCurrentUser();
         Users users =usersRepository.findOneByEmail(user.getUsername())
@@ -99,11 +109,11 @@ public class TasksServiceImpl implements TasksService {
         if (info == null) {
             throw new ApplicationException(TASK_NOT_FOUND);
         }
-        if (projectMembersRepository
-                .findByProjectIdAndUserId(info.getProjectId(),
-                        users.getId()).isEmpty()){
-            throw new ApplicationException(HttpStatus.FORBIDDEN, AppMessage.USER_NOT_IN_PROJECT);
-        }
+//        if (projectMembersRepository
+//                .findByProjectIdAndUserId(info.getProjectId(),
+//                        users.getId()).isEmpty()){
+//            throw new ApplicationException(HttpStatus.FORBIDDEN, AppMessage.USER_NOT_IN_PROJECT);
+//        }
         List<TaskSubscribers> subscribers = subscribersRepository.getSubscriberByTaskId(info.getId());
         return TasksMapper.mapper.entityToInfoDto(info, subscribers);
     }
@@ -117,12 +127,12 @@ public class TasksServiceImpl implements TasksService {
         if (info == null) {
             throw new ApplicationException(TASK_NOT_FOUND);
         }
-        if (projectMembersRepository
-                .findByProjectIdAndUserId(info.getProjectId(),
-                        users.getId()).isEmpty()){
-            throw new ApplicationException(HttpStatus.FORBIDDEN, AppMessage.USER_NOT_IN_PROJECT);
-        }
-        tasksRepository.save(info.toBuilder().status(DefaultStatus.ARCHIVED).build());
+//        if (projectMembersRepository
+//                .findByProjectIdAndUserId(info.getProjectId(),
+//                        users.getId()).isEmpty()){
+//            throw new ApplicationException(HttpStatus.FORBIDDEN, AppMessage.USER_NOT_IN_PROJECT);
+//        }
+        tasksRepository.save(info.toBuilder().status(DefaultStatus.CANCELLED).build());
         return true;
     }
     //Todo: move to util & optimize

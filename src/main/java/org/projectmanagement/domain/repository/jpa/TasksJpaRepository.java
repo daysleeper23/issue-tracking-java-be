@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface TasksJpaRepository extends JpaRepository<Tasks, UUID> {
-    @Query(value ="SELECT * FROM tasks t WHERE t.project_id = :projectId",
-            nativeQuery = true
-    )
-    List<Tasks> findByProjectId(@Param("projectId")UUID projectId);
+
+    List<Tasks> findByProjectId(UUID projectId);
+
+    List<Tasks> findByWorkspaceId(UUID workspaceId);
 
     @Query(value ="SELECT t.id, " +
             "t.name," +

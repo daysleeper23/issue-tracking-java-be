@@ -21,6 +21,8 @@ public interface TasksMapper {
     @Mapping(target = "subscribers", source = "subscribers")
     TasksInfo entityToInfoDto(Tasks task, List<TaskSubscribers> subscribers);
 
+    List<TasksInfo> entitiesToInfoDtoList(List<Tasks> tasks);
+
     List<TasksCompact> entitiesToCompactDtoList(List<Tasks> tasks);
 
 }

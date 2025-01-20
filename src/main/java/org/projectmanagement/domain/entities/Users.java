@@ -43,6 +43,9 @@ public class Users extends BaseEntity{
     @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean isDeleted;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
     //Todo: Lombok does not support the creation with super class constructor
     // so either remove the constructor or keep it if you are using it for testing
     public Users(UUID id, String name, String email, String passwordHash, String title, Boolean isActive, UUID companyId, Boolean isOwner, Boolean isDeleted, Instant createdAt, Instant updatedAt) {

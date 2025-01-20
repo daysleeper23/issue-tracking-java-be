@@ -8,10 +8,7 @@ import org.projectmanagement.application.exceptions.AppMessage;
 import org.projectmanagement.application.exceptions.ApplicationException;
 import org.projectmanagement.domain.entities.Roles;
 import org.projectmanagement.domain.entities.WorkspacesMembersRoles;
-import org.projectmanagement.domain.repository.RolesRepository;
-import org.projectmanagement.domain.repository.UsersRepository;
-import org.projectmanagement.domain.repository.WorkspacesMembersRolesRepository;
-import org.projectmanagement.domain.repository.WorkspacesRepository;
+import org.projectmanagement.domain.repository.*;
 import org.projectmanagement.domain.services.WorkspacesMembersRolesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -163,5 +160,10 @@ public class WorkspacesMembersRolesServiceImpl implements WorkspacesMembersRoles
 
         //delete the role
         wmrRepository.deleteById(id);
+    }
+
+    @Override
+    public List<WorkspacesMembersRoles> getAllWorkspacesForUser(UUID userId) {
+        return wmrRepository.findByUserId(userId);
     }
 }

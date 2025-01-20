@@ -33,5 +33,5 @@ public interface WorkspacesMembersRolesRepoJpa extends JpaRepository<WorkspacesM
         , nativeQuery = true)
     int updateWorkspacesMembersRoles(@Param("id") UUID id, @Param("newRoleId") UUID newRoleId);
 
-    Optional<WorkspacesMembersRoles> findByUserId(UUID userId);
+    List<WorkspacesMembersRoles> findByUserId(UUID userId);
 }

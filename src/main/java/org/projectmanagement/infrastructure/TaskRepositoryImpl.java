@@ -21,6 +21,11 @@ public class TaskRepositoryImpl implements TasksRepository {
         return jpaRepository.findByProjectId(projectId);
     }
 
+    @Override
+    public List<Tasks> findByWorkspaceId(UUID workspaceId) {
+        return jpaRepository.findByWorkspaceId(workspaceId);
+    }
+
     public Tasks save(Tasks task) {
         //Replace with actual implementation for jpa
         return jpaRepository.save(task);

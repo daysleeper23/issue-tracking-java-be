@@ -10,10 +10,11 @@ import java.util.UUID;
 
 @Builder
 public record TasksInfo(UUID id,
-                         String name,
+                         String title,
                          String description,
                          DefaultStatus status,
                          UUID assigneeId,
+                         UUID workspaceId,
                          short priority,
                          UUID projectId,
                          Instant createdAt,

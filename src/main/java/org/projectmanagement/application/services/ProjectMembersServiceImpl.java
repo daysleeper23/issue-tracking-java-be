@@ -74,10 +74,12 @@ public class ProjectMembersServiceImpl {
             throw new ResourceNotFoundException("Project with id: " + projectId + " was not found.");
         }
 
-        WorkspacesMembersRoles workspacesMembersRoleFromDb = workspacesMembersRolesRepository.findByUserId(dto.userId()).orElse(null);
+//        WorkspacesMembersRoles workspacesMembersRoleFromDb = workspacesMembersRolesRepository.findByUserIdAndWorkspaceId(dto.userId()).orElse(null);
         CompanyManagers companyManagersFromDb = companyManagersRepository.findByUserId(dto.userId()).orElse(null);
 
-        if (workspacesMembersRoleFromDb == null && companyManagersFromDb == null) {
+        if (
+//            workspacesMembersRoleFromDb == null &&
+            companyManagersFromDb == null) {
             throw new ResourceNotFoundException("Given user is not a member of the workspace and can not be added to given the project.");
         }
 

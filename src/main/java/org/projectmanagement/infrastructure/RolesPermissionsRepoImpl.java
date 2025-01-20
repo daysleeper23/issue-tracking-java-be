@@ -1,5 +1,6 @@
 package org.projectmanagement.infrastructure;
 
+import org.projectmanagement.application.dto.roles_permissions.RolesPermissionsRead;
 import org.projectmanagement.domain.entities.RolesPermissions;
 import org.projectmanagement.domain.repository.RolesPermissionsRepoJpa;
 import org.projectmanagement.domain.repository.RolesPermissionsRepository;
@@ -44,7 +45,7 @@ public class RolesPermissionsRepoImpl implements RolesPermissionsRepository {
     }
 
     @Override
-    public List<RolesPermissions> findAllRolesPermissionsForCompany(UUID companyId) {
+    public List<RolesPermissionsRead> findAllRolesPermissionsForCompany(UUID companyId) {
         return rolesPermissionsRepoJpa.findAllByCompanyId(companyId);
     }
 }

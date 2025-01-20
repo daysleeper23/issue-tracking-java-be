@@ -15,6 +15,8 @@ public interface TasksRepository {
 
     List<Tasks> findByProjectId(UUID projectId);
 
+    List<Tasks> findByWorkspaceId(UUID workspaceId);
+
     Tasks findById(UUID id);
 
     List<Tasks> findAllTasksUserAssociated(UUID userId);

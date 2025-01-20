@@ -31,7 +31,7 @@ public class InvitationsServiceImpl implements InvitationsService {
 
     private final RolesService rolesService;
 
-    private final EmailsService emailsService;
+//    private final EmailsService emailsService;
 
     private final CompaniesService companiesService;
 
@@ -58,19 +58,19 @@ public class InvitationsServiceImpl implements InvitationsService {
         }
         Invitations newInvitations = invitationsRepository.save(InvitationsMapper.mapper.dtoToEntity(dto).toBuilder()
                         .companyId(company.getId()).build());
-        CompletableFuture<Void> sendEmail = CompletableFuture.runAsync(() ->
-        emailsService.sendInvitationEmail(dto.userEmail(), uriBuilder,
-                new InvitationMailBody(company.getName(),
-                        newInvitations.getId().toString() ,
-                        workspaceName, roleName,
-                        dto.isAdmin(),
-                        newInvitations.getCreatedAt().toEpochMilli()
-                        )));
-        try {
-            sendEmail.get();
-        } catch (Exception e) {
-            throw new ApplicationException(e.getMessage());
-        }
+//        CompletableFuture<Void> sendEmail = CompletableFuture.runAsync(() ->
+//        emailsService.sendInvitationEmail(dto.userEmail(), uriBuilder,
+//                new InvitationMailBody(company.getName(),
+//                        newInvitations.getId().toString() ,
+//                        workspaceName, roleName,
+//                        dto.isAdmin(),
+//                        newInvitations.getCreatedAt().toEpochMilli()
+//                        )));
+//        try {
+//            sendEmail.get();
+//        } catch (Exception e) {
+//            throw new ApplicationException(e.getMessage());
+//        }
         return InvitationsMapper.mapper.entityToInvitationInfo(newInvitations);
     }
 

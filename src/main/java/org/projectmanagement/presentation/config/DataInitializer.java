@@ -57,12 +57,12 @@ public class DataInitializer {
     @Bean
     CommandLineRunner initializeData(PermissionsRepoJpa permissionsRepository) {
         return args -> {
-            initializeCompanies();
-            initializeUsers();
-            initializeRolesPermissions();
-            initializeWorkspacesAndMemberRoles();
-            initializeProjectsAndMembers();
-            initializeInvitations();
+//            initializeCompanies();
+//            initializeUsers();
+//            initializeRolesPermissions();
+//            initializeWorkspacesAndMemberRoles();
+//            initializeProjectsAndMembers();
+//            initializeInvitations();
         };
     }
 
