@@ -1,0 +1,15 @@
+name: Wake Render Server
+
+on:
+  schedule:
+    # Runs every 30 minutes (adjust as needed to keep your server awake)
+    - cron: "*/30 * * * *"
+  workflow_dispatch: # Allows you to trigger manually if needed
+
+jobs:
+  wake-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send HTTP request to wake the server
+        run: |
+          curl -I https://fs19-pm-be-java.onrender.com || echo "Failed to wake server"
