@@ -12,10 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -31,6 +28,13 @@ public class AuthController {
         this.usersService = usersService;
         this.authManager = am;
         this.authService = as;
+    }
+
+    @GetMapping("/awake")
+    public ResponseEntity<GlobalResponse<String>> wakeUp() {
+        return new ResponseEntity<>(
+            new GlobalResponse<>(HttpStatus.OK.value(), "I'm awake!")
+            , HttpStatus.OK);
     }
 
 
