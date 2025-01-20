@@ -12,4 +12,4 @@ jobs:
     steps:
       - name: Send HTTP request to wake the server
         run: |
-          curl -I https://fs19-pm-be-java.onrender.com/auth/awake || echo "Failed to wake server"
+          curl -X 'GET' 'https://fs19-pm-be-java.onrender.com/auth/awake' -H 'accept: */*' || echo "Failed to wake server"
