@@ -37,7 +37,7 @@ public class ProjectsRepoImpl implements ProjectsRepository {
 
     @Override
     public List<Projects> findAllFromWorkspace(UUID workspaceId) {
-        return projectsRepoJpa.findByWorkspaceId(workspaceId);
+        return projectsRepoJpa.findByWorkspaceIdAndIsDeletedFalse(workspaceId);
     }
 
     @Override

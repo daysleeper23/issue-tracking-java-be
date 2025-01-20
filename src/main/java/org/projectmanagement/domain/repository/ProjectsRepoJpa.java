@@ -21,6 +21,8 @@ public interface ProjectsRepoJpa extends JpaRepository<Projects, UUID> {
             nativeQuery = true)
     List<Projects> findByWorkspaceId(@Param("workspaceId") UUID workspaceId);
 
+    List<Projects> findByWorkspaceIdAndIsDeletedFalse(@Param("workspaceId") UUID workspaceId);
+
     @Modifying
     @Query(value = "UPDATE projects " +
             "SET is_deleted = true, " +

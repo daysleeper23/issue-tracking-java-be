@@ -38,7 +38,9 @@ public class ProjectController {
     */
 
     @GetMapping
-    public ResponseEntity<GlobalResponse<List<Projects>>> getProjectsByWorkspaceId(@PathVariable @Valid UUID workspaceId) {
+    public ResponseEntity<GlobalResponse<List<Projects>>> getProjectsByWorkspaceId(
+        @PathVariable @Valid UUID workspaceId
+        , @PathVariable @Valid UUID companyId) {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projectService.getProjectsByWorkspaceId(workspaceId)), HttpStatus.OK);
     }
 
