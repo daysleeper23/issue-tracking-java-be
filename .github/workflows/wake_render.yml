@@ -2,7 +2,7 @@ name: Wake Render Server
 
 on:
   schedule:
-    # Runs every 30 minutes (adjust as needed to keep your server awake)
+    # Runs every 5 minutes (adjust as needed to keep your server awake)
     - cron: "*/5 * * * *"
   workflow_dispatch: # Allows you to trigger manually if needed
 
@@ -12,4 +12,4 @@ jobs:
     steps:
       - name: Send HTTP request to wake the server
         run: |
-          curl -I https://fs19-pm-be-java.onrender.com || echo "Failed to wake server"
+          curl -I https://fs19-pm-be-java.onrender.com/swagger-ui/index.html || echo "Failed to wake server"
