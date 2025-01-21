@@ -52,7 +52,11 @@ public class ProjectController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("@permissionEvaluator.hasPermissionOnSingleResource(authentication, #id, {'PROJECT_UPDATE_ALL', 'PROJECT_UPDATE_ONE'})")
-    public ResponseEntity<GlobalResponse<Projects>> updateProject(@PathVariable @Valid UUID id, @RequestBody @Valid ProjectsUpdate project) {
+    public ResponseEntity<GlobalResponse<Projects>> updateProject(
+        @PathVariable @Valid UUID companyId
+        , @PathVariable @Valid UUID workspaceId
+        , @PathVariable @Valid UUID id
+        , @RequestBody @Valid ProjectsUpdate project) {
         Projects updatedProject = projectService.updateProject(id, project);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedProject), HttpStatus.OK);
     }

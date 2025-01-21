@@ -16,6 +16,7 @@ public record ProjectsUpdate(
         @Min(0)
         @Max(4)
         int priority,
+        String leaderId,
         DefaultStatus status
 ) {
 }
