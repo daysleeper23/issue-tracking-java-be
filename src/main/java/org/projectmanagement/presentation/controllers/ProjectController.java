@@ -46,7 +46,10 @@ public class ProjectController {
 
 
     @PostMapping
-    public ResponseEntity<GlobalResponse<Projects>> createProject(@RequestBody @Valid ProjectsCreate project) {
+    public ResponseEntity<GlobalResponse<Projects>> createProject(
+        @PathVariable @Valid UUID companyId
+        , @PathVariable @Valid UUID workspaceId
+        , @RequestBody @Valid ProjectsCreate project) {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), projectService.createProject(project)), HttpStatus.CREATED);
     }
 
