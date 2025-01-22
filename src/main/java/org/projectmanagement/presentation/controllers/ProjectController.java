@@ -43,8 +43,7 @@ public class ProjectController {
         , @PathVariable @Valid UUID companyId) {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projectService.getProjectsByWorkspaceId(workspaceId)), HttpStatus.OK);
     }
-
-
+    
     @PostMapping
     public ResponseEntity<GlobalResponse<Projects>> createProject(
         @PathVariable @Valid UUID companyId
