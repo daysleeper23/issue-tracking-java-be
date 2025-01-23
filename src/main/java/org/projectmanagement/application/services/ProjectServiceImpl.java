@@ -81,7 +81,7 @@ public class ProjectServiceImpl implements ProjectService {
                         .endDate(dto.endDate())
                         .startDate(dto.startDate())
                         .priority(dto.priority() == null ? 0 : dto.priority())
-                        .status(dto.status())
+                        .status(DefaultStatus.valueOf(dto.status()))
                         .leaderId(dto.leaderId())
                         .workspaceId(dto.workspaceId())
                         .isDeleted(false)

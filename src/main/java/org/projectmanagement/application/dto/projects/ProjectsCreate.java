@@ -22,7 +22,7 @@ public record ProjectsCreate(
         @Max(4)
         Integer priority,
         @EnumValidation(target = DefaultStatus.class)
-        DefaultStatus status,
+        String status,
         UUID leaderId,
         @NotNull(message = "Can not be null")
         UUID workspaceId
