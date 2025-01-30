@@ -163,6 +163,20 @@ public class SecurityConfig {
                         .hasAnyAuthority("PROJECT_UPDATE_ALL", "PROJECT_UPDATE_ONE")
 
                     /*
+                        TASK PERMISSIONS
+                    */
+                    //Allow POST requests on /{companyId}/{projectId}/tasks
+                    .requestMatchers(HttpMethod.POST,"/{companyId}/{projectId}/tasks")
+                        .hasAnyAuthority("PROJECT_UPDATE_ALL", "PROJECT_UPDATE_ONE")
+
+                    //Allow PUT requests on /{companyId}/{projectId}/tasks/{taskId}
+                    .requestMatchers(HttpMethod.PUT,"/{companyId}/{projectId}/tasks/{taskId}")
+                        .hasAnyAuthority("PROJECT_UPDATE_ALL", "PROJECT_UPDATE_ONE")
+
+                    //Allow DELETE requests on /{companyId}/{projectId}/tasks/{taskId}
+                    .requestMatchers(HttpMethod.DELETE,"/{companyId}/{projectId}/tasks/{taskId}")
+                        .hasAnyAuthority("PROJECT_UPDATE_ALL", "PROJECT_UPDATE_ONE")
+                    /*
                         ROLE PERMISSIONS
                     */
                     //Allow GET requests on /roles
