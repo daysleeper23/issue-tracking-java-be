@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -93,9 +94,8 @@ public class CompanyManagersServiceImpl implements CompanyManagersService {
     }
 
     @Override
-    public CompanyManagers getByUserId(UUID userId) {
-        return companyManagersRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Company Manager with user id: " + userId + " is not found"));
+    public Optional<CompanyManagers> getByUserId(UUID userId) {
+        return companyManagersRepository.findByUserId(userId);
     }
 
     @Override

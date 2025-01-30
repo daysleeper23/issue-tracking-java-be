@@ -62,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         List<UUID> wIds = new ArrayList<UUID>();
-        if (companyManagersService.getByUserId(existingUser.get().getId()) != null) {
+        if (!companyManagersService.getByUserId(existingUser.get().getId()).isEmpty()) {
             wIds = wRepo.findAllWorkspaces(existingUser.get().getCompanyId()).stream().map(w -> w.getId()).toList();
         }
         else {

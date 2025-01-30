@@ -5,6 +5,7 @@ import org.projectmanagement.application.dto.company_managers.UpdateCompanyManag
 import org.projectmanagement.domain.entities.CompanyManagers;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface CompanyManagersService {
@@ -14,7 +15,7 @@ public interface CompanyManagersService {
 
     CompanyManagers getById(UUID id);
 
-    CompanyManagers getByUserId(UUID userId);
+    Optional<CompanyManagers> getByUserId(UUID userId);
 
     List<CompanyManagers> getAllManagersByCompanyId(UUID companyId);
 
