@@ -221,7 +221,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://dancing-selkie-f70674.netlify.app/")); // Add allowed origins
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:4000", "https://dancing-selkie-f70674.netlify.app/")); // Add allowed origins
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
