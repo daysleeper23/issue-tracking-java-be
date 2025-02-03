@@ -11,5 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send HTTP request to wake the server
+        with:
+          COMPANY_ID: ${{ secrets.COMPANY_ID }}
+          WORKSPACE_ID: ${{ secrets.WORKSPACE_ID }}
+          TOKEN: ${{ secrets.TOKEN }}
         run: |
-          curl -X 'GET' 'https://fs19-pm-be-java.onrender.com/auth/awake' -H 'accept: */*' || echo "Failed to wake server"
+          curl -H 'Authorization: Bearer "$TOKEN"' -X 'GET' 'https://fs19-pm-be-java.onrender.com/"$COMPANY_ID"/"$WORKSPACE_ID"' || echo "Failed to wake server"
